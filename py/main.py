@@ -16,7 +16,7 @@ def main(
 
     input_text = input_file.read_text(encoding="utf-8")
 
-    new_output = transform(input_text)
+    new_output = str(transform(input_text))
     output_file.write_text(new_output, encoding="utf-8")
 
 
