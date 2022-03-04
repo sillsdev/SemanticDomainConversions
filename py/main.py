@@ -15,7 +15,9 @@ def main(
     transform = etree.XSLT(xslt)
 
     input_text = input_file.read_text(encoding="utf-8")
+
     new_output = transform(input_text)
+    output_file.write_text(new_output, encoding="utf-8")
 
 
 if __name__ == "__main__":
