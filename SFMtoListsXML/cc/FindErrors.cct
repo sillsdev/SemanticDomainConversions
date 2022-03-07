@@ -1,0 +1,63 @@
+c findErrors.cct
+
+c jim albright
+c version 1.0.0 	2021-04-27  initial release
+
+begin		> 	utf8
+			set(start)
+			store(nl) nl 
+		store(upper) 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+		store(alpha) 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+				     'abcdefghijklmnopqrstuvwxyz'
+			store(digit) '0123456789'
+			store(space) ' '
+			store(slash) '/'
+			store(tone) 'hmb'
+			store(openParens) '('
+		   	store(closeParens) ')'
+			store(x)	'x'
+			store(trash)
+			store(count) '00000'	
+			store(nbsp) uA0 endstore
+			store(&nbsp) '&nbsp;' endstore
+define(makeArial) > nl '\arial ' clear(arial)
+			store(total) '00000'	
+			store(is)    '00000'  
+define(checkForErrors)	> nl  
+		  ifeq(count) '00002'   out(count)  incr(total) '*************' nl endif
+		  ifeq(count) '00003'   out(count)  incr(total) '*************' nl endif
+		  ifeq(count) '00004'   out(count)  incr(total) '*************' nl endif
+		  ifeq(count) '00005'   out(count)  incr(total) '*************' nl endif
+		  ifeq(count) '00006'   out(count)  incr(total) '*************' nl endif
+		  ifeq(count) '00007'   out(count)  incr(total) '*************' nl endif
+		  ifeq(count) '00008'   out(count)  incr(total) '*************' nl endif
+		  ifeq(count) '00009'   out(count)  incr(total) '*************' nl endif
+		  ifeq(count) '00010'   out(count)  incr(total) '*************' nl endif
+		  ifeq(count) '00011'   out(count)  incr(total) '*************' nl endif
+		  dup  store(count) '00000' endstore
+
+use(main)
+		
+c ----------
+group(main)
+c ----------
+
+
+
+'  '		> next
+'  '		> ' ' back(1)
+' ' nl 		> nl back(2)
+nl nl 		> nl back(1)
+nl '\is'	> nl nl '\is'  incr(is)
+nl nl '\is'	> do(checkForErrors) incr(is)
+		   
+
+nl ' '		> ' '
+
+
+nl '\qu '	> do(checkForErrors) dup 
+nl '\xe '	> dup incr(count)
+
+
+endfile		> 	nl '******* total semantic domains ' out(is) ' *****' 
+			nl '******* total errors ' out(total) ' *****'  dup
