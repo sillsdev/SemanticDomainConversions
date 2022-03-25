@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #
-# Generated Fri Mar 25 13:17:55 2022 by generateDS.py version 2.40.9.
+# Generated Fri Mar 25 14:16:35 2022 by generateDS.py version 2.40.9.
 # Python 3.10.3 (tags/v3.10.3:a342a49, Mar 16 2022, 13:07:40) [MSC v.1929 64 bit (AMD64)]
 #
 # Command line options:
@@ -9,10 +9,10 @@
 #   ('-s', 'semantic_domain_subs.py')
 #
 # Command line arguments:
-#   ../schemas/semantic-domain.xsd
+#   ../schemas/SemanticDomain.xsd
 #
 # Command line:
-#   .\venv\Scripts\generateDS.py -o "semantic_domain.py" -s "semantic_domain_subs.py" ../schemas/semantic-domain.xsd
+#   .\venv\Scripts\generateDS.py -o "semantic_domain.py" -s "semantic_domain_subs.py" ../schemas/SemanticDomain.xsd
 #
 # Current working directory (os.getcwd()):
 #   py-doc-to-xml
@@ -64,106 +64,106 @@ SaveElementTreeNode = True
 #
 
 
-class AUniSub(supermod.AUni):
+class AUniTypeSub(supermod.AUniType):
     def __init__(self, ws=None, valueOf_=None, **kwargs_):
-        super(AUniSub, self).__init__(ws, valueOf_, **kwargs_)
+        super(AUniTypeSub, self).__init__(ws, valueOf_, **kwargs_)
 
 
-supermod.AUni.subclass = AUniSub
-# end class AUniSub
+supermod.AUniType.subclass = AUniTypeSub
+# end class AUniTypeSub
 
 
-class RunSub(supermod.Run):
+class NameTypeSub(supermod.NameType):
+    def __init__(self, AUni=None, **kwargs_):
+        super(NameTypeSub, self).__init__(AUni, **kwargs_)
+
+
+supermod.NameType.subclass = NameTypeSub
+# end class NameTypeSub
+
+
+class AbbreviationTypeSub(supermod.AbbreviationType):
+    def __init__(self, AUni=None, **kwargs_):
+        super(AbbreviationTypeSub, self).__init__(AUni, **kwargs_)
+
+
+supermod.AbbreviationType.subclass = AbbreviationTypeSub
+# end class AbbreviationTypeSub
+
+
+class RunTypeSub(supermod.RunType):
     def __init__(self, ws=None, valueOf_=None, **kwargs_):
-        super(RunSub, self).__init__(ws, valueOf_, **kwargs_)
+        super(RunTypeSub, self).__init__(ws, valueOf_, **kwargs_)
 
 
-supermod.Run.subclass = RunSub
-# end class RunSub
+supermod.RunType.subclass = RunTypeSub
+# end class RunTypeSub
 
 
-class AStrSub(supermod.AStr):
+class AStrTypeSub(supermod.AStrType):
     def __init__(self, ws=None, Run=None, **kwargs_):
-        super(AStrSub, self).__init__(ws, Run, **kwargs_)
+        super(AStrTypeSub, self).__init__(ws, Run, **kwargs_)
 
 
-supermod.AStr.subclass = AStrSub
-# end class AStrSub
+supermod.AStrType.subclass = AStrTypeSub
+# end class AStrTypeSub
 
 
-class QuestionSub(supermod.Question):
-    def __init__(self, AUni=None, **kwargs_):
-        super(QuestionSub, self).__init__(AUni, **kwargs_)
-
-
-supermod.Question.subclass = QuestionSub
-# end class QuestionSub
-
-
-class ExampleWordsSub(supermod.ExampleWords):
-    def __init__(self, AUni=None, **kwargs_):
-        super(ExampleWordsSub, self).__init__(AUni, **kwargs_)
-
-
-supermod.ExampleWords.subclass = ExampleWordsSub
-# end class ExampleWordsSub
-
-
-class ExampleSentencesSub(supermod.ExampleSentences):
+class DescriptionTypeSub(supermod.DescriptionType):
     def __init__(self, AStr=None, **kwargs_):
-        super(ExampleSentencesSub, self).__init__(AStr, **kwargs_)
+        super(DescriptionTypeSub, self).__init__(AStr, **kwargs_)
 
 
-supermod.ExampleSentences.subclass = ExampleSentencesSub
-# end class ExampleSentencesSub
+supermod.DescriptionType.subclass = DescriptionTypeSub
+# end class DescriptionTypeSub
 
 
-class CmDomainQSub(supermod.CmDomainQ):
+class QuestionTypeSub(supermod.QuestionType):
+    def __init__(self, AUni=None, **kwargs_):
+        super(QuestionTypeSub, self).__init__(AUni, **kwargs_)
+
+
+supermod.QuestionType.subclass = QuestionTypeSub
+# end class QuestionTypeSub
+
+
+class ExampleWordsTypeSub(supermod.ExampleWordsType):
+    def __init__(self, AUni=None, **kwargs_):
+        super(ExampleWordsTypeSub, self).__init__(AUni, **kwargs_)
+
+
+supermod.ExampleWordsType.subclass = ExampleWordsTypeSub
+# end class ExampleWordsTypeSub
+
+
+class ExampleSentencesTypeSub(supermod.ExampleSentencesType):
+    def __init__(self, AStr=None, **kwargs_):
+        super(ExampleSentencesTypeSub, self).__init__(AStr, **kwargs_)
+
+
+supermod.ExampleSentencesType.subclass = ExampleSentencesTypeSub
+# end class ExampleSentencesTypeSub
+
+
+class CmDomainQTypeSub(supermod.CmDomainQType):
     def __init__(self, Question=None, ExampleWords=None, ExampleSentences=None, **kwargs_):
-        super(CmDomainQSub, self).__init__(Question, ExampleWords, ExampleSentences, **kwargs_)
+        super(CmDomainQTypeSub, self).__init__(Question, ExampleWords, ExampleSentences, **kwargs_)
 
 
-supermod.CmDomainQ.subclass = CmDomainQSub
-# end class CmDomainQSub
+supermod.CmDomainQType.subclass = CmDomainQTypeSub
+# end class CmDomainQTypeSub
 
 
-class NameSub(supermod.Name):
-    def __init__(self, AUni=None, valueOf_=None, **kwargs_):
-        super(NameSub, self).__init__(AUni, **kwargs_)
-
-
-supermod.Name.subclass = NameSub
-# end class NameSub
-
-
-class AbbreviationSub(supermod.Abbreviation):
-    def __init__(self, AUni=None, **kwargs_):
-        super(AbbreviationSub, self).__init__(AUni, **kwargs_)
-
-
-supermod.Abbreviation.subclass = AbbreviationSub
-# end class AbbreviationSub
-
-
-class DescriptionSub(supermod.Description):
-    def __init__(self, AStr=None, **kwargs_):
-        super(DescriptionSub, self).__init__(AStr, **kwargs_)
-
-
-supermod.Description.subclass = DescriptionSub
-# end class DescriptionSub
-
-
-class QuestionsSub(supermod.Questions):
+class QuestionsTypeSub(supermod.QuestionsType):
     def __init__(self, CmDomainQ=None, **kwargs_):
-        super(QuestionsSub, self).__init__(CmDomainQ, **kwargs_)
+        super(QuestionsTypeSub, self).__init__(CmDomainQ, **kwargs_)
 
 
-supermod.Questions.subclass = QuestionsSub
-# end class QuestionsSub
+supermod.QuestionsType.subclass = QuestionsTypeSub
+# end class QuestionsTypeSub
 
 
-class CmSemanticDomainSub(supermod.CmSemanticDomain):
+class CmSemanticDomainTypeSub(supermod.CmSemanticDomainType):
     def __init__(
         self,
         guid=None,
@@ -174,22 +174,22 @@ class CmSemanticDomainSub(supermod.CmSemanticDomain):
         SubPossibilities=None,
         **kwargs_,
     ):
-        super(CmSemanticDomainSub, self).__init__(
+        super(CmSemanticDomainTypeSub, self).__init__(
             guid, Name, Abbreviation, Description, Questions, SubPossibilities, **kwargs_
         )
 
 
-supermod.CmSemanticDomain.subclass = CmSemanticDomainSub
-# end class CmSemanticDomainSub
+supermod.CmSemanticDomainType.subclass = CmSemanticDomainTypeSub
+# end class CmSemanticDomainTypeSub
 
 
-class SubPossibilitiesSub(supermod.SubPossibilities):
+class SubPossibilitiesTypeSub(supermod.SubPossibilitiesType):
     def __init__(self, CmSemanticDomain=None, **kwargs_):
-        super(SubPossibilitiesSub, self).__init__(CmSemanticDomain, **kwargs_)
+        super(SubPossibilitiesTypeSub, self).__init__(CmSemanticDomain, **kwargs_)
 
 
-supermod.SubPossibilities.subclass = SubPossibilitiesSub
-# end class SubPossibilitiesSub
+supermod.SubPossibilitiesType.subclass = SubPossibilitiesTypeSub
+# end class SubPossibilitiesTypeSub
 
 
 def get_root_tag(node):
@@ -207,8 +207,8 @@ def parse(inFilename, silence=False):
     rootNode = doc.getroot()
     rootTag, rootClass = get_root_tag(rootNode)
     if rootClass is None:
-        rootTag = "AUni"
-        rootClass = supermod.AUni
+        rootTag = "CmSemanticDomainType"
+        rootClass = supermod.CmSemanticDomainType
     rootObj = rootClass.factory()
     rootObj.build(rootNode)
     # Enable Python to collect the space used by the DOM.
@@ -227,8 +227,8 @@ def parseEtree(inFilename, silence=False):
     rootNode = doc.getroot()
     rootTag, rootClass = get_root_tag(rootNode)
     if rootClass is None:
-        rootTag = "AUni"
-        rootClass = supermod.AUni
+        rootTag = "CmSemanticDomainType"
+        rootClass = supermod.CmSemanticDomainType
     rootObj = rootClass.factory()
     rootObj.build(rootNode)
     mapping = {}
@@ -256,8 +256,8 @@ def parseString(inString, silence=False):
     rootNode = parsexmlstring_(inString, parser)
     rootTag, rootClass = get_root_tag(rootNode)
     if rootClass is None:
-        rootTag = "AUni"
-        rootClass = supermod.AUni
+        rootTag = "CmSemanticDomainType"
+        rootClass = supermod.CmSemanticDomainType
     rootObj = rootClass.factory()
     rootObj.build(rootNode)
     # Enable Python to collect the space used by the DOM.
@@ -275,8 +275,8 @@ def parseLiteral(inFilename, silence=False):
     rootNode = doc.getroot()
     rootTag, rootClass = get_root_tag(rootNode)
     if rootClass is None:
-        rootTag = "AUni"
-        rootClass = supermod.AUni
+        rootTag = "CmSemanticDomainType"
+        rootClass = supermod.CmSemanticDomainType
     rootObj = rootClass.factory()
     rootObj.build(rootNode)
     # Enable Python to collect the space used by the DOM.

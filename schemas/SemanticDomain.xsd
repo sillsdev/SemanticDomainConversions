@@ -1,0 +1,80 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="CmSemanticDomain" type="CmSemanticDomainType"/>
+  <xs:complexType name="AUniType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="ws" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="NameType">
+    <xs:sequence>
+      <xs:element type="AUniType" name="AUni" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="AbbreviationType">
+    <xs:sequence>
+      <xs:element type="AUniType" name="AUni" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="RunType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="ws" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="AStrType">
+    <xs:sequence>
+      <xs:element type="RunType" name="Run"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="ws" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="DescriptionType">
+    <xs:sequence>
+      <xs:element type="AStrType" name="AStr" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="QuestionType">
+    <xs:sequence>
+      <xs:element type="AUniType" name="AUni" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ExampleWordsType">
+    <xs:sequence>
+      <xs:element type="AUniType" name="AUni" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ExampleSentencesType">
+    <xs:sequence>
+      <xs:element type="AStrType" name="AStr" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="CmDomainQType">
+    <xs:sequence>
+      <xs:element type="QuestionType" name="Question"/>
+      <xs:element type="ExampleWordsType" name="ExampleWords" minOccurs="0"/>
+      <xs:element type="ExampleSentencesType" name="ExampleSentences" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="QuestionsType">
+    <xs:sequence>
+      <xs:element type="CmDomainQType" name="CmDomainQ" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="CmSemanticDomainType">
+    <xs:sequence>
+      <xs:element type="NameType" name="Name"/>
+      <xs:element type="AbbreviationType" name="Abbreviation"/>
+      <xs:element type="DescriptionType" name="Description"/>
+      <xs:element type="QuestionsType" name="Questions"/>
+      <xs:element type="SubPossibilitiesType" name="SubPossibilities" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="guid" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="SubPossibilitiesType">
+    <xs:sequence>
+      <xs:element type="CmSemanticDomainType" name="CmSemanticDomain" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
