@@ -3,3 +3,7 @@ typer
 
 # Parsing.
 simplify-docx
+
+# GenerateDS Output Dependencies
+six
+lxml

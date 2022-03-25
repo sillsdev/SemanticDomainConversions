@@ -10,6 +10,7 @@ colorama==0.4.4
     # via click
 lxml==4.8.0
     # via
+    #   -r .\requirements.in
     #   python-docx
     #   simplify-docx
 more-itertools==7.0.0
@@ -19,7 +20,9 @@ python-docx==0.8.10
 simplify-docx==0.1.1
     # via -r .\requirements.in
 six==1.16.0
-    # via simplify-docx
+    # via
+    #   -r .\requirements.in
+    #   simplify-docx
 typer==0.4.0
     # via -r .\requirements.in
 wincertstore==0.2
