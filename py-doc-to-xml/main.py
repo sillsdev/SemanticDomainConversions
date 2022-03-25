@@ -1,11 +1,21 @@
 #!/usr/bin/env python3
 
+from __future__ import annotations
+
 from pathlib import Path
 from pprint import pprint
+from typing import List, Literal, TypedDict
 
 from docx import Document
 from simplify_docx import simplify
 from typer import Option, run
+
+Type = Literal["body", "paragraph", "text"]
+
+
+class DocEntry(TypedDict):
+    TYPE: Type
+    VALUE: List[DocEntry]
 
 
 def main(
@@ -13,7 +23,7 @@ def main(
     output_file: Path = Option(..., writable=True, resolve_path=True),
 ) -> None:
     doc = Document(doc_file)
-    json = simplify(doc)
+    json: DocEntry = simplify(doc)
     pprint(json)
 
 
