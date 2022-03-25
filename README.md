@@ -10,7 +10,7 @@ to produce a SemanticDomainList.xml file which can be used by FieldWorks.
 
 A collection of files used to convert a translated SemDom list from an older version to a newer version.
 Contains folders:
- - Scripts: the main script for doing the conversion.  Filenames are hardcoded, so it needs to be customized per language.
+ - Scripts: the main script for doing the conversion.  Filenames are hardcoded in the script, so it needs to be customized per language.
  - Tables: the CC tables for converting data from v1, v2, or v3.  The script reads in one of these tables, to determine what changes it needs to make.
  - SemDom SFM Authority Files: The authority files for different versions of the SemDom list.
 
