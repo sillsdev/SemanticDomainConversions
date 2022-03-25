@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-from pprint import pprint
 from typing import List, Literal, Union
 
 from docx import Document
