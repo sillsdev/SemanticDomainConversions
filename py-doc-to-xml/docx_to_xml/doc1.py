@@ -37,6 +37,7 @@ def parse_semantic_domains(body: List[DocModel]) -> List[SemanticDomain]:
             print("Ignoring blank line")
             continue
 
+        # TODO: Complete this logic.
         if is_semantic_domain_number(value):
             # When finding a new semantic domain, save the previous (now complete) one.
             semantic_domains.append(current_semantic_domain)
