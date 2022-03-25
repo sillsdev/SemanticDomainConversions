@@ -24,7 +24,7 @@ Install dependencies within the activated environment (`(venv)` at start of prom
 
 ```bash
 python -m pip install --upgrade pip pip-tools
-python -m pip-tools sync requirements.txt dev-requirements.txt
+python -m piptools sync requirements.txt dev-requirements.txt
 ```
 
 (Python 3.10+ only) To work around this upstream issue:
