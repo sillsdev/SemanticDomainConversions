@@ -1,0 +1,8 @@
+-c requirements.txt
+
+# Formatting.
+black
+isort
+
+# XML serialization generation
+generateDS
