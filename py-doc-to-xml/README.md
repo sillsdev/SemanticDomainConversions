@@ -1,3 +1,9 @@
+# Overview
+
+Covert a Microsoft Office `.docx` file to `.xml`.
+
+> Note: To process `.doc` files, open them in Microsoft Office and re-save them as `.docx`.
+
 # Requirements
 
 - Python 3.9+
