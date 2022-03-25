@@ -19,14 +19,28 @@ class DocModel(BaseModel):
     VALUE: Union[List[DocModel], str]
 
 
+def display_model(model: DocModel, *, depth: int = 0) -> None:
+    """Recursively explore a doc model."""
+    indent = " " * depth
+    print(f"{indent}{model.TYPE}")
+    value = model.VALUE
+    if isinstance(value, str):
+        print(f"{indent}{value}")
+        return
+
+    depth += 1
+    for v in value:
+        display_model(v, depth=depth)
+
+
 def main(
     doc_file: Path = Option(..., exists=True, dir_okay=False, readable=True, resolve_path=True),
     output_file: Path = Option(..., writable=True, resolve_path=True),
 ) -> None:
     doc = Document(doc_file)
     json = simplify(doc)
-    pprint(json)
     doc_model: DocModel = DocModel.parse_obj(json)
+    display_model(doc_model)
 
 
 if __name__ == "__main__":
