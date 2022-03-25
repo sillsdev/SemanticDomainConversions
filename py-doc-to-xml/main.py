@@ -4,18 +4,19 @@ from __future__ import annotations
 
 from pathlib import Path
 from pprint import pprint
-from typing import List, Literal, TypedDict
+from typing import List, Literal, Union
 
 from docx import Document
+from pydantic import BaseModel
 from simplify_docx import simplify
 from typer import Option, run
 
-Type = Literal["body", "paragraph", "text"]
+Type = Literal["body", "paragraph", "text", "document"]
 
 
-class DocEntry(TypedDict):
+class DocModel(BaseModel):
     TYPE: Type
-    VALUE: List[DocEntry]
+    VALUE: Union[List[DocModel], str]
 
 
 def main(
@@ -23,8 +24,9 @@ def main(
     output_file: Path = Option(..., writable=True, resolve_path=True),
 ) -> None:
     doc = Document(doc_file)
-    json: DocEntry = simplify(doc)
+    json = simplify(doc)
     pprint(json)
+    doc_model: DocModel = DocModel.parse_obj(json)
 
 
 if __name__ == "__main__":

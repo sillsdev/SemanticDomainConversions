@@ -3,6 +3,7 @@ typer
 
 # Parsing.
 simplify-docx
+pydantic
 
 # GenerateDS Output Dependencies
 six
