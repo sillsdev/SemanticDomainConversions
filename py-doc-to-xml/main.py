@@ -3,30 +3,23 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import List, Literal, Union
 
 from docx import Document
-from pydantic import BaseModel
+from docx_to_xml.doc1 import process_doc
+from docx_to_xml.types import DocModel
 from simplify_docx import simplify
 from typer import Option, run
-
-Type = Literal["body", "paragraph", "text", "document"]
-
-
-class DocModel(BaseModel):
-    TYPE: Type
-    VALUE: Union[List[DocModel], str]
 
 
 def display_model(model: DocModel, *, depth: int = 0) -> None:
     """Recursively explore a doc model."""
     indent = " " * depth
-    print(f"{indent}{model.TYPE}")
     value = model.VALUE
     if isinstance(value, str):
-        print(f"{indent}{value}")
+        print(f"{indent}{model.TYPE}: {value}")
         return
 
+    print(f"{indent}{model.TYPE}")
     depth += 1
     for v in value:
         display_model(v, depth=depth)
@@ -40,6 +33,8 @@ def main(
     json = simplify(doc)
     doc_model: DocModel = DocModel.parse_obj(json)
     display_model(doc_model)
+
+    process_doc(doc_model)
 
 
 if __name__ == "__main__":
