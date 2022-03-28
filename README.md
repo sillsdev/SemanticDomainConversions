@@ -1,12 +1,12 @@
 # SemanticDomainConversions
 A collection of files and instructions for converting semantic domain data into formats that software tools can easily use
 
-## SFM to Lists.xml transformer
+## SFMtoListsXML - SFM to Lists.xml Transformer
 
 Process created by Jim Albright which checks a sfm file with CC and then runs several xslt transforms
 to produce a SemanticDomainList.xml file which can be used by FieldWorks.
 
-## SemDom Version Migration SFM Tools
+## VersionMigrationTools - SemDom Version Migration SFM Tools
 
 A collection of files used to convert a translated SemDom list from an older version to a newer version.
 Contains folders:
