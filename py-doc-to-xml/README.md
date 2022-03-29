@@ -1,14 +1,16 @@
-# Overview
+# Converting Microsoft Office .docx File to XML
+
+## Overview
 
 Covert a Microsoft Office `.docx` file to `.xml`.
 
 > Note: To process `.doc` files, open them in Microsoft Office and re-save them as `.docx`.
 
-# Requirements
+## Requirements
 
 - Python 3.9+
 
-# Installation
+## Installation
 
 Create and activate a Python virtual environment.
 
@@ -33,7 +35,7 @@ python -m pip install --upgrade pip pip-tools
 python -m piptools sync requirements.txt dev-requirements.txt
 ```
 
-## Build and Install Simplify-Docx
+### Build and Install Simplify-Docx
 
 The Simplify-Docx module is built and installed locally to address two outstanding issues:
 
@@ -58,7 +60,7 @@ To build and install Simplify-Docx:
 
 Note that the install step must be performed after every time the requirements are sync'ed.
 
-# Usage
+## Usage
 
 Run the tool:
 
@@ -66,9 +68,9 @@ Run the tool:
 python main.py --doc-file input.docx --output-file output.xml
 ```
 
-# Developer Guide
+## Developer Guide
 
-## XML Serialization Generation
+### XML Serialization Generation
 
 ```bash
 # On Windows, you might have to run `python .\venv\Scripts\generateDS.py ...`
