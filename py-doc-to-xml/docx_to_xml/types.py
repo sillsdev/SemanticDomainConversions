@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import List, Literal, Union
 
 from pydantic import BaseModel
+from docx_to_xml.util import is_semantic_domain_number, split_question
 
 Type = Literal["body", "paragraph", "text", "document"]
 
@@ -23,3 +24,7 @@ class SemanticDomain:
     title: str
     description: str
     questions: List[str]
+
+    def is_valid(self):
+        return is_semantic_domain_number(self.number)
+    
