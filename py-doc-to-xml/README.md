@@ -33,12 +33,30 @@ python -m pip install --upgrade pip pip-tools
 python -m piptools sync requirements.txt dev-requirements.txt
 ```
 
-(Python 3.10+ only) To work around this upstream issue:
-https://github.com/microsoft/Simplify-Docx/issues/17
+## Build and Install Simplify-Docx
 
-```bash
-python -m pip install python-docx==0.8.11
-```
+The Simplify-Docx module is built and installed locally to address two outstanding issues:
+
+- lxml error #12
+- Pinned python-docx breaks Python 3.10 support #17
+
+To build and install Simplify-Docx:
+
+1. Activate the `py-doc-to-xml` virtual environment (See [Installation](#installation)).
+2. Build the `simplify-docx` package if not done previously:
+
+    ```bash
+    cd ../Simplify-Docx
+    python setup.py build
+    ```
+
+3. Install the package:
+
+    ```bash
+    python setup.py install
+    ```
+
+Note that the install step must be performed after every time the requirements are sync'ed.
 
 # Usage
 

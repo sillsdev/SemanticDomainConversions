@@ -2,7 +2,9 @@
 typer
 
 # Parsing.
-simplify-docx
+# Build and install simplify-docx manually to fix issue with ordered and
+# unordered lists in .docx files.
+#simplify-docx
 pydantic
 
 # GenerateDS Output Dependencies
