@@ -1,4 +1,5 @@
 # CLI.
+click==8.0.4
 typer
 
 # Parsing.
