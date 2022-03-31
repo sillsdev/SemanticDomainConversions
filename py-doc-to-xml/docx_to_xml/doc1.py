@@ -7,7 +7,7 @@ import sys
 from typing import List
 
 from docx_to_xml.types import DocModel, SemanticDomain
-from docx_to_xml.util import is_semantic_domain_number, split_question
+from docx_to_xml.util import is_question, is_semantic_domain_number, split_question
 
 
 class State(Enum):
@@ -58,9 +58,13 @@ def parse_semantic_domains(body: List[DocModel]) -> List[SemanticDomain]:
             current_semantic_domain = replace(current_semantic_domain, title=value)
             state = State.Description
         elif state is State.Description:
-            current_semantic_domain = replace(current_semantic_domain, description=value)
+            # Some documents don't have a description.
+            if not is_question(value):
+                current_semantic_domain = replace(current_semantic_domain, description=value)
+                state = State.Questions
+                continue
             state = State.Questions
-        elif state is State.Questions:
+        if state is State.Questions:
             (question_num, question_text) = split_question(value)
             if question_num:
                 current_semantic_domain.questions.append(f"({question_num}) {question_text}")
@@ -69,6 +73,8 @@ def parse_semantic_domains(body: List[DocModel]) -> List[SemanticDomain]:
             else:
                 last_question = current_semantic_domain.questions[-1]
                 current_semantic_domain.questions[-1] = f"{last_question} {question_text}"
+
+    semantic_domains.append(current_semantic_domain)
     return semantic_domains
 
 
