@@ -20,6 +20,83 @@ class State(Enum):
 
 
 def parse_semantic_domains(body: List[DocModel]) -> List[SemanticDomain]:
+    """
+    Convert a list of DocModel elements into a list of SemanticDomain elements.
+
+    The current source documents have different document structures that need to be parsed in order to generate the XML elements.  The current set of documents
+    have following structures:
+
+    Structure 1:
+        1
+        Domain Title
+        Domain Description
+        1. Question 1
+        2. Question 2...
+        ```
+
+    Structure 2:
+        1.3 Domain Title
+        Domain Description
+        (1) Question 1
+        (2) Question 2...
+
+    Structure 3:
+        3. Domain Title
+        Question 1
+        3.1 Domain Title
+        (1) Question 1
+
+    Structure 4 has multiple forms:
+    4.2.6 Domain Title
+    or
+    4.2 (no domain title)
+    or
+    4.2.6.4
+    Domain Title
+    1 Question 1
+
+    This file has duplicate entries as well.
+
+    In order to parse these documents, the following algorithm is used.  In order to manage the varied
+    document structures, different tests are used to identify a semantic domain number and a question. 
+
+    Parsing Algorithm Logic
+    -----------------------
+
+    if the DocModel element starts with a semantic domain number, then
+        - if the current semantic domain element is valid, it is stored, and
+        - a new semantic domain element is created with the semantic domain number and title (if present)
+    else
+        if the DocModel element starts with a question number, then
+            - add the text to the list of questions
+        else (it's a plain block of text)
+            if the current semantic domain's list of questions is not empty
+                - append it to the last question in the list
+                  (this must be a continuation paragraph for the previous question)
+            else if the current semantic domain's title is emtpy,
+                - set the title to the text
+            else
+                - append the text to the description
+
+    Tests for document structures 1-3:
+        semantic domain number:
+            - starts with a number
+            - number is followed by '.[0-9]' between 0 and 4 times
+            - no puntuation at the end of the number
+        question:
+            - may start with a '('
+            - followed by a sequence of digits
+            - followed by a ')' or '.'
+
+    Tests for document structure 4:
+        semantic domain number:
+            - starts with a number
+            - number is followed by '.[0-9]' between 1 and 3 times
+            - no puntuation at the end of the number
+         question:
+            - starts a sequence of digits, no punctuation 
+           
+    """
     semantic_domains: List[SemanticDomain] = []
 
     current_semantic_domain = SemanticDomain(number="", title="", description="", questions=[])
@@ -79,7 +156,7 @@ def parse_semantic_domains(body: List[DocModel]) -> List[SemanticDomain]:
     return semantic_domains
 
 
-def process_doc(doc: DocModel, start_index: int = 2) -> None:
+def process_doc(doc: DocModel, start_index: int = 0) -> None:
     """Document-specific steps."""
     assert doc.TYPE == "document"
     body = doc.VALUE[0]
