@@ -3,9 +3,18 @@ from typing import Tuple
 
 
 def is_semantic_domain_number(s: str) -> bool:
-    """Checks if string consists of 1-5 single digits separated by decimal points."""
-    return re.match(r"^\d(\.\d){0,4}$", s) is not None
-#    return re.match(r"^[0-9.]*$", s) is not None
+    """
+    Checks if string contains a semantic domain number.
+    
+    A semantic domain number consists of 1-5 single digits separated by decimal points."""
+    return re.match(r"^\d(\.\d){0,4}.*$", s) is not None
+
+def split_semantic_domain_line(s: str) -> Tuple[str, str]:
+    """Splits a line into a semantic domain number and a title."""
+    match = re.match(r"^ *(\d)(\.\d){0,4} *(.*)$", s)
+    if match is not None:
+        return ( match.group(1)+match.group(2), match.group(3) )
+    return ( "", s )
 
 def split_question(s: str) -> Tuple[str, str]:
     """
