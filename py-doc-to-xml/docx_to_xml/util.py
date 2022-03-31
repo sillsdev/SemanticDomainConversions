@@ -16,7 +16,7 @@ def split_question(s: str) -> Tuple[str, str]:
     The question number may be a one- or two-digit number of the form:
      1
      1.
-     1), or
+     1)
      (1)
     """
     match = re.match(r" *\(?(\d){1,2}[).]? *(.*)", s)

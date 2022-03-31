@@ -58,7 +58,7 @@ def parse_semantic_domains(body: List[DocModel]) -> List[SemanticDomain]:
             current_semantic_domain = replace(current_semantic_domain, title=value)
             state = State.Description
         elif state is State.Description:
-            # Some documents don't have a description.
+            # Some documents don't have a description for each semantic domain.
             if not is_question(value):
                 current_semantic_domain = replace(current_semantic_domain, description=value)
                 state = State.Questions
@@ -74,6 +74,7 @@ def parse_semantic_domains(body: List[DocModel]) -> List[SemanticDomain]:
                 last_question = current_semantic_domain.questions[-1]
                 current_semantic_domain.questions[-1] = f"{last_question} {question_text}"
 
+    # Save the final semantic domain.
     semantic_domains.append(current_semantic_domain)
     return semantic_domains
 
