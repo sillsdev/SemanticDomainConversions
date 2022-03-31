@@ -21,7 +21,7 @@ def split_question(s: str) -> Tuple[str, str]:
     """
     Returns a question number that starts a string and the question string.
     
-    The question number may be a number of the form:
+    The question number may be of the form:
      1
      1.
      1)
