@@ -26,8 +26,8 @@ def display_model(model: DocModel, *, depth: int = 0) -> None:
 
 
 def main(
-    doc_file: Path = Option(..., exists=True, dir_okay=False, readable=True, resolve_path=True),
-    output_file: Path = Option(..., writable=True, resolve_path=True),
+    doc_file: Path = Option(..., "--doc-file", "-d", exists=True, dir_okay=False, readable=True, resolve_path=True),
+    output_file: Path = Option(..., "--output-file", "-o", writable=True, resolve_path=True),
 ) -> None:
     doc = Document(doc_file)
     json = simplify(doc)
