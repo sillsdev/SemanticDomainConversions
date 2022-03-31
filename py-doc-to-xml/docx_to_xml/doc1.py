@@ -120,16 +120,19 @@ def parse_semantic_domains(body: List[DocModel]) -> List[SemanticDomain]:
         elif is_question(value):
             # add the text to the list of questions
             (question_num, question_text) = split_question(value)
-            current_semantic_domain.questions.append(f"({question_num}) {question_text}")
+            current_semantic_domain.questions.append(f"{question_num} {question_text}")
         else:  # it's a plain block of text
             if current_semantic_domain.title == "":
                 current_semantic_domain = replace(current_semantic_domain, title=value)
+            elif len(current_semantic_domain.questions) > 0:
+                current_semantic_domain.questions[-1] += f" {value}"
             else:
-                updated_description = f"{current_semantic_domain.description}\n{value}"
+                updated_description = f"{current_semantic_domain.description} {value}"
                 current_semantic_domain = replace(current_semantic_domain, description=updated_description)
     # Save the final semantic domain.
     if current_semantic_domain.is_valid():
         semantic_domains.append(current_semantic_domain)
+    semantic_domains.sort()
     return semantic_domains
 
 
