@@ -40,7 +40,7 @@ def main(
     doc_model: DocModel = DocModel.parse_obj(json)
     display_model(doc_model)
 
-    process_doc(doc_model)
+    process_doc(doc_model, output_file)
 
 
 if __name__ == "__main__":
