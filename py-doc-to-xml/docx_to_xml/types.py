@@ -28,3 +28,22 @@ class SemanticDomain:
     def is_valid(self):
         return is_semantic_domain_number(self.number)
     
+    # Define the comparison operators so that Python will sort for us
+    # based only on the domain number
+    def __eq__(self, rvalue: SemanticDomain) -> bool:
+        return self.number == rvalue.number
+
+    def __ne__(self, rvalue: SemanticDomain) -> bool:
+        return self.number != rvalue.number
+
+    def __lt__(self, rvalue: SemanticDomain) -> bool:
+        return self.number < rvalue.number
+
+    def __le__(self, rvalue: SemanticDomain) -> bool:
+        return self.number <= rvalue.number
+
+    def __gt__(self, rvalue: SemanticDomain) -> bool:
+        return self.number > rvalue.number
+
+    def __ge__(self, rvalue: SemanticDomain) -> bool:
+        return self.number > rvalue.number

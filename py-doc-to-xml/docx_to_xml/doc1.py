@@ -2,21 +2,13 @@
 
 from dataclasses import replace
 from enum import Enum, auto
+from pathlib import Path
 from pprint import pprint
 import sys
-from typing import List
+from typing import List, Optional
 
 from docx_to_xml.types import DocModel, SemanticDomain
-from docx_to_xml.util import is_question, is_semantic_domain_number, split_question
-
-
-class State(Enum):
-    """Parsing State."""
-
-    Number = auto()
-    Title = auto()
-    Description = auto()
-    Questions = auto()
+from docx_to_xml.util import is_question, is_semantic_domain_number, split_question, split_semantic_domain_line
 
 
 def parse_semantic_domains(body: List[DocModel]) -> List[SemanticDomain]:
@@ -63,20 +55,20 @@ def parse_semantic_domains(body: List[DocModel]) -> List[SemanticDomain]:
     Parsing Algorithm Logic
     -----------------------
 
+    if the DocModel element is blank or starts with a '#', skip it.  (It is a comment.)
     if the DocModel element starts with a semantic domain number, then
-        - if the current semantic domain element is valid, it is stored, and
+        - if the current semantic domain element is valid, add it to the list
         - a new semantic domain element is created with the semantic domain number and title (if present)
-    else
-        if the DocModel element starts with a question number, then
-            - add the text to the list of questions
-        else (it's a plain block of text)
-            if the current semantic domain's list of questions is not empty
-                - append it to the last question in the list
-                  (this must be a continuation paragraph for the previous question)
-            else if the current semantic domain's title is emtpy,
-                - set the title to the text
-            else
-                - append the text to the description
+    else if the DocModel element starts with a question number, then
+        - add the text to the list of questions
+    else (it's a plain block of text)
+        if the current semantic domain's list of questions is not empty
+            - append it to the last question in the list
+                (this must be a continuation paragraph for the previous question)
+        else if the current semantic domain's title is emtpy,
+            - set the title to the text
+        else
+            - append the text to the description
 
     Tests for document structures 1-3:
         semantic domain number:
@@ -100,7 +92,6 @@ def parse_semantic_domains(body: List[DocModel]) -> List[SemanticDomain]:
     semantic_domains: List[SemanticDomain] = []
 
     current_semantic_domain = SemanticDomain(number="", title="", description="", questions=[])
-    state = State.Number
     for paragraph in body:
         if paragraph.TYPE != "paragraph":
             raise ValueError(f"Unexpected paragraph: {paragraph}")
@@ -110,57 +101,45 @@ def parse_semantic_domains(body: List[DocModel]) -> List[SemanticDomain]:
         if values_count != 1:
             print(f"Warning: Ignoring paragraph with count: {values_count}", file=sys.stderr)
 
+        # if the DocModel element is blank or starts with a '#', skip it.  (It is a comment.)
         value = paragraph.VALUE[0].VALUE
-        if value == "":
-            print("Ignoring blank line", file=sys.stderr)
+        if value == "" or value[0] == "#":
             continue
 
-        # TODO: Complete this logic.
+        # if the DocModel element starts with a semantic domain number, then
         if is_semantic_domain_number(value):
-            # When finding a new semantic domain, save the previous (now complete) one.
+            # if the current semantic domain element is valid, add it to the list
             if current_semantic_domain.is_valid():
                 semantic_domains.append(current_semantic_domain)
+            (domain_number, domain_title) = split_semantic_domain_line(value)
             current_semantic_domain = SemanticDomain(
-                number="", title="", description="", questions=[]
+                number=domain_number, title=domain_title, description="", questions=[]
             )
-            state = State.Number
-
-        if state is State.Number:
-            if is_semantic_domain_number(value):
-                current_semantic_domain = replace(current_semantic_domain, number=value)
-                state = State.Title
-            else:
-                print(f"Warning: Ignoring {value}", file=sys.stderr)
-        elif state is State.Title:
-            current_semantic_domain = replace(current_semantic_domain, title=value)
-            state = State.Description
-        elif state is State.Description:
-            # Some documents don't have a description for each semantic domain.
-            if not is_question(value):
-                current_semantic_domain = replace(current_semantic_domain, description=value)
-                state = State.Questions
-                continue
-            state = State.Questions
-        if state is State.Questions:
+        # else
+        #   if the DocModel element starts with a question number, then
+        elif is_question(value):
+            # add the text to the list of questions
             (question_num, question_text) = split_question(value)
-            if question_num:
-                current_semantic_domain.questions.append(f"({question_num}) {question_text}")
-            elif len(current_semantic_domain.questions) == 0:
-                current_semantic_domain.questions.append(question_text)
+            current_semantic_domain.questions.append(f"({question_num}) {question_text}")
+        else:  # it's a plain block of text
+            if current_semantic_domain.title == "":
+                current_semantic_domain = replace(current_semantic_domain, title=value)
             else:
-                last_question = current_semantic_domain.questions[-1]
-                current_semantic_domain.questions[-1] = f"{last_question} {question_text}"
-
+                updated_description = f"{current_semantic_domain.description}\n{value}"
+                current_semantic_domain = replace(current_semantic_domain, description=updated_description)
     # Save the final semantic domain.
-    semantic_domains.append(current_semantic_domain)
+    if current_semantic_domain.is_valid():
+        semantic_domains.append(current_semantic_domain)
     return semantic_domains
 
 
-def process_doc(doc: DocModel, start_index: int = 0) -> None:
+def process_doc(doc: DocModel, output_file: Optional[Path] = None, start_index: int = 0) -> None:
     """Document-specific steps."""
     assert doc.TYPE == "document"
     body = doc.VALUE[0]
     assert body.TYPE == "body"
     # Allow skipping title pages and similar.
     semantic_domains = parse_semantic_domains(body.VALUE[start_index:])
-    pprint(semantic_domains)
+    if output_file is not None:
+        with open(output_file, "w") as file:
+            pprint(semantic_domains, stream=file)
