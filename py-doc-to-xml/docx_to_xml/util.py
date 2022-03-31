@@ -19,7 +19,7 @@ def split_question(s: str) -> Tuple[str, str]:
      1), or
      (1)
     """
-    match = re.match(r" *\(?(\d){1,2}[). ] *(.*)", s)
+    match = re.match(r" *\(?(\d){1,2}[).]? *(.*)", s)
     if match is not None:
         return ( match.group(1), match.group(2) )
     return ( "", s )
