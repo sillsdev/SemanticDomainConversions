@@ -51,7 +51,14 @@ def translate(
 
 @app.command()
 def parse_final_xml(
-    xml_file: Path = Option(..., exists=True, dir_okay=False, readable=True, resolve_path=True),
+    xml_file: Path = Option(
+        ...,
+        exists=True,
+        dir_okay=False,
+        readable=True,
+        resolve_path=True,
+        help="An XML file containing a **single** semantic domain (<CmSemanticDomain>).",
+    ),
 ) -> None:
     xml_root = parse(xml_file)
     print(xml_root)
