@@ -1,22 +1,26 @@
 """Custom doc1 processing."""
 
 from dataclasses import replace
-from enum import Enum, auto
 from pathlib import Path
 from pprint import pprint
 import sys
 from typing import List, Optional
 
 from docx_to_xml.types import DocModel, SemanticDomain
-from docx_to_xml.util import is_question, is_semantic_domain_number, split_question, split_semantic_domain_line
+from docx_to_xml.util import (
+    is_question,
+    is_semantic_domain_number,
+    split_question,
+    split_semantic_domain_line,
+)
 
 
 def parse_semantic_domains(body: List[DocModel]) -> List[SemanticDomain]:
     """
     Convert a list of DocModel elements into a list of SemanticDomain elements.
 
-    The current source documents have different document structures that need to be parsed in order to generate the XML elements.  The current set of documents
-    have following structures:
+    The current source documents have different document structures that need to be parsed in
+    order to generate the XML elements. The current set of documents have following structures:
 
     Structure 1:
         1
@@ -49,8 +53,9 @@ def parse_semantic_domains(body: List[DocModel]) -> List[SemanticDomain]:
 
     This file has duplicate entries as well.
 
-    In order to parse these documents, the following algorithm is used.  In order to manage the varied
-    document structures, different tests are used to identify a semantic domain number and a question. 
+    In order to parse these documents, the following algorithm is used.  In order to manage the
+    various document structures, different tests are used to identify a semantic domain number
+    and a question.
 
     Parsing Algorithm Logic
     -----------------------
@@ -58,7 +63,8 @@ def parse_semantic_domains(body: List[DocModel]) -> List[SemanticDomain]:
     if the DocModel element is blank or starts with a '#', skip it.  (It is a comment.)
     if the DocModel element starts with a semantic domain number, then
         - if the current semantic domain element is valid, add it to the list
-        - a new semantic domain element is created with the semantic domain number and title (if present)
+        - a new semantic domain element is created with the semantic domain number and title
+         (if present)
     else if the DocModel element starts with a question number, then
         - add the text to the list of questions
     else (it's a plain block of text)
@@ -86,8 +92,8 @@ def parse_semantic_domains(body: List[DocModel]) -> List[SemanticDomain]:
             - number is followed by '.[0-9]' between 1 and 3 times
             - no puntuation at the end of the number
          question:
-            - starts a sequence of digits, no punctuation 
-           
+            - starts a sequence of digits, no punctuation
+
     """
     semantic_domains: List[SemanticDomain] = []
 
@@ -102,7 +108,7 @@ def parse_semantic_domains(body: List[DocModel]) -> List[SemanticDomain]:
             print(f"Warning: Ignoring paragraph with count: {values_count}", file=sys.stderr)
 
         # if the DocModel element is blank or starts with a '#', skip it.  (It is a comment.)
-        value = paragraph.VALUE[0].VALUE
+        value = str(paragraph.VALUE[0].VALUE)
         if value == "" or value[0] == "#":
             continue
 
@@ -128,7 +134,9 @@ def parse_semantic_domains(body: List[DocModel]) -> List[SemanticDomain]:
                 current_semantic_domain.questions[-1] += f" {value}"
             else:
                 updated_description = f"{current_semantic_domain.description} {value}"
-                current_semantic_domain = replace(current_semantic_domain, description=updated_description)
+                current_semantic_domain = replace(
+                    current_semantic_domain, description=updated_description
+                )
     # Save the final semantic domain.
     if current_semantic_domain.is_valid():
         semantic_domains.append(current_semantic_domain)

@@ -1,3 +1,11 @@
+[tool.mypy]
+ignore_missing_imports = true
+strict = true
+exclude = [
+    "venv",
+    "^semantic_domain.*\\.py$"
+]
+
 [tool.black]
 line-length = 99
 target-version = ["py38", "py39", "py310"]

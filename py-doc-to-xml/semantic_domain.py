@@ -20,18 +20,19 @@
 #
 
 import sys
+
 try:
     ModulenotfoundExp_ = ModuleNotFoundError
 except NameError:
     ModulenotfoundExp_ = ImportError
-from six.moves import zip_longest
-import os
-import re as re_
 import base64
 import datetime as datetime_
 import decimal as decimal_
-from lxml import etree as etree_
+import os
+import re as re_
 
+from lxml import etree as etree_
+from six.moves import zip_longest
 
 Validate_simpletypes_ = True
 SaveElementTreeNode = True
@@ -59,6 +60,7 @@ def parsexml_(infile, parser=None, **kwargs):
     doc = etree_.parse(infile, parser=parser, **kwargs)
     return doc
 
+
 def parsexmlstring_(instring, parser=None, **kwargs):
     if parser is None:
         # Use the lxml ElementTree compatible parser so that, e.g.,
@@ -70,6 +72,7 @@ def parsexmlstring_(instring, parser=None, **kwargs):
             parser = etree_.XMLParser()
     element = etree_.fromstring(instring, parser=parser, **kwargs)
     return element
+
 
 #
 # Namespace prefix definition table (and other attributes, too)
@@ -109,11 +112,13 @@ def parsexmlstring_(instring, parser=None, **kwargs):
 
 try:
     from generatedsnamespaces import GenerateDSNamespaceDefs as GenerateDSNamespaceDefs_
-except ModulenotfoundExp_ :
+except ModulenotfoundExp_:
     GenerateDSNamespaceDefs_ = {}
 try:
-    from generatedsnamespaces import GenerateDSNamespaceTypePrefixes as GenerateDSNamespaceTypePrefixes_
-except ModulenotfoundExp_ :
+    from generatedsnamespaces import (
+        GenerateDSNamespaceTypePrefixes as GenerateDSNamespaceTypePrefixes_,
+    )
+except ModulenotfoundExp_:
     GenerateDSNamespaceTypePrefixes_ = {}
 
 #
@@ -124,10 +129,9 @@ except ModulenotfoundExp_ :
 #
 try:
     from generatedscollector import GdsCollector as GdsCollector_
-except ModulenotfoundExp_ :
+except ModulenotfoundExp_:
 
     class GdsCollector_(object):
-
         def __init__(self, messages=None):
             if messages is None:
                 self.messages = []
@@ -158,7 +162,7 @@ except ModulenotfoundExp_ :
 
 try:
     from enum import Enum
-except ModulenotfoundExp_ :
+except ModulenotfoundExp_:
     Enum = object
 
 #
@@ -174,29 +178,35 @@ except ModulenotfoundExp_ as exp:
     try:
         from generatedssupersuper import GeneratedsSuperSuper
     except ModulenotfoundExp_ as exp:
+
         class GeneratedsSuperSuper(object):
             pass
-    
+
     class GeneratedsSuper(GeneratedsSuperSuper):
         __hash__ = object.__hash__
-        tzoff_pattern = re_.compile(r'(\+|-)((0\d|1[0-3]):[0-5]\d|14:00)$')
+        tzoff_pattern = re_.compile(r"(\+|-)((0\d|1[0-3]):[0-5]\d|14:00)$")
+
         class _FixedOffsetTZ(datetime_.tzinfo):
             def __init__(self, offset, name):
                 self.__offset = datetime_.timedelta(minutes=offset)
                 self.__name = name
+
             def utcoffset(self, dt):
                 return self.__offset
+
             def tzname(self, dt):
                 return self.__name
+
             def dst(self, dt):
                 return None
+
         def __str__(self):
             settings = {
-                'str_pretty_print': True,
-                'str_indent_level': 0,
-                'str_namespaceprefix': '',
-                'str_name': self.__class__.__name__,
-                'str_namespacedefs': '',
+                "str_pretty_print": True,
+                "str_indent_level": 0,
+                "str_namespaceprefix": "",
+                "str_name": self.__class__.__name__,
+                "str_namespacedefs": "",
             }
             for n in settings:
                 if hasattr(self, n):
@@ -208,179 +218,211 @@ except ModulenotfoundExp_ as exp:
             output = StringIO()
             self.export(
                 output,
-                settings['str_indent_level'],
-                pretty_print=settings['str_pretty_print'],
-                namespaceprefix_=settings['str_namespaceprefix'],
-                name_=settings['str_name'],
-                namespacedef_=settings['str_namespacedefs']
+                settings["str_indent_level"],
+                pretty_print=settings["str_pretty_print"],
+                namespaceprefix_=settings["str_namespaceprefix"],
+                name_=settings["str_name"],
+                namespacedef_=settings["str_namespacedefs"],
             )
             strval = output.getvalue()
             output.close()
             return strval
-        def gds_format_string(self, input_data, input_name=''):
+
+        def gds_format_string(self, input_data, input_name=""):
             return input_data
-        def gds_parse_string(self, input_data, node=None, input_name=''):
+
+        def gds_parse_string(self, input_data, node=None, input_name=""):
             return input_data
-        def gds_validate_string(self, input_data, node=None, input_name=''):
+
+        def gds_validate_string(self, input_data, node=None, input_name=""):
             if not input_data:
-                return ''
+                return ""
             else:
                 return input_data
-        def gds_format_base64(self, input_data, input_name=''):
-            return base64.b64encode(input_data).decode('ascii')
-        def gds_validate_base64(self, input_data, node=None, input_name=''):
+
+        def gds_format_base64(self, input_data, input_name=""):
+            return base64.b64encode(input_data).decode("ascii")
+
+        def gds_validate_base64(self, input_data, node=None, input_name=""):
             return input_data
-        def gds_format_integer(self, input_data, input_name=''):
-            return '%d' % int(input_data)
-        def gds_parse_integer(self, input_data, node=None, input_name=''):
+
+        def gds_format_integer(self, input_data, input_name=""):
+            return "%d" % int(input_data)
+
+        def gds_parse_integer(self, input_data, node=None, input_name=""):
             try:
                 ival = int(input_data)
             except (TypeError, ValueError) as exp:
-                raise_parse_error(node, 'Requires integer value: %s' % exp)
+                raise_parse_error(node, "Requires integer value: %s" % exp)
             return ival
-        def gds_validate_integer(self, input_data, node=None, input_name=''):
+
+        def gds_validate_integer(self, input_data, node=None, input_name=""):
             try:
                 value = int(input_data)
             except (TypeError, ValueError):
-                raise_parse_error(node, 'Requires integer value')
+                raise_parse_error(node, "Requires integer value")
             return value
-        def gds_format_integer_list(self, input_data, input_name=''):
+
+        def gds_format_integer_list(self, input_data, input_name=""):
             if len(input_data) > 0 and not isinstance(input_data[0], BaseStrType_):
                 input_data = [str(s) for s in input_data]
-            return '%s' % ' '.join(input_data)
-        def gds_validate_integer_list(
-                self, input_data, node=None, input_name=''):
+            return "%s" % " ".join(input_data)
+
+        def gds_validate_integer_list(self, input_data, node=None, input_name=""):
             values = input_data.split()
             for value in values:
                 try:
                     int(value)
                 except (TypeError, ValueError):
-                    raise_parse_error(node, 'Requires sequence of integer values')
+                    raise_parse_error(node, "Requires sequence of integer values")
             return values
-        def gds_format_float(self, input_data, input_name=''):
-            return ('%.15f' % float(input_data)).rstrip('0')
-        def gds_parse_float(self, input_data, node=None, input_name=''):
+
+        def gds_format_float(self, input_data, input_name=""):
+            return ("%.15f" % float(input_data)).rstrip("0")
+
+        def gds_parse_float(self, input_data, node=None, input_name=""):
             try:
                 fval_ = float(input_data)
             except (TypeError, ValueError) as exp:
-                raise_parse_error(node, 'Requires float or double value: %s' % exp)
+                raise_parse_error(node, "Requires float or double value: %s" % exp)
             return fval_
-        def gds_validate_float(self, input_data, node=None, input_name=''):
+
+        def gds_validate_float(self, input_data, node=None, input_name=""):
             try:
                 value = float(input_data)
             except (TypeError, ValueError):
-                raise_parse_error(node, 'Requires float value')
+                raise_parse_error(node, "Requires float value")
             return value
-        def gds_format_float_list(self, input_data, input_name=''):
+
+        def gds_format_float_list(self, input_data, input_name=""):
             if len(input_data) > 0 and not isinstance(input_data[0], BaseStrType_):
                 input_data = [str(s) for s in input_data]
-            return '%s' % ' '.join(input_data)
-        def gds_validate_float_list(
-                self, input_data, node=None, input_name=''):
+            return "%s" % " ".join(input_data)
+
+        def gds_validate_float_list(self, input_data, node=None, input_name=""):
             values = input_data.split()
             for value in values:
                 try:
                     float(value)
                 except (TypeError, ValueError):
-                    raise_parse_error(node, 'Requires sequence of float values')
+                    raise_parse_error(node, "Requires sequence of float values")
             return values
-        def gds_format_decimal(self, input_data, input_name=''):
-            return_value = '%s' % input_data
-            if '.' in return_value:
-                return_value = return_value.rstrip('0')
-                if return_value.endswith('.'):
-                    return_value = return_value.rstrip('.')
+
+        def gds_format_decimal(self, input_data, input_name=""):
+            return_value = "%s" % input_data
+            if "." in return_value:
+                return_value = return_value.rstrip("0")
+                if return_value.endswith("."):
+                    return_value = return_value.rstrip(".")
             return return_value
-        def gds_parse_decimal(self, input_data, node=None, input_name=''):
+
+        def gds_parse_decimal(self, input_data, node=None, input_name=""):
             try:
                 decimal_value = decimal_.Decimal(input_data)
             except (TypeError, ValueError):
-                raise_parse_error(node, 'Requires decimal value')
+                raise_parse_error(node, "Requires decimal value")
             return decimal_value
-        def gds_validate_decimal(self, input_data, node=None, input_name=''):
+
+        def gds_validate_decimal(self, input_data, node=None, input_name=""):
             try:
                 value = decimal_.Decimal(input_data)
             except (TypeError, ValueError):
-                raise_parse_error(node, 'Requires decimal value')
+                raise_parse_error(node, "Requires decimal value")
             return value
-        def gds_format_decimal_list(self, input_data, input_name=''):
+
+        def gds_format_decimal_list(self, input_data, input_name=""):
             if len(input_data) > 0 and not isinstance(input_data[0], BaseStrType_):
                 input_data = [str(s) for s in input_data]
-            return ' '.join([self.gds_format_decimal(item) for item in input_data])
-        def gds_validate_decimal_list(
-                self, input_data, node=None, input_name=''):
+            return " ".join([self.gds_format_decimal(item) for item in input_data])
+
+        def gds_validate_decimal_list(self, input_data, node=None, input_name=""):
             values = input_data.split()
             for value in values:
                 try:
                     decimal_.Decimal(value)
                 except (TypeError, ValueError):
-                    raise_parse_error(node, 'Requires sequence of decimal values')
+                    raise_parse_error(node, "Requires sequence of decimal values")
             return values
-        def gds_format_double(self, input_data, input_name=''):
-            return '%s' % input_data
-        def gds_parse_double(self, input_data, node=None, input_name=''):
+
+        def gds_format_double(self, input_data, input_name=""):
+            return "%s" % input_data
+
+        def gds_parse_double(self, input_data, node=None, input_name=""):
             try:
                 fval_ = float(input_data)
             except (TypeError, ValueError) as exp:
-                raise_parse_error(node, 'Requires double or float value: %s' % exp)
+                raise_parse_error(node, "Requires double or float value: %s" % exp)
             return fval_
-        def gds_validate_double(self, input_data, node=None, input_name=''):
+
+        def gds_validate_double(self, input_data, node=None, input_name=""):
             try:
                 value = float(input_data)
             except (TypeError, ValueError):
-                raise_parse_error(node, 'Requires double or float value')
+                raise_parse_error(node, "Requires double or float value")
             return value
-        def gds_format_double_list(self, input_data, input_name=''):
+
+        def gds_format_double_list(self, input_data, input_name=""):
             if len(input_data) > 0 and not isinstance(input_data[0], BaseStrType_):
                 input_data = [str(s) for s in input_data]
-            return '%s' % ' '.join(input_data)
-        def gds_validate_double_list(
-                self, input_data, node=None, input_name=''):
+            return "%s" % " ".join(input_data)
+
+        def gds_validate_double_list(self, input_data, node=None, input_name=""):
             values = input_data.split()
             for value in values:
                 try:
                     float(value)
                 except (TypeError, ValueError):
-                    raise_parse_error(
-                        node, 'Requires sequence of double or float values')
+                    raise_parse_error(node, "Requires sequence of double or float values")
             return values
-        def gds_format_boolean(self, input_data, input_name=''):
-            return ('%s' % input_data).lower()
-        def gds_parse_boolean(self, input_data, node=None, input_name=''):
-            if input_data in ('true', '1'):
+
+        def gds_format_boolean(self, input_data, input_name=""):
+            return ("%s" % input_data).lower()
+
+        def gds_parse_boolean(self, input_data, node=None, input_name=""):
+            if input_data in ("true", "1"):
                 bval = True
-            elif input_data in ('false', '0'):
+            elif input_data in ("false", "0"):
                 bval = False
             else:
-                raise_parse_error(node, 'Requires boolean value')
+                raise_parse_error(node, "Requires boolean value")
             return bval
-        def gds_validate_boolean(self, input_data, node=None, input_name=''):
-            if input_data not in (True, 1, False, 0, ):
-                raise_parse_error(
-                    node,
-                    'Requires boolean value '
-                    '(one of True, 1, False, 0)')
+
+        def gds_validate_boolean(self, input_data, node=None, input_name=""):
+            if input_data not in (
+                True,
+                1,
+                False,
+                0,
+            ):
+                raise_parse_error(node, "Requires boolean value " "(one of True, 1, False, 0)")
             return input_data
-        def gds_format_boolean_list(self, input_data, input_name=''):
+
+        def gds_format_boolean_list(self, input_data, input_name=""):
             if len(input_data) > 0 and not isinstance(input_data[0], BaseStrType_):
                 input_data = [str(s) for s in input_data]
-            return '%s' % ' '.join(input_data)
-        def gds_validate_boolean_list(
-                self, input_data, node=None, input_name=''):
+            return "%s" % " ".join(input_data)
+
+        def gds_validate_boolean_list(self, input_data, node=None, input_name=""):
             values = input_data.split()
             for value in values:
                 value = self.gds_parse_boolean(value, node, input_name)
-                if value not in (True, 1, False, 0, ):
+                if value not in (
+                    True,
+                    1,
+                    False,
+                    0,
+                ):
                     raise_parse_error(
-                        node,
-                        'Requires sequence of boolean values '
-                        '(one of True, 1, False, 0)')
+                        node, "Requires sequence of boolean values " "(one of True, 1, False, 0)"
+                    )
             return values
-        def gds_validate_datetime(self, input_data, node=None, input_name=''):
+
+        def gds_validate_datetime(self, input_data, node=None, input_name=""):
             return input_data
-        def gds_format_datetime(self, input_data, input_name=''):
+
+        def gds_format_datetime(self, input_data, input_name=""):
             if input_data.microsecond == 0:
-                _svalue = '%04d-%02d-%02dT%02d:%02d:%02d' % (
+                _svalue = "%04d-%02d-%02dT%02d:%02d:%02d" % (
                     input_data.year,
                     input_data.month,
                     input_data.day,
@@ -389,63 +431,65 @@ except ModulenotfoundExp_ as exp:
                     input_data.second,
                 )
             else:
-                _svalue = '%04d-%02d-%02dT%02d:%02d:%02d.%s' % (
+                _svalue = "%04d-%02d-%02dT%02d:%02d:%02d.%s" % (
                     input_data.year,
                     input_data.month,
                     input_data.day,
                     input_data.hour,
                     input_data.minute,
                     input_data.second,
-                    ('%f' % (float(input_data.microsecond) / 1000000))[2:],
+                    ("%f" % (float(input_data.microsecond) / 1000000))[2:],
                 )
             if input_data.tzinfo is not None:
                 tzoff = input_data.tzinfo.utcoffset(input_data)
                 if tzoff is not None:
                     total_seconds = tzoff.seconds + (86400 * tzoff.days)
                     if total_seconds == 0:
-                        _svalue += 'Z'
+                        _svalue += "Z"
                     else:
                         if total_seconds < 0:
-                            _svalue += '-'
+                            _svalue += "-"
                             total_seconds *= -1
                         else:
-                            _svalue += '+'
+                            _svalue += "+"
                         hours = total_seconds // 3600
                         minutes = (total_seconds - (hours * 3600)) // 60
-                        _svalue += '{0:02d}:{1:02d}'.format(hours, minutes)
+                        _svalue += "{0:02d}:{1:02d}".format(hours, minutes)
             return _svalue
+
         @classmethod
         def gds_parse_datetime(cls, input_data):
             tz = None
-            if input_data[-1] == 'Z':
-                tz = GeneratedsSuper._FixedOffsetTZ(0, 'UTC')
+            if input_data[-1] == "Z":
+                tz = GeneratedsSuper._FixedOffsetTZ(0, "UTC")
                 input_data = input_data[:-1]
             else:
                 results = GeneratedsSuper.tzoff_pattern.search(input_data)
                 if results is not None:
-                    tzoff_parts = results.group(2).split(':')
+                    tzoff_parts = results.group(2).split(":")
                     tzoff = int(tzoff_parts[0]) * 60 + int(tzoff_parts[1])
-                    if results.group(1) == '-':
+                    if results.group(1) == "-":
                         tzoff *= -1
-                    tz = GeneratedsSuper._FixedOffsetTZ(
-                        tzoff, results.group(0))
+                    tz = GeneratedsSuper._FixedOffsetTZ(tzoff, results.group(0))
                     input_data = input_data[:-6]
-            time_parts = input_data.split('.')
+            time_parts = input_data.split(".")
             if len(time_parts) > 1:
-                micro_seconds = int(float('0.' + time_parts[1]) * 1000000)
-                input_data = '%s.%s' % (
-                    time_parts[0], "{}".format(micro_seconds).rjust(6, "0"), )
-                dt = datetime_.datetime.strptime(
-                    input_data, '%Y-%m-%dT%H:%M:%S.%f')
+                micro_seconds = int(float("0." + time_parts[1]) * 1000000)
+                input_data = "%s.%s" % (
+                    time_parts[0],
+                    "{}".format(micro_seconds).rjust(6, "0"),
+                )
+                dt = datetime_.datetime.strptime(input_data, "%Y-%m-%dT%H:%M:%S.%f")
             else:
-                dt = datetime_.datetime.strptime(
-                    input_data, '%Y-%m-%dT%H:%M:%S')
+                dt = datetime_.datetime.strptime(input_data, "%Y-%m-%dT%H:%M:%S")
             dt = dt.replace(tzinfo=tz)
             return dt
-        def gds_validate_date(self, input_data, node=None, input_name=''):
+
+        def gds_validate_date(self, input_data, node=None, input_name=""):
             return input_data
-        def gds_format_date(self, input_data, input_name=''):
-            _svalue = '%04d-%02d-%02d' % (
+
+        def gds_format_date(self, input_data, input_name=""):
+            _svalue = "%04d-%02d-%02d" % (
                 input_data.year,
                 input_data.month,
                 input_data.day,
@@ -456,71 +500,73 @@ except ModulenotfoundExp_ as exp:
                     if tzoff is not None:
                         total_seconds = tzoff.seconds + (86400 * tzoff.days)
                         if total_seconds == 0:
-                            _svalue += 'Z'
+                            _svalue += "Z"
                         else:
                             if total_seconds < 0:
-                                _svalue += '-'
+                                _svalue += "-"
                                 total_seconds *= -1
                             else:
-                                _svalue += '+'
+                                _svalue += "+"
                             hours = total_seconds // 3600
                             minutes = (total_seconds - (hours * 3600)) // 60
-                            _svalue += '{0:02d}:{1:02d}'.format(
-                                hours, minutes)
+                            _svalue += "{0:02d}:{1:02d}".format(hours, minutes)
             except AttributeError:
                 pass
             return _svalue
+
         @classmethod
         def gds_parse_date(cls, input_data):
             tz = None
-            if input_data[-1] == 'Z':
-                tz = GeneratedsSuper._FixedOffsetTZ(0, 'UTC')
+            if input_data[-1] == "Z":
+                tz = GeneratedsSuper._FixedOffsetTZ(0, "UTC")
                 input_data = input_data[:-1]
             else:
                 results = GeneratedsSuper.tzoff_pattern.search(input_data)
                 if results is not None:
-                    tzoff_parts = results.group(2).split(':')
+                    tzoff_parts = results.group(2).split(":")
                     tzoff = int(tzoff_parts[0]) * 60 + int(tzoff_parts[1])
-                    if results.group(1) == '-':
+                    if results.group(1) == "-":
                         tzoff *= -1
-                    tz = GeneratedsSuper._FixedOffsetTZ(
-                        tzoff, results.group(0))
+                    tz = GeneratedsSuper._FixedOffsetTZ(tzoff, results.group(0))
                     input_data = input_data[:-6]
-            dt = datetime_.datetime.strptime(input_data, '%Y-%m-%d')
+            dt = datetime_.datetime.strptime(input_data, "%Y-%m-%d")
             dt = dt.replace(tzinfo=tz)
             return dt.date()
-        def gds_validate_time(self, input_data, node=None, input_name=''):
+
+        def gds_validate_time(self, input_data, node=None, input_name=""):
             return input_data
-        def gds_format_time(self, input_data, input_name=''):
+
+        def gds_format_time(self, input_data, input_name=""):
             if input_data.microsecond == 0:
-                _svalue = '%02d:%02d:%02d' % (
+                _svalue = "%02d:%02d:%02d" % (
                     input_data.hour,
                     input_data.minute,
                     input_data.second,
                 )
             else:
-                _svalue = '%02d:%02d:%02d.%s' % (
+                _svalue = "%02d:%02d:%02d.%s" % (
                     input_data.hour,
                     input_data.minute,
                     input_data.second,
-                    ('%f' % (float(input_data.microsecond) / 1000000))[2:],
+                    ("%f" % (float(input_data.microsecond) / 1000000))[2:],
                 )
             if input_data.tzinfo is not None:
                 tzoff = input_data.tzinfo.utcoffset(input_data)
                 if tzoff is not None:
                     total_seconds = tzoff.seconds + (86400 * tzoff.days)
                     if total_seconds == 0:
-                        _svalue += 'Z'
+                        _svalue += "Z"
                     else:
                         if total_seconds < 0:
-                            _svalue += '-'
+                            _svalue += "-"
                             total_seconds *= -1
                         else:
-                            _svalue += '+'
+                            _svalue += "+"
                         hours = total_seconds // 3600
                         minutes = (total_seconds - (hours * 3600)) // 60
-                        _svalue += '{0:02d}:{1:02d}'.format(hours, minutes)
+                        _svalue += "{0:02d}:{1:02d}".format(hours, minutes)
             return _svalue
+
         def gds_validate_simple_patterns(self, patterns, target):
             # pat is a list of lists of strings/patterns.
             # The target value must match at least one of the patterns
@@ -538,160 +584,184 @@ except ModulenotfoundExp_ as exp:
                     found1 = False
                     break
             return found1
+
         @classmethod
         def gds_parse_time(cls, input_data):
             tz = None
-            if input_data[-1] == 'Z':
-                tz = GeneratedsSuper._FixedOffsetTZ(0, 'UTC')
+            if input_data[-1] == "Z":
+                tz = GeneratedsSuper._FixedOffsetTZ(0, "UTC")
                 input_data = input_data[:-1]
             else:
                 results = GeneratedsSuper.tzoff_pattern.search(input_data)
                 if results is not None:
-                    tzoff_parts = results.group(2).split(':')
+                    tzoff_parts = results.group(2).split(":")
                     tzoff = int(tzoff_parts[0]) * 60 + int(tzoff_parts[1])
-                    if results.group(1) == '-':
+                    if results.group(1) == "-":
                         tzoff *= -1
-                    tz = GeneratedsSuper._FixedOffsetTZ(
-                        tzoff, results.group(0))
+                    tz = GeneratedsSuper._FixedOffsetTZ(tzoff, results.group(0))
                     input_data = input_data[:-6]
-            if len(input_data.split('.')) > 1:
-                dt = datetime_.datetime.strptime(input_data, '%H:%M:%S.%f')
+            if len(input_data.split(".")) > 1:
+                dt = datetime_.datetime.strptime(input_data, "%H:%M:%S.%f")
             else:
-                dt = datetime_.datetime.strptime(input_data, '%H:%M:%S')
+                dt = datetime_.datetime.strptime(input_data, "%H:%M:%S")
             dt = dt.replace(tzinfo=tz)
             return dt.time()
+
         def gds_check_cardinality_(
-                self, value, input_name,
-                min_occurs=0, max_occurs=1, required=None):
+            self, value, input_name, min_occurs=0, max_occurs=1, required=None
+        ):
             if value is None:
                 length = 0
             elif isinstance(value, list):
                 length = len(value)
             else:
                 length = 1
-            if required is not None :
+            if required is not None:
                 if required and length < 1:
                     self.gds_collector_.add_message(
                         "Required value {}{} is missing".format(
-                            input_name, self.gds_get_node_lineno_()))
+                            input_name, self.gds_get_node_lineno_()
+                        )
+                    )
             if length < min_occurs:
                 self.gds_collector_.add_message(
                     "Number of values for {}{} is below "
                     "the minimum allowed, "
                     "expected at least {}, found {}".format(
-                        input_name, self.gds_get_node_lineno_(),
-                        min_occurs, length))
+                        input_name, self.gds_get_node_lineno_(), min_occurs, length
+                    )
+                )
             elif length > max_occurs:
                 self.gds_collector_.add_message(
                     "Number of values for {}{} is above "
                     "the maximum allowed, "
                     "expected at most {}, found {}".format(
-                        input_name, self.gds_get_node_lineno_(),
-                        max_occurs, length))
+                        input_name, self.gds_get_node_lineno_(), max_occurs, length
+                    )
+                )
+
         def gds_validate_builtin_ST_(
-                self, validator, value, input_name,
-                min_occurs=None, max_occurs=None, required=None):
+            self, validator, value, input_name, min_occurs=None, max_occurs=None, required=None
+        ):
             if value is not None:
                 try:
                     validator(value, input_name=input_name)
                 except GDSParseError as parse_error:
                     self.gds_collector_.add_message(str(parse_error))
+
         def gds_validate_defined_ST_(
-                self, validator, value, input_name,
-                min_occurs=None, max_occurs=None, required=None):
+            self, validator, value, input_name, min_occurs=None, max_occurs=None, required=None
+        ):
             if value is not None:
                 try:
                     validator(value)
                 except GDSParseError as parse_error:
                     self.gds_collector_.add_message(str(parse_error))
+
         def gds_str_lower(self, instring):
             return instring.lower()
+
         def get_path_(self, node):
             path_list = []
             self.get_path_list_(node, path_list)
             path_list.reverse()
-            path = '/'.join(path_list)
+            path = "/".join(path_list)
             return path
-        Tag_strip_pattern_ = re_.compile(r'\{.*\}')
+
+        Tag_strip_pattern_ = re_.compile(r"\{.*\}")
+
         def get_path_list_(self, node, path_list):
             if node is None:
                 return
-            tag = GeneratedsSuper.Tag_strip_pattern_.sub('', node.tag)
+            tag = GeneratedsSuper.Tag_strip_pattern_.sub("", node.tag)
             if tag:
                 path_list.append(tag)
             self.get_path_list_(node.getparent(), path_list)
+
         def get_class_obj_(self, node, default_class=None):
             class_obj1 = default_class
-            if 'xsi' in node.nsmap:
-                classname = node.get('{%s}type' % node.nsmap['xsi'])
+            if "xsi" in node.nsmap:
+                classname = node.get("{%s}type" % node.nsmap["xsi"])
                 if classname is not None:
-                    names = classname.split(':')
+                    names = classname.split(":")
                     if len(names) == 2:
                         classname = names[1]
                     class_obj2 = globals().get(classname)
                     if class_obj2 is not None:
                         class_obj1 = class_obj2
             return class_obj1
+
         def gds_build_any(self, node, type_name=None):
             # provide default value in case option --disable-xml is used.
             content = ""
             content = etree_.tostring(node, encoding="unicode")
             return content
+
         @classmethod
         def gds_reverse_node_mapping(cls, mapping):
             return dict(((v, k) for k, v in mapping.items()))
+
         @staticmethod
         def gds_encode(instring):
             if sys.version_info.major == 2:
                 if ExternalEncoding:
                     encoding = ExternalEncoding
                 else:
-                    encoding = 'utf-8'
+                    encoding = "utf-8"
                 return instring.encode(encoding)
             else:
                 return instring
+
         @staticmethod
         def convert_unicode(instring):
             if isinstance(instring, str):
                 result = quote_xml(instring)
             elif sys.version_info.major == 2 and isinstance(instring, unicode):
-                result = quote_xml(instring).encode('utf8')
+                result = quote_xml(instring).encode("utf8")
             else:
                 result = GeneratedsSuper.gds_encode(str(instring))
             return result
+
         def __eq__(self, other):
             def excl_select_objs_(obj):
-                return (obj[0] != 'parent_object_' and
-                        obj[0] != 'gds_collector_')
+                return obj[0] != "parent_object_" and obj[0] != "gds_collector_"
+
             if type(self) != type(other):
                 return False
-            return all(x == y for x, y in zip_longest(
-                filter(excl_select_objs_, self.__dict__.items()),
-                filter(excl_select_objs_, other.__dict__.items())))
+            return all(
+                x == y
+                for x, y in zip_longest(
+                    filter(excl_select_objs_, self.__dict__.items()),
+                    filter(excl_select_objs_, other.__dict__.items()),
+                )
+            )
+
         def __ne__(self, other):
             return not self.__eq__(other)
+
         # Django ETL transform hooks.
         def gds_djo_etl_transform(self):
             pass
+
         def gds_djo_etl_transform_db_obj(self, dbobj):
             pass
+
         # SQLAlchemy ETL transform hooks.
         def gds_sqa_etl_transform(self):
             return 0, None
+
         def gds_sqa_etl_transform_db_obj(self, dbobj):
             pass
+
         def gds_get_node_lineno_(self):
-            if (hasattr(self, "gds_elementtree_node_") and
-                    self.gds_elementtree_node_ is not None):
-                return ' near line {}'.format(
-                    self.gds_elementtree_node_.sourceline)
+            if hasattr(self, "gds_elementtree_node_") and self.gds_elementtree_node_ is not None:
+                return " near line {}".format(self.gds_elementtree_node_.sourceline)
             else:
                 return ""
-    
-    
+
     def getSubclassFromModule_(module, class_):
-        '''Get the subclass of a class from a specific module.'''
-        name = class_.__name__ + 'Sub'
+        """Get the subclass of a class from a specific module."""
+        name = class_.__name__ + "Sub"
         if hasattr(module, name):
             return getattr(module, name)
         else:
@@ -717,14 +787,14 @@ except ModulenotfoundExp_ as exp:
 # Globals
 #
 
-ExternalEncoding = ''
+ExternalEncoding = ""
 # Set this to false in order to deactivate during export, the use of
 # name space prefixes captured from the input document.
 UseCapturedNS_ = True
 CapturedNsmap_ = {}
-Tag_pattern_ = re_.compile(r'({.*})?(.*)')
+Tag_pattern_ = re_.compile(r"({.*})?(.*)")
 String_cleanup_pat_ = re_.compile(r"[\n\r\s]+")
-Namespace_extract_pat_ = re_.compile(r'{(.*)}(.*)')
+Namespace_extract_pat_ = re_.compile(r"{(.*)}(.*)")
 CDATA_pattern_ = re_.compile(r"<!\[CDATA\[.*?\]\]>", re_.DOTALL)
 
 # Change this to redirect the generated superclass module to use a
@@ -739,21 +809,21 @@ CurrentSubclassModule_ = None
 def showIndent(outfile, level, pretty_print=True):
     if pretty_print:
         for idx in range(level):
-            outfile.write('    ')
+            outfile.write("    ")
 
 
 def quote_xml(inStr):
     "Escape markup chars, but do not modify CDATA sections."
     if not inStr:
-        return ''
-    s1 = (isinstance(inStr, BaseStrType_) and inStr or '%s' % inStr)
-    s2 = ''
+        return ""
+    s1 = isinstance(inStr, BaseStrType_) and inStr or "%s" % inStr
+    s2 = ""
     pos = 0
     matchobjects = CDATA_pattern_.finditer(s1)
     for mo in matchobjects:
-        s3 = s1[pos:mo.start()]
+        s3 = s1[pos : mo.start()]
         s2 += quote_xml_aux(s3)
-        s2 += s1[mo.start():mo.end()]
+        s2 += s1[mo.start() : mo.end()]
         pos = mo.end()
     s3 = s1[pos:]
     s2 += quote_xml_aux(s3)
@@ -761,17 +831,17 @@ def quote_xml(inStr):
 
 
 def quote_xml_aux(inStr):
-    s1 = inStr.replace('&', '&amp;')
-    s1 = s1.replace('<', '&lt;')
-    s1 = s1.replace('>', '&gt;')
+    s1 = inStr.replace("&", "&amp;")
+    s1 = s1.replace("<", "&lt;")
+    s1 = s1.replace(">", "&gt;")
     return s1
 
 
 def quote_attrib(inStr):
-    s1 = (isinstance(inStr, BaseStrType_) and inStr or '%s' % inStr)
-    s1 = s1.replace('&', '&amp;')
-    s1 = s1.replace('<', '&lt;')
-    s1 = s1.replace('>', '&gt;')
+    s1 = isinstance(inStr, BaseStrType_) and inStr or "%s" % inStr
+    s1 = s1.replace("&", "&amp;")
+    s1 = s1.replace("<", "&lt;")
+    s1 = s1.replace(">", "&gt;")
     if '"' in s1:
         if "'" in s1:
             s1 = '"%s"' % s1.replace('"', "&quot;")
@@ -785,14 +855,14 @@ def quote_attrib(inStr):
 def quote_python(inStr):
     s1 = inStr
     if s1.find("'") == -1:
-        if s1.find('\n') == -1:
+        if s1.find("\n") == -1:
             return "'%s'" % s1
         else:
             return "'''%s'''" % s1
     else:
         if s1.find('"') != -1:
             s1 = s1.replace('"', '\\"')
-        if s1.find('\n') == -1:
+        if s1.find("\n") == -1:
             return '"%s"' % s1
         else:
             return '"""%s"""' % s1
@@ -802,7 +872,7 @@ def get_all_text_(node):
     if node.text is not None:
         text = node.text
     else:
-        text = ''
+        text = ""
     for child in node:
         if child.tail is not None:
             text += child.tail
@@ -811,18 +881,24 @@ def get_all_text_(node):
 
 def find_attr_value_(attr_name, node):
     attrs = node.attrib
-    attr_parts = attr_name.split(':')
+    attr_parts = attr_name.split(":")
     value = None
     if len(attr_parts) == 1:
         value = attrs.get(attr_name)
     elif len(attr_parts) == 2:
         prefix, name = attr_parts
-        if prefix == 'xml':
-            namespace = 'http://www.w3.org/XML/1998/namespace'
+        if prefix == "xml":
+            namespace = "http://www.w3.org/XML/1998/namespace"
         else:
             namespace = node.nsmap.get(prefix)
         if namespace is not None:
-            value = attrs.get('{%s}%s' % (namespace, name, ))
+            value = attrs.get(
+                "{%s}%s"
+                % (
+                    namespace,
+                    name,
+                )
+            )
     return value
 
 
@@ -836,7 +912,11 @@ class GDSParseError(Exception):
 
 def raise_parse_error(node, msg):
     if node is not None:
-        msg = '%s (element %s/line %d)' % (msg, node.tag, node.sourceline, )
+        msg = "%s (element %s/line %d)" % (
+            msg,
+            node.tag,
+            node.sourceline,
+        )
     raise GDSParseError(msg)
 
 
@@ -856,51 +936,53 @@ class MixedContainer:
     TypeDouble = 6
     TypeBoolean = 7
     TypeBase64 = 8
+
     def __init__(self, category, content_type, name, value):
         self.category = category
         self.content_type = content_type
         self.name = name
         self.value = value
+
     def getCategory(self):
         return self.category
+
     def getContenttype(self, content_type):
         return self.content_type
+
     def getValue(self):
         return self.value
+
     def getName(self):
         return self.name
-    def export(self, outfile, level, name, namespace,
-               pretty_print=True):
+
+    def export(self, outfile, level, name, namespace, pretty_print=True):
         if self.category == MixedContainer.CategoryText:
             # Prevent exporting empty content as empty lines.
             if self.value.strip():
                 outfile.write(self.value)
         elif self.category == MixedContainer.CategorySimple:
             self.exportSimple(outfile, level, name)
-        else:    # category == MixedContainer.CategoryComplex
-            self.value.export(
-                outfile, level, namespace, name_=name,
-                pretty_print=pretty_print)
+        else:  # category == MixedContainer.CategoryComplex
+            self.value.export(outfile, level, namespace, name_=name, pretty_print=pretty_print)
+
     def exportSimple(self, outfile, level, name):
         if self.content_type == MixedContainer.TypeString:
-            outfile.write('<%s>%s</%s>' % (
-                self.name, self.value, self.name))
-        elif self.content_type == MixedContainer.TypeInteger or \
-                self.content_type == MixedContainer.TypeBoolean:
-            outfile.write('<%s>%d</%s>' % (
-                self.name, self.value, self.name))
-        elif self.content_type == MixedContainer.TypeFloat or \
-                self.content_type == MixedContainer.TypeDecimal:
-            outfile.write('<%s>%f</%s>' % (
-                self.name, self.value, self.name))
+            outfile.write("<%s>%s</%s>" % (self.name, self.value, self.name))
+        elif (
+            self.content_type == MixedContainer.TypeInteger
+            or self.content_type == MixedContainer.TypeBoolean
+        ):
+            outfile.write("<%s>%d</%s>" % (self.name, self.value, self.name))
+        elif (
+            self.content_type == MixedContainer.TypeFloat
+            or self.content_type == MixedContainer.TypeDecimal
+        ):
+            outfile.write("<%s>%f</%s>" % (self.name, self.value, self.name))
         elif self.content_type == MixedContainer.TypeDouble:
-            outfile.write('<%s>%g</%s>' % (
-                self.name, self.value, self.name))
+            outfile.write("<%s>%g</%s>" % (self.name, self.value, self.name))
         elif self.content_type == MixedContainer.TypeBase64:
-            outfile.write('<%s>%s</%s>' % (
-                self.name,
-                base64.b64encode(self.value),
-                self.name))
+            outfile.write("<%s>%s</%s>" % (self.name, base64.b64encode(self.value), self.name))
+
     def to_etree(self, element, mapping_=None, reverse_mapping_=None, nsmap_=None):
         if self.category == MixedContainer.CategoryText:
             # Prevent exporting empty content as empty lines.
@@ -916,83 +998,120 @@ class MixedContainer:
                     else:
                         element.text += self.value
         elif self.category == MixedContainer.CategorySimple:
-            subelement = etree_.SubElement(
-                element, '%s' % self.name)
+            subelement = etree_.SubElement(element, "%s" % self.name)
             subelement.text = self.to_etree_simple()
-        else:    # category == MixedContainer.CategoryComplex
+        else:  # category == MixedContainer.CategoryComplex
             self.value.to_etree(element)
+
     def to_etree_simple(self, mapping_=None, reverse_mapping_=None, nsmap_=None):
         if self.content_type == MixedContainer.TypeString:
             text = self.value
-        elif (self.content_type == MixedContainer.TypeInteger or
-                self.content_type == MixedContainer.TypeBoolean):
-            text = '%d' % self.value
-        elif (self.content_type == MixedContainer.TypeFloat or
-                self.content_type == MixedContainer.TypeDecimal):
-            text = '%f' % self.value
+        elif (
+            self.content_type == MixedContainer.TypeInteger
+            or self.content_type == MixedContainer.TypeBoolean
+        ):
+            text = "%d" % self.value
+        elif (
+            self.content_type == MixedContainer.TypeFloat
+            or self.content_type == MixedContainer.TypeDecimal
+        ):
+            text = "%f" % self.value
         elif self.content_type == MixedContainer.TypeDouble:
-            text = '%g' % self.value
+            text = "%g" % self.value
         elif self.content_type == MixedContainer.TypeBase64:
-            text = '%s' % base64.b64encode(self.value)
+            text = "%s" % base64.b64encode(self.value)
         return text
+
     def exportLiteral(self, outfile, level, name):
         if self.category == MixedContainer.CategoryText:
             showIndent(outfile, level)
             outfile.write(
-                'model_.MixedContainer(%d, %d, "%s", "%s"),\n' % (
-                    self.category, self.content_type,
-                    self.name, self.value))
+                'model_.MixedContainer(%d, %d, "%s", "%s"),\n'
+                % (self.category, self.content_type, self.name, self.value)
+            )
         elif self.category == MixedContainer.CategorySimple:
             showIndent(outfile, level)
             outfile.write(
-                'model_.MixedContainer(%d, %d, "%s", "%s"),\n' % (
-                    self.category, self.content_type,
-                    self.name, self.value))
-        else:    # category == MixedContainer.CategoryComplex
+                'model_.MixedContainer(%d, %d, "%s", "%s"),\n'
+                % (self.category, self.content_type, self.name, self.value)
+            )
+        else:  # category == MixedContainer.CategoryComplex
             showIndent(outfile, level)
             outfile.write(
-                'model_.MixedContainer(%d, %d, "%s",\n' % (
-                    self.category, self.content_type, self.name,))
+                'model_.MixedContainer(%d, %d, "%s",\n'
+                % (
+                    self.category,
+                    self.content_type,
+                    self.name,
+                )
+            )
             self.value.exportLiteral(outfile, level + 1)
             showIndent(outfile, level)
-            outfile.write(')\n')
+            outfile.write(")\n")
 
 
 class MemberSpec_(object):
-    def __init__(self, name='', data_type='', container=0,
-            optional=0, child_attrs=None, choice=None):
+    def __init__(
+        self, name="", data_type="", container=0, optional=0, child_attrs=None, choice=None
+    ):
         self.name = name
         self.data_type = data_type
         self.container = container
         self.child_attrs = child_attrs
         self.choice = choice
         self.optional = optional
-    def set_name(self, name): self.name = name
-    def get_name(self): return self.name
-    def set_data_type(self, data_type): self.data_type = data_type
-    def get_data_type_chain(self): return self.data_type
+
+    def set_name(self, name):
+        self.name = name
+
+    def get_name(self):
+        return self.name
+
+    def set_data_type(self, data_type):
+        self.data_type = data_type
+
+    def get_data_type_chain(self):
+        return self.data_type
+
     def get_data_type(self):
         if isinstance(self.data_type, list):
             if len(self.data_type) > 0:
                 return self.data_type[-1]
             else:
-                return 'xs:string'
+                return "xs:string"
         else:
             return self.data_type
-    def set_container(self, container): self.container = container
-    def get_container(self): return self.container
-    def set_child_attrs(self, child_attrs): self.child_attrs = child_attrs
-    def get_child_attrs(self): return self.child_attrs
-    def set_choice(self, choice): self.choice = choice
-    def get_choice(self): return self.choice
-    def set_optional(self, optional): self.optional = optional
-    def get_optional(self): return self.optional
+
+    def set_container(self, container):
+        self.container = container
+
+    def get_container(self):
+        return self.container
+
+    def set_child_attrs(self, child_attrs):
+        self.child_attrs = child_attrs
+
+    def get_child_attrs(self):
+        return self.child_attrs
+
+    def set_choice(self, choice):
+        self.choice = choice
+
+    def get_choice(self):
+        return self.choice
+
+    def set_optional(self, optional):
+        self.optional = optional
+
+    def get_optional(self):
+        return self.optional
 
 
 def _cast(typ, value):
     if typ is None or value is None:
         return value
     return typ(value)
+
 
 #
 # Data representation classes.
@@ -1003,72 +1122,127 @@ class AUniType(GeneratedsSuper):
     __hash__ = GeneratedsSuper.__hash__
     subclass = None
     superclass = None
+
     def __init__(self, ws=None, valueOf_=None, gds_collector_=None, **kwargs_):
         self.gds_collector_ = gds_collector_
         self.gds_elementtree_node_ = None
         self.original_tagname_ = None
-        self.parent_object_ = kwargs_.get('parent_object_')
+        self.parent_object_ = kwargs_.get("parent_object_")
         self.ns_prefix_ = None
         self.ws = _cast(None, ws)
         self.ws_nsprefix_ = None
         self.valueOf_ = valueOf_
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
-            subclass = getSubclassFromModule_(
-                CurrentSubclassModule_, AUniType)
+            subclass = getSubclassFromModule_(CurrentSubclassModule_, AUniType)
             if subclass is not None:
                 return subclass(*args_, **kwargs_)
         if AUniType.subclass:
             return AUniType.subclass(*args_, **kwargs_)
         else:
             return AUniType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
+
     def get_ns_prefix_(self):
         return self.ns_prefix_
+
     def set_ns_prefix_(self, ns_prefix):
         self.ns_prefix_ = ns_prefix
+
     def get_ws(self):
         return self.ws
+
     def set_ws(self, ws):
         self.ws = ws
-    def get_valueOf_(self): return self.valueOf_
-    def set_valueOf_(self, valueOf_): self.valueOf_ = valueOf_
+
+    def get_valueOf_(self):
+        return self.valueOf_
+
+    def set_valueOf_(self, valueOf_):
+        self.valueOf_ = valueOf_
+
     def _hasContent(self):
-        if (
-            (1 if type(self.valueOf_) in [int,float] else self.valueOf_)
-        ):
+        if 1 if type(self.valueOf_) in [int, float] else self.valueOf_:
             return True
         else:
             return False
-    def export(self, outfile, level, namespaceprefix_='', namespacedef_='', name_='AUniType', pretty_print=True):
-        imported_ns_def_ = GenerateDSNamespaceDefs_.get('AUniType')
+
+    def export(
+        self,
+        outfile,
+        level,
+        namespaceprefix_="",
+        namespacedef_="",
+        name_="AUniType",
+        pretty_print=True,
+    ):
+        imported_ns_def_ = GenerateDSNamespaceDefs_.get("AUniType")
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
         if pretty_print:
-            eol_ = '\n'
+            eol_ = "\n"
         else:
-            eol_ = ''
-        if self.original_tagname_ is not None and name_ == 'AUniType':
+            eol_ = ""
+        if self.original_tagname_ is not None and name_ == "AUniType":
             name_ = self.original_tagname_
         if UseCapturedNS_ and self.ns_prefix_:
-            namespaceprefix_ = self.ns_prefix_ + ':'
+            namespaceprefix_ = self.ns_prefix_ + ":"
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespaceprefix_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write(
+            "<%s%s%s"
+            % (
+                namespaceprefix_,
+                name_,
+                namespacedef_ and " " + namespacedef_ or "",
+            )
+        )
         already_processed = set()
-        self._exportAttributes(outfile, level, already_processed, namespaceprefix_, name_='AUniType')
+        self._exportAttributes(
+            outfile, level, already_processed, namespaceprefix_, name_="AUniType"
+        )
         if self._hasContent():
-            outfile.write('>')
+            outfile.write(">")
             outfile.write(self.convert_unicode(self.valueOf_))
-            self._exportChildren(outfile, level + 1, namespaceprefix_, namespacedef_, name_='AUniType', pretty_print=pretty_print)
-            outfile.write('</%s%s>%s' % (namespaceprefix_, name_, eol_))
+            self._exportChildren(
+                outfile,
+                level + 1,
+                namespaceprefix_,
+                namespacedef_,
+                name_="AUniType",
+                pretty_print=pretty_print,
+            )
+            outfile.write("</%s%s>%s" % (namespaceprefix_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def _exportAttributes(self, outfile, level, already_processed, namespaceprefix_='', name_='AUniType'):
-        if self.ws is not None and 'ws' not in already_processed:
-            already_processed.add('ws')
-            outfile.write(' ws=%s' % (self.gds_encode(self.gds_format_string(quote_attrib(self.ws), input_name='ws')), ))
-    def _exportChildren(self, outfile, level, namespaceprefix_='', namespacedef_='', name_='AUniType', fromsubclass_=False, pretty_print=True):
+            outfile.write("/>%s" % (eol_,))
+
+    def _exportAttributes(
+        self, outfile, level, already_processed, namespaceprefix_="", name_="AUniType"
+    ):
+        if self.ws is not None and "ws" not in already_processed:
+            already_processed.add("ws")
+            outfile.write(
+                " ws=%s"
+                % (
+                    self.gds_encode(
+                        self.gds_format_string(quote_attrib(self.ws), input_name="ws")
+                    ),
+                )
+            )
+
+    def _exportChildren(
+        self,
+        outfile,
+        level,
+        namespaceprefix_="",
+        namespacedef_="",
+        name_="AUniType",
+        fromsubclass_=False,
+        pretty_print=True,
+    ):
         pass
+
     def build(self, node, gds_collector_=None):
         self.gds_collector_ = gds_collector_
         if SaveElementTreeNode:
@@ -1081,13 +1255,17 @@ class AUniType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self._buildChildren(child, node, nodeName_, gds_collector_=gds_collector_)
         return self
+
     def _buildAttributes(self, node, attrs, already_processed):
-        value = find_attr_value_('ws', node)
-        if value is not None and 'ws' not in already_processed:
-            already_processed.add('ws')
+        value = find_attr_value_("ws", node)
+        if value is not None and "ws" not in already_processed:
+            already_processed.add("ws")
             self.ws = value
+
     def _buildChildren(self, child_, node, nodeName_, fromsubclass_=False, gds_collector_=None):
         pass
+
+
 # end class AUniType
 
 
@@ -1095,82 +1273,138 @@ class NameType(GeneratedsSuper):
     __hash__ = GeneratedsSuper.__hash__
     subclass = None
     superclass = None
+
     def __init__(self, AUni=None, gds_collector_=None, **kwargs_):
         self.gds_collector_ = gds_collector_
         self.gds_elementtree_node_ = None
         self.original_tagname_ = None
-        self.parent_object_ = kwargs_.get('parent_object_')
+        self.parent_object_ = kwargs_.get("parent_object_")
         self.ns_prefix_ = None
         if AUni is None:
             self.AUni = []
         else:
             self.AUni = AUni
         self.AUni_nsprefix_ = None
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
-            subclass = getSubclassFromModule_(
-                CurrentSubclassModule_, NameType)
+            subclass = getSubclassFromModule_(CurrentSubclassModule_, NameType)
             if subclass is not None:
                 return subclass(*args_, **kwargs_)
         if NameType.subclass:
             return NameType.subclass(*args_, **kwargs_)
         else:
             return NameType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
+
     def get_ns_prefix_(self):
         return self.ns_prefix_
+
     def set_ns_prefix_(self, ns_prefix):
         self.ns_prefix_ = ns_prefix
+
     def get_AUni(self):
         return self.AUni
+
     def set_AUni(self, AUni):
         self.AUni = AUni
+
     def add_AUni(self, value):
         self.AUni.append(value)
+
     def insert_AUni_at(self, index, value):
         self.AUni.insert(index, value)
+
     def replace_AUni_at(self, index, value):
         self.AUni[index] = value
+
     def _hasContent(self):
-        if (
-            self.AUni
-        ):
+        if self.AUni:
             return True
         else:
             return False
-    def export(self, outfile, level, namespaceprefix_='', namespacedef_='', name_='NameType', pretty_print=True):
-        imported_ns_def_ = GenerateDSNamespaceDefs_.get('NameType')
+
+    def export(
+        self,
+        outfile,
+        level,
+        namespaceprefix_="",
+        namespacedef_="",
+        name_="NameType",
+        pretty_print=True,
+    ):
+        imported_ns_def_ = GenerateDSNamespaceDefs_.get("NameType")
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
         if pretty_print:
-            eol_ = '\n'
+            eol_ = "\n"
         else:
-            eol_ = ''
-        if self.original_tagname_ is not None and name_ == 'NameType':
+            eol_ = ""
+        if self.original_tagname_ is not None and name_ == "NameType":
             name_ = self.original_tagname_
         if UseCapturedNS_ and self.ns_prefix_:
-            namespaceprefix_ = self.ns_prefix_ + ':'
+            namespaceprefix_ = self.ns_prefix_ + ":"
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespaceprefix_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write(
+            "<%s%s%s"
+            % (
+                namespaceprefix_,
+                name_,
+                namespacedef_ and " " + namespacedef_ or "",
+            )
+        )
         already_processed = set()
-        self._exportAttributes(outfile, level, already_processed, namespaceprefix_, name_='NameType')
+        self._exportAttributes(
+            outfile, level, already_processed, namespaceprefix_, name_="NameType"
+        )
         if self._hasContent():
-            outfile.write('>%s' % (eol_, ))
-            self._exportChildren(outfile, level + 1, namespaceprefix_, namespacedef_, name_='NameType', pretty_print=pretty_print)
+            outfile.write(">%s" % (eol_,))
+            self._exportChildren(
+                outfile,
+                level + 1,
+                namespaceprefix_,
+                namespacedef_,
+                name_="NameType",
+                pretty_print=pretty_print,
+            )
             showIndent(outfile, level, pretty_print)
-            outfile.write('</%s%s>%s' % (namespaceprefix_, name_, eol_))
+            outfile.write("</%s%s>%s" % (namespaceprefix_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def _exportAttributes(self, outfile, level, already_processed, namespaceprefix_='', name_='NameType'):
+            outfile.write("/>%s" % (eol_,))
+
+    def _exportAttributes(
+        self, outfile, level, already_processed, namespaceprefix_="", name_="NameType"
+    ):
         pass
-    def _exportChildren(self, outfile, level, namespaceprefix_='', namespacedef_='', name_='NameType', fromsubclass_=False, pretty_print=True):
+
+    def _exportChildren(
+        self,
+        outfile,
+        level,
+        namespaceprefix_="",
+        namespacedef_="",
+        name_="NameType",
+        fromsubclass_=False,
+        pretty_print=True,
+    ):
         if pretty_print:
-            eol_ = '\n'
+            eol_ = "\n"
         else:
-            eol_ = ''
+            eol_ = ""
         for AUni_ in self.AUni:
-            namespaceprefix_ = self.AUni_nsprefix_ + ':' if (UseCapturedNS_ and self.AUni_nsprefix_) else ''
-            AUni_.export(outfile, level, namespaceprefix_, namespacedef_='', name_='AUni', pretty_print=pretty_print)
+            namespaceprefix_ = (
+                self.AUni_nsprefix_ + ":" if (UseCapturedNS_ and self.AUni_nsprefix_) else ""
+            )
+            AUni_.export(
+                outfile,
+                level,
+                namespaceprefix_,
+                namespacedef_="",
+                name_="AUni",
+                pretty_print=pretty_print,
+            )
+
     def build(self, node, gds_collector_=None):
         self.gds_collector_ = gds_collector_
         if SaveElementTreeNode:
@@ -1182,14 +1416,18 @@ class NameType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self._buildChildren(child, node, nodeName_, gds_collector_=gds_collector_)
         return self
+
     def _buildAttributes(self, node, attrs, already_processed):
         pass
+
     def _buildChildren(self, child_, node, nodeName_, fromsubclass_=False, gds_collector_=None):
-        if nodeName_ == 'AUni':
+        if nodeName_ == "AUni":
             obj_ = AUniType.factory(parent_object_=self)
             obj_.build(child_, gds_collector_=gds_collector_)
             self.AUni.append(obj_)
-            obj_.original_tagname_ = 'AUni'
+            obj_.original_tagname_ = "AUni"
+
+
 # end class NameType
 
 
@@ -1197,82 +1435,138 @@ class AbbreviationType(GeneratedsSuper):
     __hash__ = GeneratedsSuper.__hash__
     subclass = None
     superclass = None
+
     def __init__(self, AUni=None, gds_collector_=None, **kwargs_):
         self.gds_collector_ = gds_collector_
         self.gds_elementtree_node_ = None
         self.original_tagname_ = None
-        self.parent_object_ = kwargs_.get('parent_object_')
+        self.parent_object_ = kwargs_.get("parent_object_")
         self.ns_prefix_ = None
         if AUni is None:
             self.AUni = []
         else:
             self.AUni = AUni
         self.AUni_nsprefix_ = None
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
-            subclass = getSubclassFromModule_(
-                CurrentSubclassModule_, AbbreviationType)
+            subclass = getSubclassFromModule_(CurrentSubclassModule_, AbbreviationType)
             if subclass is not None:
                 return subclass(*args_, **kwargs_)
         if AbbreviationType.subclass:
             return AbbreviationType.subclass(*args_, **kwargs_)
         else:
             return AbbreviationType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
+
     def get_ns_prefix_(self):
         return self.ns_prefix_
+
     def set_ns_prefix_(self, ns_prefix):
         self.ns_prefix_ = ns_prefix
+
     def get_AUni(self):
         return self.AUni
+
     def set_AUni(self, AUni):
         self.AUni = AUni
+
     def add_AUni(self, value):
         self.AUni.append(value)
+
     def insert_AUni_at(self, index, value):
         self.AUni.insert(index, value)
+
     def replace_AUni_at(self, index, value):
         self.AUni[index] = value
+
     def _hasContent(self):
-        if (
-            self.AUni
-        ):
+        if self.AUni:
             return True
         else:
             return False
-    def export(self, outfile, level, namespaceprefix_='', namespacedef_='', name_='AbbreviationType', pretty_print=True):
-        imported_ns_def_ = GenerateDSNamespaceDefs_.get('AbbreviationType')
+
+    def export(
+        self,
+        outfile,
+        level,
+        namespaceprefix_="",
+        namespacedef_="",
+        name_="AbbreviationType",
+        pretty_print=True,
+    ):
+        imported_ns_def_ = GenerateDSNamespaceDefs_.get("AbbreviationType")
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
         if pretty_print:
-            eol_ = '\n'
+            eol_ = "\n"
         else:
-            eol_ = ''
-        if self.original_tagname_ is not None and name_ == 'AbbreviationType':
+            eol_ = ""
+        if self.original_tagname_ is not None and name_ == "AbbreviationType":
             name_ = self.original_tagname_
         if UseCapturedNS_ and self.ns_prefix_:
-            namespaceprefix_ = self.ns_prefix_ + ':'
+            namespaceprefix_ = self.ns_prefix_ + ":"
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespaceprefix_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write(
+            "<%s%s%s"
+            % (
+                namespaceprefix_,
+                name_,
+                namespacedef_ and " " + namespacedef_ or "",
+            )
+        )
         already_processed = set()
-        self._exportAttributes(outfile, level, already_processed, namespaceprefix_, name_='AbbreviationType')
+        self._exportAttributes(
+            outfile, level, already_processed, namespaceprefix_, name_="AbbreviationType"
+        )
         if self._hasContent():
-            outfile.write('>%s' % (eol_, ))
-            self._exportChildren(outfile, level + 1, namespaceprefix_, namespacedef_, name_='AbbreviationType', pretty_print=pretty_print)
+            outfile.write(">%s" % (eol_,))
+            self._exportChildren(
+                outfile,
+                level + 1,
+                namespaceprefix_,
+                namespacedef_,
+                name_="AbbreviationType",
+                pretty_print=pretty_print,
+            )
             showIndent(outfile, level, pretty_print)
-            outfile.write('</%s%s>%s' % (namespaceprefix_, name_, eol_))
+            outfile.write("</%s%s>%s" % (namespaceprefix_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def _exportAttributes(self, outfile, level, already_processed, namespaceprefix_='', name_='AbbreviationType'):
+            outfile.write("/>%s" % (eol_,))
+
+    def _exportAttributes(
+        self, outfile, level, already_processed, namespaceprefix_="", name_="AbbreviationType"
+    ):
         pass
-    def _exportChildren(self, outfile, level, namespaceprefix_='', namespacedef_='', name_='AbbreviationType', fromsubclass_=False, pretty_print=True):
+
+    def _exportChildren(
+        self,
+        outfile,
+        level,
+        namespaceprefix_="",
+        namespacedef_="",
+        name_="AbbreviationType",
+        fromsubclass_=False,
+        pretty_print=True,
+    ):
         if pretty_print:
-            eol_ = '\n'
+            eol_ = "\n"
         else:
-            eol_ = ''
+            eol_ = ""
         for AUni_ in self.AUni:
-            namespaceprefix_ = self.AUni_nsprefix_ + ':' if (UseCapturedNS_ and self.AUni_nsprefix_) else ''
-            AUni_.export(outfile, level, namespaceprefix_, namespacedef_='', name_='AUni', pretty_print=pretty_print)
+            namespaceprefix_ = (
+                self.AUni_nsprefix_ + ":" if (UseCapturedNS_ and self.AUni_nsprefix_) else ""
+            )
+            AUni_.export(
+                outfile,
+                level,
+                namespaceprefix_,
+                namespacedef_="",
+                name_="AUni",
+                pretty_print=pretty_print,
+            )
+
     def build(self, node, gds_collector_=None):
         self.gds_collector_ = gds_collector_
         if SaveElementTreeNode:
@@ -1284,14 +1578,18 @@ class AbbreviationType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self._buildChildren(child, node, nodeName_, gds_collector_=gds_collector_)
         return self
+
     def _buildAttributes(self, node, attrs, already_processed):
         pass
+
     def _buildChildren(self, child_, node, nodeName_, fromsubclass_=False, gds_collector_=None):
-        if nodeName_ == 'AUni':
+        if nodeName_ == "AUni":
             obj_ = AUniType.factory(parent_object_=self)
             obj_.build(child_, gds_collector_=gds_collector_)
             self.AUni.append(obj_)
-            obj_.original_tagname_ = 'AUni'
+            obj_.original_tagname_ = "AUni"
+
+
 # end class AbbreviationType
 
 
@@ -1299,72 +1597,127 @@ class RunType(GeneratedsSuper):
     __hash__ = GeneratedsSuper.__hash__
     subclass = None
     superclass = None
+
     def __init__(self, ws=None, valueOf_=None, gds_collector_=None, **kwargs_):
         self.gds_collector_ = gds_collector_
         self.gds_elementtree_node_ = None
         self.original_tagname_ = None
-        self.parent_object_ = kwargs_.get('parent_object_')
+        self.parent_object_ = kwargs_.get("parent_object_")
         self.ns_prefix_ = None
         self.ws = _cast(None, ws)
         self.ws_nsprefix_ = None
         self.valueOf_ = valueOf_
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
-            subclass = getSubclassFromModule_(
-                CurrentSubclassModule_, RunType)
+            subclass = getSubclassFromModule_(CurrentSubclassModule_, RunType)
             if subclass is not None:
                 return subclass(*args_, **kwargs_)
         if RunType.subclass:
             return RunType.subclass(*args_, **kwargs_)
         else:
             return RunType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
+
     def get_ns_prefix_(self):
         return self.ns_prefix_
+
     def set_ns_prefix_(self, ns_prefix):
         self.ns_prefix_ = ns_prefix
+
     def get_ws(self):
         return self.ws
+
     def set_ws(self, ws):
         self.ws = ws
-    def get_valueOf_(self): return self.valueOf_
-    def set_valueOf_(self, valueOf_): self.valueOf_ = valueOf_
+
+    def get_valueOf_(self):
+        return self.valueOf_
+
+    def set_valueOf_(self, valueOf_):
+        self.valueOf_ = valueOf_
+
     def _hasContent(self):
-        if (
-            (1 if type(self.valueOf_) in [int,float] else self.valueOf_)
-        ):
+        if 1 if type(self.valueOf_) in [int, float] else self.valueOf_:
             return True
         else:
             return False
-    def export(self, outfile, level, namespaceprefix_='', namespacedef_='', name_='RunType', pretty_print=True):
-        imported_ns_def_ = GenerateDSNamespaceDefs_.get('RunType')
+
+    def export(
+        self,
+        outfile,
+        level,
+        namespaceprefix_="",
+        namespacedef_="",
+        name_="RunType",
+        pretty_print=True,
+    ):
+        imported_ns_def_ = GenerateDSNamespaceDefs_.get("RunType")
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
         if pretty_print:
-            eol_ = '\n'
+            eol_ = "\n"
         else:
-            eol_ = ''
-        if self.original_tagname_ is not None and name_ == 'RunType':
+            eol_ = ""
+        if self.original_tagname_ is not None and name_ == "RunType":
             name_ = self.original_tagname_
         if UseCapturedNS_ and self.ns_prefix_:
-            namespaceprefix_ = self.ns_prefix_ + ':'
+            namespaceprefix_ = self.ns_prefix_ + ":"
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespaceprefix_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write(
+            "<%s%s%s"
+            % (
+                namespaceprefix_,
+                name_,
+                namespacedef_ and " " + namespacedef_ or "",
+            )
+        )
         already_processed = set()
-        self._exportAttributes(outfile, level, already_processed, namespaceprefix_, name_='RunType')
+        self._exportAttributes(
+            outfile, level, already_processed, namespaceprefix_, name_="RunType"
+        )
         if self._hasContent():
-            outfile.write('>')
+            outfile.write(">")
             outfile.write(self.convert_unicode(self.valueOf_))
-            self._exportChildren(outfile, level + 1, namespaceprefix_, namespacedef_, name_='RunType', pretty_print=pretty_print)
-            outfile.write('</%s%s>%s' % (namespaceprefix_, name_, eol_))
+            self._exportChildren(
+                outfile,
+                level + 1,
+                namespaceprefix_,
+                namespacedef_,
+                name_="RunType",
+                pretty_print=pretty_print,
+            )
+            outfile.write("</%s%s>%s" % (namespaceprefix_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def _exportAttributes(self, outfile, level, already_processed, namespaceprefix_='', name_='RunType'):
-        if self.ws is not None and 'ws' not in already_processed:
-            already_processed.add('ws')
-            outfile.write(' ws=%s' % (self.gds_encode(self.gds_format_string(quote_attrib(self.ws), input_name='ws')), ))
-    def _exportChildren(self, outfile, level, namespaceprefix_='', namespacedef_='', name_='RunType', fromsubclass_=False, pretty_print=True):
+            outfile.write("/>%s" % (eol_,))
+
+    def _exportAttributes(
+        self, outfile, level, already_processed, namespaceprefix_="", name_="RunType"
+    ):
+        if self.ws is not None and "ws" not in already_processed:
+            already_processed.add("ws")
+            outfile.write(
+                " ws=%s"
+                % (
+                    self.gds_encode(
+                        self.gds_format_string(quote_attrib(self.ws), input_name="ws")
+                    ),
+                )
+            )
+
+    def _exportChildren(
+        self,
+        outfile,
+        level,
+        namespaceprefix_="",
+        namespacedef_="",
+        name_="RunType",
+        fromsubclass_=False,
+        pretty_print=True,
+    ):
         pass
+
     def build(self, node, gds_collector_=None):
         self.gds_collector_ = gds_collector_
         if SaveElementTreeNode:
@@ -1377,13 +1730,17 @@ class RunType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self._buildChildren(child, node, nodeName_, gds_collector_=gds_collector_)
         return self
+
     def _buildAttributes(self, node, attrs, already_processed):
-        value = find_attr_value_('ws', node)
-        if value is not None and 'ws' not in already_processed:
-            already_processed.add('ws')
+        value = find_attr_value_("ws", node)
+        if value is not None and "ws" not in already_processed:
+            already_processed.add("ws")
             self.ws = value
+
     def _buildChildren(self, child_, node, nodeName_, fromsubclass_=False, gds_collector_=None):
         pass
+
+
 # end class RunType
 
 
@@ -1391,81 +1748,143 @@ class AStrType(GeneratedsSuper):
     __hash__ = GeneratedsSuper.__hash__
     subclass = None
     superclass = None
+
     def __init__(self, ws=None, Run=None, gds_collector_=None, **kwargs_):
         self.gds_collector_ = gds_collector_
         self.gds_elementtree_node_ = None
         self.original_tagname_ = None
-        self.parent_object_ = kwargs_.get('parent_object_')
+        self.parent_object_ = kwargs_.get("parent_object_")
         self.ns_prefix_ = None
         self.ws = _cast(None, ws)
         self.ws_nsprefix_ = None
         self.Run = Run
         self.Run_nsprefix_ = None
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
-            subclass = getSubclassFromModule_(
-                CurrentSubclassModule_, AStrType)
+            subclass = getSubclassFromModule_(CurrentSubclassModule_, AStrType)
             if subclass is not None:
                 return subclass(*args_, **kwargs_)
         if AStrType.subclass:
             return AStrType.subclass(*args_, **kwargs_)
         else:
             return AStrType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
+
     def get_ns_prefix_(self):
         return self.ns_prefix_
+
     def set_ns_prefix_(self, ns_prefix):
         self.ns_prefix_ = ns_prefix
+
     def get_Run(self):
         return self.Run
+
     def set_Run(self, Run):
         self.Run = Run
+
     def get_ws(self):
         return self.ws
+
     def set_ws(self, ws):
         self.ws = ws
+
     def _hasContent(self):
-        if (
-            self.Run is not None
-        ):
+        if self.Run is not None:
             return True
         else:
             return False
-    def export(self, outfile, level, namespaceprefix_='', namespacedef_='', name_='AStrType', pretty_print=True):
-        imported_ns_def_ = GenerateDSNamespaceDefs_.get('AStrType')
+
+    def export(
+        self,
+        outfile,
+        level,
+        namespaceprefix_="",
+        namespacedef_="",
+        name_="AStrType",
+        pretty_print=True,
+    ):
+        imported_ns_def_ = GenerateDSNamespaceDefs_.get("AStrType")
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
         if pretty_print:
-            eol_ = '\n'
+            eol_ = "\n"
         else:
-            eol_ = ''
-        if self.original_tagname_ is not None and name_ == 'AStrType':
+            eol_ = ""
+        if self.original_tagname_ is not None and name_ == "AStrType":
             name_ = self.original_tagname_
         if UseCapturedNS_ and self.ns_prefix_:
-            namespaceprefix_ = self.ns_prefix_ + ':'
+            namespaceprefix_ = self.ns_prefix_ + ":"
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespaceprefix_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write(
+            "<%s%s%s"
+            % (
+                namespaceprefix_,
+                name_,
+                namespacedef_ and " " + namespacedef_ or "",
+            )
+        )
         already_processed = set()
-        self._exportAttributes(outfile, level, already_processed, namespaceprefix_, name_='AStrType')
+        self._exportAttributes(
+            outfile, level, already_processed, namespaceprefix_, name_="AStrType"
+        )
         if self._hasContent():
-            outfile.write('>%s' % (eol_, ))
-            self._exportChildren(outfile, level + 1, namespaceprefix_, namespacedef_, name_='AStrType', pretty_print=pretty_print)
+            outfile.write(">%s" % (eol_,))
+            self._exportChildren(
+                outfile,
+                level + 1,
+                namespaceprefix_,
+                namespacedef_,
+                name_="AStrType",
+                pretty_print=pretty_print,
+            )
             showIndent(outfile, level, pretty_print)
-            outfile.write('</%s%s>%s' % (namespaceprefix_, name_, eol_))
+            outfile.write("</%s%s>%s" % (namespaceprefix_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def _exportAttributes(self, outfile, level, already_processed, namespaceprefix_='', name_='AStrType'):
-        if self.ws is not None and 'ws' not in already_processed:
-            already_processed.add('ws')
-            outfile.write(' ws=%s' % (self.gds_encode(self.gds_format_string(quote_attrib(self.ws), input_name='ws')), ))
-    def _exportChildren(self, outfile, level, namespaceprefix_='', namespacedef_='', name_='AStrType', fromsubclass_=False, pretty_print=True):
+            outfile.write("/>%s" % (eol_,))
+
+    def _exportAttributes(
+        self, outfile, level, already_processed, namespaceprefix_="", name_="AStrType"
+    ):
+        if self.ws is not None and "ws" not in already_processed:
+            already_processed.add("ws")
+            outfile.write(
+                " ws=%s"
+                % (
+                    self.gds_encode(
+                        self.gds_format_string(quote_attrib(self.ws), input_name="ws")
+                    ),
+                )
+            )
+
+    def _exportChildren(
+        self,
+        outfile,
+        level,
+        namespaceprefix_="",
+        namespacedef_="",
+        name_="AStrType",
+        fromsubclass_=False,
+        pretty_print=True,
+    ):
         if pretty_print:
-            eol_ = '\n'
+            eol_ = "\n"
         else:
-            eol_ = ''
+            eol_ = ""
         if self.Run is not None:
-            namespaceprefix_ = self.Run_nsprefix_ + ':' if (UseCapturedNS_ and self.Run_nsprefix_) else ''
-            self.Run.export(outfile, level, namespaceprefix_, namespacedef_='', name_='Run', pretty_print=pretty_print)
+            namespaceprefix_ = (
+                self.Run_nsprefix_ + ":" if (UseCapturedNS_ and self.Run_nsprefix_) else ""
+            )
+            self.Run.export(
+                outfile,
+                level,
+                namespaceprefix_,
+                namespacedef_="",
+                name_="Run",
+                pretty_print=pretty_print,
+            )
+
     def build(self, node, gds_collector_=None):
         self.gds_collector_ = gds_collector_
         if SaveElementTreeNode:
@@ -1477,17 +1896,21 @@ class AStrType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self._buildChildren(child, node, nodeName_, gds_collector_=gds_collector_)
         return self
+
     def _buildAttributes(self, node, attrs, already_processed):
-        value = find_attr_value_('ws', node)
-        if value is not None and 'ws' not in already_processed:
-            already_processed.add('ws')
+        value = find_attr_value_("ws", node)
+        if value is not None and "ws" not in already_processed:
+            already_processed.add("ws")
             self.ws = value
+
     def _buildChildren(self, child_, node, nodeName_, fromsubclass_=False, gds_collector_=None):
-        if nodeName_ == 'Run':
+        if nodeName_ == "Run":
             obj_ = RunType.factory(parent_object_=self)
             obj_.build(child_, gds_collector_=gds_collector_)
             self.Run = obj_
-            obj_.original_tagname_ = 'Run'
+            obj_.original_tagname_ = "Run"
+
+
 # end class AStrType
 
 
@@ -1495,82 +1918,138 @@ class DescriptionType(GeneratedsSuper):
     __hash__ = GeneratedsSuper.__hash__
     subclass = None
     superclass = None
+
     def __init__(self, AStr=None, gds_collector_=None, **kwargs_):
         self.gds_collector_ = gds_collector_
         self.gds_elementtree_node_ = None
         self.original_tagname_ = None
-        self.parent_object_ = kwargs_.get('parent_object_')
+        self.parent_object_ = kwargs_.get("parent_object_")
         self.ns_prefix_ = None
         if AStr is None:
             self.AStr = []
         else:
             self.AStr = AStr
         self.AStr_nsprefix_ = None
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
-            subclass = getSubclassFromModule_(
-                CurrentSubclassModule_, DescriptionType)
+            subclass = getSubclassFromModule_(CurrentSubclassModule_, DescriptionType)
             if subclass is not None:
                 return subclass(*args_, **kwargs_)
         if DescriptionType.subclass:
             return DescriptionType.subclass(*args_, **kwargs_)
         else:
             return DescriptionType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
+
     def get_ns_prefix_(self):
         return self.ns_prefix_
+
     def set_ns_prefix_(self, ns_prefix):
         self.ns_prefix_ = ns_prefix
+
     def get_AStr(self):
         return self.AStr
+
     def set_AStr(self, AStr):
         self.AStr = AStr
+
     def add_AStr(self, value):
         self.AStr.append(value)
+
     def insert_AStr_at(self, index, value):
         self.AStr.insert(index, value)
+
     def replace_AStr_at(self, index, value):
         self.AStr[index] = value
+
     def _hasContent(self):
-        if (
-            self.AStr
-        ):
+        if self.AStr:
             return True
         else:
             return False
-    def export(self, outfile, level, namespaceprefix_='', namespacedef_='', name_='DescriptionType', pretty_print=True):
-        imported_ns_def_ = GenerateDSNamespaceDefs_.get('DescriptionType')
+
+    def export(
+        self,
+        outfile,
+        level,
+        namespaceprefix_="",
+        namespacedef_="",
+        name_="DescriptionType",
+        pretty_print=True,
+    ):
+        imported_ns_def_ = GenerateDSNamespaceDefs_.get("DescriptionType")
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
         if pretty_print:
-            eol_ = '\n'
+            eol_ = "\n"
         else:
-            eol_ = ''
-        if self.original_tagname_ is not None and name_ == 'DescriptionType':
+            eol_ = ""
+        if self.original_tagname_ is not None and name_ == "DescriptionType":
             name_ = self.original_tagname_
         if UseCapturedNS_ and self.ns_prefix_:
-            namespaceprefix_ = self.ns_prefix_ + ':'
+            namespaceprefix_ = self.ns_prefix_ + ":"
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespaceprefix_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write(
+            "<%s%s%s"
+            % (
+                namespaceprefix_,
+                name_,
+                namespacedef_ and " " + namespacedef_ or "",
+            )
+        )
         already_processed = set()
-        self._exportAttributes(outfile, level, already_processed, namespaceprefix_, name_='DescriptionType')
+        self._exportAttributes(
+            outfile, level, already_processed, namespaceprefix_, name_="DescriptionType"
+        )
         if self._hasContent():
-            outfile.write('>%s' % (eol_, ))
-            self._exportChildren(outfile, level + 1, namespaceprefix_, namespacedef_, name_='DescriptionType', pretty_print=pretty_print)
+            outfile.write(">%s" % (eol_,))
+            self._exportChildren(
+                outfile,
+                level + 1,
+                namespaceprefix_,
+                namespacedef_,
+                name_="DescriptionType",
+                pretty_print=pretty_print,
+            )
             showIndent(outfile, level, pretty_print)
-            outfile.write('</%s%s>%s' % (namespaceprefix_, name_, eol_))
+            outfile.write("</%s%s>%s" % (namespaceprefix_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def _exportAttributes(self, outfile, level, already_processed, namespaceprefix_='', name_='DescriptionType'):
+            outfile.write("/>%s" % (eol_,))
+
+    def _exportAttributes(
+        self, outfile, level, already_processed, namespaceprefix_="", name_="DescriptionType"
+    ):
         pass
-    def _exportChildren(self, outfile, level, namespaceprefix_='', namespacedef_='', name_='DescriptionType', fromsubclass_=False, pretty_print=True):
+
+    def _exportChildren(
+        self,
+        outfile,
+        level,
+        namespaceprefix_="",
+        namespacedef_="",
+        name_="DescriptionType",
+        fromsubclass_=False,
+        pretty_print=True,
+    ):
         if pretty_print:
-            eol_ = '\n'
+            eol_ = "\n"
         else:
-            eol_ = ''
+            eol_ = ""
         for AStr_ in self.AStr:
-            namespaceprefix_ = self.AStr_nsprefix_ + ':' if (UseCapturedNS_ and self.AStr_nsprefix_) else ''
-            AStr_.export(outfile, level, namespaceprefix_, namespacedef_='', name_='AStr', pretty_print=pretty_print)
+            namespaceprefix_ = (
+                self.AStr_nsprefix_ + ":" if (UseCapturedNS_ and self.AStr_nsprefix_) else ""
+            )
+            AStr_.export(
+                outfile,
+                level,
+                namespaceprefix_,
+                namespacedef_="",
+                name_="AStr",
+                pretty_print=pretty_print,
+            )
+
     def build(self, node, gds_collector_=None):
         self.gds_collector_ = gds_collector_
         if SaveElementTreeNode:
@@ -1582,14 +2061,18 @@ class DescriptionType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self._buildChildren(child, node, nodeName_, gds_collector_=gds_collector_)
         return self
+
     def _buildAttributes(self, node, attrs, already_processed):
         pass
+
     def _buildChildren(self, child_, node, nodeName_, fromsubclass_=False, gds_collector_=None):
-        if nodeName_ == 'AStr':
+        if nodeName_ == "AStr":
             obj_ = AStrType.factory(parent_object_=self)
             obj_.build(child_, gds_collector_=gds_collector_)
             self.AStr.append(obj_)
-            obj_.original_tagname_ = 'AStr'
+            obj_.original_tagname_ = "AStr"
+
+
 # end class DescriptionType
 
 
@@ -1597,82 +2080,138 @@ class QuestionType(GeneratedsSuper):
     __hash__ = GeneratedsSuper.__hash__
     subclass = None
     superclass = None
+
     def __init__(self, AUni=None, gds_collector_=None, **kwargs_):
         self.gds_collector_ = gds_collector_
         self.gds_elementtree_node_ = None
         self.original_tagname_ = None
-        self.parent_object_ = kwargs_.get('parent_object_')
+        self.parent_object_ = kwargs_.get("parent_object_")
         self.ns_prefix_ = None
         if AUni is None:
             self.AUni = []
         else:
             self.AUni = AUni
         self.AUni_nsprefix_ = None
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
-            subclass = getSubclassFromModule_(
-                CurrentSubclassModule_, QuestionType)
+            subclass = getSubclassFromModule_(CurrentSubclassModule_, QuestionType)
             if subclass is not None:
                 return subclass(*args_, **kwargs_)
         if QuestionType.subclass:
             return QuestionType.subclass(*args_, **kwargs_)
         else:
             return QuestionType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
+
     def get_ns_prefix_(self):
         return self.ns_prefix_
+
     def set_ns_prefix_(self, ns_prefix):
         self.ns_prefix_ = ns_prefix
+
     def get_AUni(self):
         return self.AUni
+
     def set_AUni(self, AUni):
         self.AUni = AUni
+
     def add_AUni(self, value):
         self.AUni.append(value)
+
     def insert_AUni_at(self, index, value):
         self.AUni.insert(index, value)
+
     def replace_AUni_at(self, index, value):
         self.AUni[index] = value
+
     def _hasContent(self):
-        if (
-            self.AUni
-        ):
+        if self.AUni:
             return True
         else:
             return False
-    def export(self, outfile, level, namespaceprefix_='', namespacedef_='', name_='QuestionType', pretty_print=True):
-        imported_ns_def_ = GenerateDSNamespaceDefs_.get('QuestionType')
+
+    def export(
+        self,
+        outfile,
+        level,
+        namespaceprefix_="",
+        namespacedef_="",
+        name_="QuestionType",
+        pretty_print=True,
+    ):
+        imported_ns_def_ = GenerateDSNamespaceDefs_.get("QuestionType")
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
         if pretty_print:
-            eol_ = '\n'
+            eol_ = "\n"
         else:
-            eol_ = ''
-        if self.original_tagname_ is not None and name_ == 'QuestionType':
+            eol_ = ""
+        if self.original_tagname_ is not None and name_ == "QuestionType":
             name_ = self.original_tagname_
         if UseCapturedNS_ and self.ns_prefix_:
-            namespaceprefix_ = self.ns_prefix_ + ':'
+            namespaceprefix_ = self.ns_prefix_ + ":"
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespaceprefix_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write(
+            "<%s%s%s"
+            % (
+                namespaceprefix_,
+                name_,
+                namespacedef_ and " " + namespacedef_ or "",
+            )
+        )
         already_processed = set()
-        self._exportAttributes(outfile, level, already_processed, namespaceprefix_, name_='QuestionType')
+        self._exportAttributes(
+            outfile, level, already_processed, namespaceprefix_, name_="QuestionType"
+        )
         if self._hasContent():
-            outfile.write('>%s' % (eol_, ))
-            self._exportChildren(outfile, level + 1, namespaceprefix_, namespacedef_, name_='QuestionType', pretty_print=pretty_print)
+            outfile.write(">%s" % (eol_,))
+            self._exportChildren(
+                outfile,
+                level + 1,
+                namespaceprefix_,
+                namespacedef_,
+                name_="QuestionType",
+                pretty_print=pretty_print,
+            )
             showIndent(outfile, level, pretty_print)
-            outfile.write('</%s%s>%s' % (namespaceprefix_, name_, eol_))
+            outfile.write("</%s%s>%s" % (namespaceprefix_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def _exportAttributes(self, outfile, level, already_processed, namespaceprefix_='', name_='QuestionType'):
+            outfile.write("/>%s" % (eol_,))
+
+    def _exportAttributes(
+        self, outfile, level, already_processed, namespaceprefix_="", name_="QuestionType"
+    ):
         pass
-    def _exportChildren(self, outfile, level, namespaceprefix_='', namespacedef_='', name_='QuestionType', fromsubclass_=False, pretty_print=True):
+
+    def _exportChildren(
+        self,
+        outfile,
+        level,
+        namespaceprefix_="",
+        namespacedef_="",
+        name_="QuestionType",
+        fromsubclass_=False,
+        pretty_print=True,
+    ):
         if pretty_print:
-            eol_ = '\n'
+            eol_ = "\n"
         else:
-            eol_ = ''
+            eol_ = ""
         for AUni_ in self.AUni:
-            namespaceprefix_ = self.AUni_nsprefix_ + ':' if (UseCapturedNS_ and self.AUni_nsprefix_) else ''
-            AUni_.export(outfile, level, namespaceprefix_, namespacedef_='', name_='AUni', pretty_print=pretty_print)
+            namespaceprefix_ = (
+                self.AUni_nsprefix_ + ":" if (UseCapturedNS_ and self.AUni_nsprefix_) else ""
+            )
+            AUni_.export(
+                outfile,
+                level,
+                namespaceprefix_,
+                namespacedef_="",
+                name_="AUni",
+                pretty_print=pretty_print,
+            )
+
     def build(self, node, gds_collector_=None):
         self.gds_collector_ = gds_collector_
         if SaveElementTreeNode:
@@ -1684,14 +2223,18 @@ class QuestionType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self._buildChildren(child, node, nodeName_, gds_collector_=gds_collector_)
         return self
+
     def _buildAttributes(self, node, attrs, already_processed):
         pass
+
     def _buildChildren(self, child_, node, nodeName_, fromsubclass_=False, gds_collector_=None):
-        if nodeName_ == 'AUni':
+        if nodeName_ == "AUni":
             obj_ = AUniType.factory(parent_object_=self)
             obj_.build(child_, gds_collector_=gds_collector_)
             self.AUni.append(obj_)
-            obj_.original_tagname_ = 'AUni'
+            obj_.original_tagname_ = "AUni"
+
+
 # end class QuestionType
 
 
@@ -1699,82 +2242,138 @@ class ExampleWordsType(GeneratedsSuper):
     __hash__ = GeneratedsSuper.__hash__
     subclass = None
     superclass = None
+
     def __init__(self, AUni=None, gds_collector_=None, **kwargs_):
         self.gds_collector_ = gds_collector_
         self.gds_elementtree_node_ = None
         self.original_tagname_ = None
-        self.parent_object_ = kwargs_.get('parent_object_')
+        self.parent_object_ = kwargs_.get("parent_object_")
         self.ns_prefix_ = None
         if AUni is None:
             self.AUni = []
         else:
             self.AUni = AUni
         self.AUni_nsprefix_ = None
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
-            subclass = getSubclassFromModule_(
-                CurrentSubclassModule_, ExampleWordsType)
+            subclass = getSubclassFromModule_(CurrentSubclassModule_, ExampleWordsType)
             if subclass is not None:
                 return subclass(*args_, **kwargs_)
         if ExampleWordsType.subclass:
             return ExampleWordsType.subclass(*args_, **kwargs_)
         else:
             return ExampleWordsType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
+
     def get_ns_prefix_(self):
         return self.ns_prefix_
+
     def set_ns_prefix_(self, ns_prefix):
         self.ns_prefix_ = ns_prefix
+
     def get_AUni(self):
         return self.AUni
+
     def set_AUni(self, AUni):
         self.AUni = AUni
+
     def add_AUni(self, value):
         self.AUni.append(value)
+
     def insert_AUni_at(self, index, value):
         self.AUni.insert(index, value)
+
     def replace_AUni_at(self, index, value):
         self.AUni[index] = value
+
     def _hasContent(self):
-        if (
-            self.AUni
-        ):
+        if self.AUni:
             return True
         else:
             return False
-    def export(self, outfile, level, namespaceprefix_='', namespacedef_='', name_='ExampleWordsType', pretty_print=True):
-        imported_ns_def_ = GenerateDSNamespaceDefs_.get('ExampleWordsType')
+
+    def export(
+        self,
+        outfile,
+        level,
+        namespaceprefix_="",
+        namespacedef_="",
+        name_="ExampleWordsType",
+        pretty_print=True,
+    ):
+        imported_ns_def_ = GenerateDSNamespaceDefs_.get("ExampleWordsType")
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
         if pretty_print:
-            eol_ = '\n'
+            eol_ = "\n"
         else:
-            eol_ = ''
-        if self.original_tagname_ is not None and name_ == 'ExampleWordsType':
+            eol_ = ""
+        if self.original_tagname_ is not None and name_ == "ExampleWordsType":
             name_ = self.original_tagname_
         if UseCapturedNS_ and self.ns_prefix_:
-            namespaceprefix_ = self.ns_prefix_ + ':'
+            namespaceprefix_ = self.ns_prefix_ + ":"
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespaceprefix_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write(
+            "<%s%s%s"
+            % (
+                namespaceprefix_,
+                name_,
+                namespacedef_ and " " + namespacedef_ or "",
+            )
+        )
         already_processed = set()
-        self._exportAttributes(outfile, level, already_processed, namespaceprefix_, name_='ExampleWordsType')
+        self._exportAttributes(
+            outfile, level, already_processed, namespaceprefix_, name_="ExampleWordsType"
+        )
         if self._hasContent():
-            outfile.write('>%s' % (eol_, ))
-            self._exportChildren(outfile, level + 1, namespaceprefix_, namespacedef_, name_='ExampleWordsType', pretty_print=pretty_print)
+            outfile.write(">%s" % (eol_,))
+            self._exportChildren(
+                outfile,
+                level + 1,
+                namespaceprefix_,
+                namespacedef_,
+                name_="ExampleWordsType",
+                pretty_print=pretty_print,
+            )
             showIndent(outfile, level, pretty_print)
-            outfile.write('</%s%s>%s' % (namespaceprefix_, name_, eol_))
+            outfile.write("</%s%s>%s" % (namespaceprefix_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def _exportAttributes(self, outfile, level, already_processed, namespaceprefix_='', name_='ExampleWordsType'):
+            outfile.write("/>%s" % (eol_,))
+
+    def _exportAttributes(
+        self, outfile, level, already_processed, namespaceprefix_="", name_="ExampleWordsType"
+    ):
         pass
-    def _exportChildren(self, outfile, level, namespaceprefix_='', namespacedef_='', name_='ExampleWordsType', fromsubclass_=False, pretty_print=True):
+
+    def _exportChildren(
+        self,
+        outfile,
+        level,
+        namespaceprefix_="",
+        namespacedef_="",
+        name_="ExampleWordsType",
+        fromsubclass_=False,
+        pretty_print=True,
+    ):
         if pretty_print:
-            eol_ = '\n'
+            eol_ = "\n"
         else:
-            eol_ = ''
+            eol_ = ""
         for AUni_ in self.AUni:
-            namespaceprefix_ = self.AUni_nsprefix_ + ':' if (UseCapturedNS_ and self.AUni_nsprefix_) else ''
-            AUni_.export(outfile, level, namespaceprefix_, namespacedef_='', name_='AUni', pretty_print=pretty_print)
+            namespaceprefix_ = (
+                self.AUni_nsprefix_ + ":" if (UseCapturedNS_ and self.AUni_nsprefix_) else ""
+            )
+            AUni_.export(
+                outfile,
+                level,
+                namespaceprefix_,
+                namespacedef_="",
+                name_="AUni",
+                pretty_print=pretty_print,
+            )
+
     def build(self, node, gds_collector_=None):
         self.gds_collector_ = gds_collector_
         if SaveElementTreeNode:
@@ -1786,14 +2385,18 @@ class ExampleWordsType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self._buildChildren(child, node, nodeName_, gds_collector_=gds_collector_)
         return self
+
     def _buildAttributes(self, node, attrs, already_processed):
         pass
+
     def _buildChildren(self, child_, node, nodeName_, fromsubclass_=False, gds_collector_=None):
-        if nodeName_ == 'AUni':
+        if nodeName_ == "AUni":
             obj_ = AUniType.factory(parent_object_=self)
             obj_.build(child_, gds_collector_=gds_collector_)
             self.AUni.append(obj_)
-            obj_.original_tagname_ = 'AUni'
+            obj_.original_tagname_ = "AUni"
+
+
 # end class ExampleWordsType
 
 
@@ -1801,82 +2404,138 @@ class ExampleSentencesType(GeneratedsSuper):
     __hash__ = GeneratedsSuper.__hash__
     subclass = None
     superclass = None
+
     def __init__(self, AStr=None, gds_collector_=None, **kwargs_):
         self.gds_collector_ = gds_collector_
         self.gds_elementtree_node_ = None
         self.original_tagname_ = None
-        self.parent_object_ = kwargs_.get('parent_object_')
+        self.parent_object_ = kwargs_.get("parent_object_")
         self.ns_prefix_ = None
         if AStr is None:
             self.AStr = []
         else:
             self.AStr = AStr
         self.AStr_nsprefix_ = None
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
-            subclass = getSubclassFromModule_(
-                CurrentSubclassModule_, ExampleSentencesType)
+            subclass = getSubclassFromModule_(CurrentSubclassModule_, ExampleSentencesType)
             if subclass is not None:
                 return subclass(*args_, **kwargs_)
         if ExampleSentencesType.subclass:
             return ExampleSentencesType.subclass(*args_, **kwargs_)
         else:
             return ExampleSentencesType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
+
     def get_ns_prefix_(self):
         return self.ns_prefix_
+
     def set_ns_prefix_(self, ns_prefix):
         self.ns_prefix_ = ns_prefix
+
     def get_AStr(self):
         return self.AStr
+
     def set_AStr(self, AStr):
         self.AStr = AStr
+
     def add_AStr(self, value):
         self.AStr.append(value)
+
     def insert_AStr_at(self, index, value):
         self.AStr.insert(index, value)
+
     def replace_AStr_at(self, index, value):
         self.AStr[index] = value
+
     def _hasContent(self):
-        if (
-            self.AStr
-        ):
+        if self.AStr:
             return True
         else:
             return False
-    def export(self, outfile, level, namespaceprefix_='', namespacedef_='', name_='ExampleSentencesType', pretty_print=True):
-        imported_ns_def_ = GenerateDSNamespaceDefs_.get('ExampleSentencesType')
+
+    def export(
+        self,
+        outfile,
+        level,
+        namespaceprefix_="",
+        namespacedef_="",
+        name_="ExampleSentencesType",
+        pretty_print=True,
+    ):
+        imported_ns_def_ = GenerateDSNamespaceDefs_.get("ExampleSentencesType")
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
         if pretty_print:
-            eol_ = '\n'
+            eol_ = "\n"
         else:
-            eol_ = ''
-        if self.original_tagname_ is not None and name_ == 'ExampleSentencesType':
+            eol_ = ""
+        if self.original_tagname_ is not None and name_ == "ExampleSentencesType":
             name_ = self.original_tagname_
         if UseCapturedNS_ and self.ns_prefix_:
-            namespaceprefix_ = self.ns_prefix_ + ':'
+            namespaceprefix_ = self.ns_prefix_ + ":"
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespaceprefix_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write(
+            "<%s%s%s"
+            % (
+                namespaceprefix_,
+                name_,
+                namespacedef_ and " " + namespacedef_ or "",
+            )
+        )
         already_processed = set()
-        self._exportAttributes(outfile, level, already_processed, namespaceprefix_, name_='ExampleSentencesType')
+        self._exportAttributes(
+            outfile, level, already_processed, namespaceprefix_, name_="ExampleSentencesType"
+        )
         if self._hasContent():
-            outfile.write('>%s' % (eol_, ))
-            self._exportChildren(outfile, level + 1, namespaceprefix_, namespacedef_, name_='ExampleSentencesType', pretty_print=pretty_print)
+            outfile.write(">%s" % (eol_,))
+            self._exportChildren(
+                outfile,
+                level + 1,
+                namespaceprefix_,
+                namespacedef_,
+                name_="ExampleSentencesType",
+                pretty_print=pretty_print,
+            )
             showIndent(outfile, level, pretty_print)
-            outfile.write('</%s%s>%s' % (namespaceprefix_, name_, eol_))
+            outfile.write("</%s%s>%s" % (namespaceprefix_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def _exportAttributes(self, outfile, level, already_processed, namespaceprefix_='', name_='ExampleSentencesType'):
+            outfile.write("/>%s" % (eol_,))
+
+    def _exportAttributes(
+        self, outfile, level, already_processed, namespaceprefix_="", name_="ExampleSentencesType"
+    ):
         pass
-    def _exportChildren(self, outfile, level, namespaceprefix_='', namespacedef_='', name_='ExampleSentencesType', fromsubclass_=False, pretty_print=True):
+
+    def _exportChildren(
+        self,
+        outfile,
+        level,
+        namespaceprefix_="",
+        namespacedef_="",
+        name_="ExampleSentencesType",
+        fromsubclass_=False,
+        pretty_print=True,
+    ):
         if pretty_print:
-            eol_ = '\n'
+            eol_ = "\n"
         else:
-            eol_ = ''
+            eol_ = ""
         for AStr_ in self.AStr:
-            namespaceprefix_ = self.AStr_nsprefix_ + ':' if (UseCapturedNS_ and self.AStr_nsprefix_) else ''
-            AStr_.export(outfile, level, namespaceprefix_, namespacedef_='', name_='AStr', pretty_print=pretty_print)
+            namespaceprefix_ = (
+                self.AStr_nsprefix_ + ":" if (UseCapturedNS_ and self.AStr_nsprefix_) else ""
+            )
+            AStr_.export(
+                outfile,
+                level,
+                namespaceprefix_,
+                namespacedef_="",
+                name_="AStr",
+                pretty_print=pretty_print,
+            )
+
     def build(self, node, gds_collector_=None):
         self.gds_collector_ = gds_collector_
         if SaveElementTreeNode:
@@ -1888,14 +2547,18 @@ class ExampleSentencesType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self._buildChildren(child, node, nodeName_, gds_collector_=gds_collector_)
         return self
+
     def _buildAttributes(self, node, attrs, already_processed):
         pass
+
     def _buildChildren(self, child_, node, nodeName_, fromsubclass_=False, gds_collector_=None):
-        if nodeName_ == 'AStr':
+        if nodeName_ == "AStr":
             obj_ = AStrType.factory(parent_object_=self)
             obj_.build(child_, gds_collector_=gds_collector_)
             self.AStr.append(obj_)
-            obj_.original_tagname_ = 'AStr'
+            obj_.original_tagname_ = "AStr"
+
+
 # end class ExampleSentencesType
 
 
@@ -1903,11 +2566,19 @@ class CmDomainQType(GeneratedsSuper):
     __hash__ = GeneratedsSuper.__hash__
     subclass = None
     superclass = None
-    def __init__(self, Question=None, ExampleWords=None, ExampleSentences=None, gds_collector_=None, **kwargs_):
+
+    def __init__(
+        self,
+        Question=None,
+        ExampleWords=None,
+        ExampleSentences=None,
+        gds_collector_=None,
+        **kwargs_,
+    ):
         self.gds_collector_ = gds_collector_
         self.gds_elementtree_node_ = None
         self.original_tagname_ = None
-        self.parent_object_ = kwargs_.get('parent_object_')
+        self.parent_object_ = kwargs_.get("parent_object_")
         self.ns_prefix_ = None
         self.Question = Question
         self.Question_nsprefix_ = None
@@ -1915,81 +2586,163 @@ class CmDomainQType(GeneratedsSuper):
         self.ExampleWords_nsprefix_ = None
         self.ExampleSentences = ExampleSentences
         self.ExampleSentences_nsprefix_ = None
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
-            subclass = getSubclassFromModule_(
-                CurrentSubclassModule_, CmDomainQType)
+            subclass = getSubclassFromModule_(CurrentSubclassModule_, CmDomainQType)
             if subclass is not None:
                 return subclass(*args_, **kwargs_)
         if CmDomainQType.subclass:
             return CmDomainQType.subclass(*args_, **kwargs_)
         else:
             return CmDomainQType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
+
     def get_ns_prefix_(self):
         return self.ns_prefix_
+
     def set_ns_prefix_(self, ns_prefix):
         self.ns_prefix_ = ns_prefix
+
     def get_Question(self):
         return self.Question
+
     def set_Question(self, Question):
         self.Question = Question
+
     def get_ExampleWords(self):
         return self.ExampleWords
+
     def set_ExampleWords(self, ExampleWords):
         self.ExampleWords = ExampleWords
+
     def get_ExampleSentences(self):
         return self.ExampleSentences
+
     def set_ExampleSentences(self, ExampleSentences):
         self.ExampleSentences = ExampleSentences
+
     def _hasContent(self):
         if (
-            self.Question is not None or
-            self.ExampleWords is not None or
-            self.ExampleSentences is not None
+            self.Question is not None
+            or self.ExampleWords is not None
+            or self.ExampleSentences is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespaceprefix_='', namespacedef_='', name_='CmDomainQType', pretty_print=True):
-        imported_ns_def_ = GenerateDSNamespaceDefs_.get('CmDomainQType')
+
+    def export(
+        self,
+        outfile,
+        level,
+        namespaceprefix_="",
+        namespacedef_="",
+        name_="CmDomainQType",
+        pretty_print=True,
+    ):
+        imported_ns_def_ = GenerateDSNamespaceDefs_.get("CmDomainQType")
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
         if pretty_print:
-            eol_ = '\n'
+            eol_ = "\n"
         else:
-            eol_ = ''
-        if self.original_tagname_ is not None and name_ == 'CmDomainQType':
+            eol_ = ""
+        if self.original_tagname_ is not None and name_ == "CmDomainQType":
             name_ = self.original_tagname_
         if UseCapturedNS_ and self.ns_prefix_:
-            namespaceprefix_ = self.ns_prefix_ + ':'
+            namespaceprefix_ = self.ns_prefix_ + ":"
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespaceprefix_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write(
+            "<%s%s%s"
+            % (
+                namespaceprefix_,
+                name_,
+                namespacedef_ and " " + namespacedef_ or "",
+            )
+        )
         already_processed = set()
-        self._exportAttributes(outfile, level, already_processed, namespaceprefix_, name_='CmDomainQType')
+        self._exportAttributes(
+            outfile, level, already_processed, namespaceprefix_, name_="CmDomainQType"
+        )
         if self._hasContent():
-            outfile.write('>%s' % (eol_, ))
-            self._exportChildren(outfile, level + 1, namespaceprefix_, namespacedef_, name_='CmDomainQType', pretty_print=pretty_print)
+            outfile.write(">%s" % (eol_,))
+            self._exportChildren(
+                outfile,
+                level + 1,
+                namespaceprefix_,
+                namespacedef_,
+                name_="CmDomainQType",
+                pretty_print=pretty_print,
+            )
             showIndent(outfile, level, pretty_print)
-            outfile.write('</%s%s>%s' % (namespaceprefix_, name_, eol_))
+            outfile.write("</%s%s>%s" % (namespaceprefix_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def _exportAttributes(self, outfile, level, already_processed, namespaceprefix_='', name_='CmDomainQType'):
+            outfile.write("/>%s" % (eol_,))
+
+    def _exportAttributes(
+        self, outfile, level, already_processed, namespaceprefix_="", name_="CmDomainQType"
+    ):
         pass
-    def _exportChildren(self, outfile, level, namespaceprefix_='', namespacedef_='', name_='CmDomainQType', fromsubclass_=False, pretty_print=True):
+
+    def _exportChildren(
+        self,
+        outfile,
+        level,
+        namespaceprefix_="",
+        namespacedef_="",
+        name_="CmDomainQType",
+        fromsubclass_=False,
+        pretty_print=True,
+    ):
         if pretty_print:
-            eol_ = '\n'
+            eol_ = "\n"
         else:
-            eol_ = ''
+            eol_ = ""
         if self.Question is not None:
-            namespaceprefix_ = self.Question_nsprefix_ + ':' if (UseCapturedNS_ and self.Question_nsprefix_) else ''
-            self.Question.export(outfile, level, namespaceprefix_, namespacedef_='', name_='Question', pretty_print=pretty_print)
+            namespaceprefix_ = (
+                self.Question_nsprefix_ + ":"
+                if (UseCapturedNS_ and self.Question_nsprefix_)
+                else ""
+            )
+            self.Question.export(
+                outfile,
+                level,
+                namespaceprefix_,
+                namespacedef_="",
+                name_="Question",
+                pretty_print=pretty_print,
+            )
         if self.ExampleWords is not None:
-            namespaceprefix_ = self.ExampleWords_nsprefix_ + ':' if (UseCapturedNS_ and self.ExampleWords_nsprefix_) else ''
-            self.ExampleWords.export(outfile, level, namespaceprefix_, namespacedef_='', name_='ExampleWords', pretty_print=pretty_print)
+            namespaceprefix_ = (
+                self.ExampleWords_nsprefix_ + ":"
+                if (UseCapturedNS_ and self.ExampleWords_nsprefix_)
+                else ""
+            )
+            self.ExampleWords.export(
+                outfile,
+                level,
+                namespaceprefix_,
+                namespacedef_="",
+                name_="ExampleWords",
+                pretty_print=pretty_print,
+            )
         if self.ExampleSentences is not None:
-            namespaceprefix_ = self.ExampleSentences_nsprefix_ + ':' if (UseCapturedNS_ and self.ExampleSentences_nsprefix_) else ''
-            self.ExampleSentences.export(outfile, level, namespaceprefix_, namespacedef_='', name_='ExampleSentences', pretty_print=pretty_print)
+            namespaceprefix_ = (
+                self.ExampleSentences_nsprefix_ + ":"
+                if (UseCapturedNS_ and self.ExampleSentences_nsprefix_)
+                else ""
+            )
+            self.ExampleSentences.export(
+                outfile,
+                level,
+                namespaceprefix_,
+                namespacedef_="",
+                name_="ExampleSentences",
+                pretty_print=pretty_print,
+            )
+
     def build(self, node, gds_collector_=None):
         self.gds_collector_ = gds_collector_
         if SaveElementTreeNode:
@@ -2001,24 +2754,28 @@ class CmDomainQType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self._buildChildren(child, node, nodeName_, gds_collector_=gds_collector_)
         return self
+
     def _buildAttributes(self, node, attrs, already_processed):
         pass
+
     def _buildChildren(self, child_, node, nodeName_, fromsubclass_=False, gds_collector_=None):
-        if nodeName_ == 'Question':
+        if nodeName_ == "Question":
             obj_ = QuestionType.factory(parent_object_=self)
             obj_.build(child_, gds_collector_=gds_collector_)
             self.Question = obj_
-            obj_.original_tagname_ = 'Question'
-        elif nodeName_ == 'ExampleWords':
+            obj_.original_tagname_ = "Question"
+        elif nodeName_ == "ExampleWords":
             obj_ = ExampleWordsType.factory(parent_object_=self)
             obj_.build(child_, gds_collector_=gds_collector_)
             self.ExampleWords = obj_
-            obj_.original_tagname_ = 'ExampleWords'
-        elif nodeName_ == 'ExampleSentences':
+            obj_.original_tagname_ = "ExampleWords"
+        elif nodeName_ == "ExampleSentences":
             obj_ = ExampleSentencesType.factory(parent_object_=self)
             obj_.build(child_, gds_collector_=gds_collector_)
             self.ExampleSentences = obj_
-            obj_.original_tagname_ = 'ExampleSentences'
+            obj_.original_tagname_ = "ExampleSentences"
+
+
 # end class CmDomainQType
 
 
@@ -2026,82 +2783,140 @@ class QuestionsType(GeneratedsSuper):
     __hash__ = GeneratedsSuper.__hash__
     subclass = None
     superclass = None
+
     def __init__(self, CmDomainQ=None, gds_collector_=None, **kwargs_):
         self.gds_collector_ = gds_collector_
         self.gds_elementtree_node_ = None
         self.original_tagname_ = None
-        self.parent_object_ = kwargs_.get('parent_object_')
+        self.parent_object_ = kwargs_.get("parent_object_")
         self.ns_prefix_ = None
         if CmDomainQ is None:
             self.CmDomainQ = []
         else:
             self.CmDomainQ = CmDomainQ
         self.CmDomainQ_nsprefix_ = None
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
-            subclass = getSubclassFromModule_(
-                CurrentSubclassModule_, QuestionsType)
+            subclass = getSubclassFromModule_(CurrentSubclassModule_, QuestionsType)
             if subclass is not None:
                 return subclass(*args_, **kwargs_)
         if QuestionsType.subclass:
             return QuestionsType.subclass(*args_, **kwargs_)
         else:
             return QuestionsType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
+
     def get_ns_prefix_(self):
         return self.ns_prefix_
+
     def set_ns_prefix_(self, ns_prefix):
         self.ns_prefix_ = ns_prefix
+
     def get_CmDomainQ(self):
         return self.CmDomainQ
+
     def set_CmDomainQ(self, CmDomainQ):
         self.CmDomainQ = CmDomainQ
+
     def add_CmDomainQ(self, value):
         self.CmDomainQ.append(value)
+
     def insert_CmDomainQ_at(self, index, value):
         self.CmDomainQ.insert(index, value)
+
     def replace_CmDomainQ_at(self, index, value):
         self.CmDomainQ[index] = value
+
     def _hasContent(self):
-        if (
-            self.CmDomainQ
-        ):
+        if self.CmDomainQ:
             return True
         else:
             return False
-    def export(self, outfile, level, namespaceprefix_='', namespacedef_='', name_='QuestionsType', pretty_print=True):
-        imported_ns_def_ = GenerateDSNamespaceDefs_.get('QuestionsType')
+
+    def export(
+        self,
+        outfile,
+        level,
+        namespaceprefix_="",
+        namespacedef_="",
+        name_="QuestionsType",
+        pretty_print=True,
+    ):
+        imported_ns_def_ = GenerateDSNamespaceDefs_.get("QuestionsType")
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
         if pretty_print:
-            eol_ = '\n'
+            eol_ = "\n"
         else:
-            eol_ = ''
-        if self.original_tagname_ is not None and name_ == 'QuestionsType':
+            eol_ = ""
+        if self.original_tagname_ is not None and name_ == "QuestionsType":
             name_ = self.original_tagname_
         if UseCapturedNS_ and self.ns_prefix_:
-            namespaceprefix_ = self.ns_prefix_ + ':'
+            namespaceprefix_ = self.ns_prefix_ + ":"
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespaceprefix_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write(
+            "<%s%s%s"
+            % (
+                namespaceprefix_,
+                name_,
+                namespacedef_ and " " + namespacedef_ or "",
+            )
+        )
         already_processed = set()
-        self._exportAttributes(outfile, level, already_processed, namespaceprefix_, name_='QuestionsType')
+        self._exportAttributes(
+            outfile, level, already_processed, namespaceprefix_, name_="QuestionsType"
+        )
         if self._hasContent():
-            outfile.write('>%s' % (eol_, ))
-            self._exportChildren(outfile, level + 1, namespaceprefix_, namespacedef_, name_='QuestionsType', pretty_print=pretty_print)
+            outfile.write(">%s" % (eol_,))
+            self._exportChildren(
+                outfile,
+                level + 1,
+                namespaceprefix_,
+                namespacedef_,
+                name_="QuestionsType",
+                pretty_print=pretty_print,
+            )
             showIndent(outfile, level, pretty_print)
-            outfile.write('</%s%s>%s' % (namespaceprefix_, name_, eol_))
+            outfile.write("</%s%s>%s" % (namespaceprefix_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def _exportAttributes(self, outfile, level, already_processed, namespaceprefix_='', name_='QuestionsType'):
+            outfile.write("/>%s" % (eol_,))
+
+    def _exportAttributes(
+        self, outfile, level, already_processed, namespaceprefix_="", name_="QuestionsType"
+    ):
         pass
-    def _exportChildren(self, outfile, level, namespaceprefix_='', namespacedef_='', name_='QuestionsType', fromsubclass_=False, pretty_print=True):
+
+    def _exportChildren(
+        self,
+        outfile,
+        level,
+        namespaceprefix_="",
+        namespacedef_="",
+        name_="QuestionsType",
+        fromsubclass_=False,
+        pretty_print=True,
+    ):
         if pretty_print:
-            eol_ = '\n'
+            eol_ = "\n"
         else:
-            eol_ = ''
+            eol_ = ""
         for CmDomainQ_ in self.CmDomainQ:
-            namespaceprefix_ = self.CmDomainQ_nsprefix_ + ':' if (UseCapturedNS_ and self.CmDomainQ_nsprefix_) else ''
-            CmDomainQ_.export(outfile, level, namespaceprefix_, namespacedef_='', name_='CmDomainQ', pretty_print=pretty_print)
+            namespaceprefix_ = (
+                self.CmDomainQ_nsprefix_ + ":"
+                if (UseCapturedNS_ and self.CmDomainQ_nsprefix_)
+                else ""
+            )
+            CmDomainQ_.export(
+                outfile,
+                level,
+                namespaceprefix_,
+                namespacedef_="",
+                name_="CmDomainQ",
+                pretty_print=pretty_print,
+            )
+
     def build(self, node, gds_collector_=None):
         self.gds_collector_ = gds_collector_
         if SaveElementTreeNode:
@@ -2113,14 +2928,18 @@ class QuestionsType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self._buildChildren(child, node, nodeName_, gds_collector_=gds_collector_)
         return self
+
     def _buildAttributes(self, node, attrs, already_processed):
         pass
+
     def _buildChildren(self, child_, node, nodeName_, fromsubclass_=False, gds_collector_=None):
-        if nodeName_ == 'CmDomainQ':
+        if nodeName_ == "CmDomainQ":
             obj_ = CmDomainQType.factory(parent_object_=self)
             obj_.build(child_, gds_collector_=gds_collector_)
             self.CmDomainQ.append(obj_)
-            obj_.original_tagname_ = 'CmDomainQ'
+            obj_.original_tagname_ = "CmDomainQ"
+
+
 # end class QuestionsType
 
 
@@ -2128,11 +2947,22 @@ class CmSemanticDomainType(GeneratedsSuper):
     __hash__ = GeneratedsSuper.__hash__
     subclass = None
     superclass = None
-    def __init__(self, guid=None, Name=None, Abbreviation=None, Description=None, Questions=None, SubPossibilities=None, gds_collector_=None, **kwargs_):
+
+    def __init__(
+        self,
+        guid=None,
+        Name=None,
+        Abbreviation=None,
+        Description=None,
+        Questions=None,
+        SubPossibilities=None,
+        gds_collector_=None,
+        **kwargs_,
+    ):
         self.gds_collector_ = gds_collector_
         self.gds_elementtree_node_ = None
         self.original_tagname_ = None
-        self.parent_object_ = kwargs_.get('parent_object_')
+        self.parent_object_ = kwargs_.get("parent_object_")
         self.ns_prefix_ = None
         self.guid = _cast(None, guid)
         self.guid_nsprefix_ = None
@@ -2146,103 +2976,218 @@ class CmSemanticDomainType(GeneratedsSuper):
         self.Questions_nsprefix_ = None
         self.SubPossibilities = SubPossibilities
         self.SubPossibilities_nsprefix_ = None
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
-            subclass = getSubclassFromModule_(
-                CurrentSubclassModule_, CmSemanticDomainType)
+            subclass = getSubclassFromModule_(CurrentSubclassModule_, CmSemanticDomainType)
             if subclass is not None:
                 return subclass(*args_, **kwargs_)
         if CmSemanticDomainType.subclass:
             return CmSemanticDomainType.subclass(*args_, **kwargs_)
         else:
             return CmSemanticDomainType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
+
     def get_ns_prefix_(self):
         return self.ns_prefix_
+
     def set_ns_prefix_(self, ns_prefix):
         self.ns_prefix_ = ns_prefix
+
     def get_Name(self):
         return self.Name
+
     def set_Name(self, Name):
         self.Name = Name
+
     def get_Abbreviation(self):
         return self.Abbreviation
+
     def set_Abbreviation(self, Abbreviation):
         self.Abbreviation = Abbreviation
+
     def get_Description(self):
         return self.Description
+
     def set_Description(self, Description):
         self.Description = Description
+
     def get_Questions(self):
         return self.Questions
+
     def set_Questions(self, Questions):
         self.Questions = Questions
+
     def get_SubPossibilities(self):
         return self.SubPossibilities
+
     def set_SubPossibilities(self, SubPossibilities):
         self.SubPossibilities = SubPossibilities
+
     def get_guid(self):
         return self.guid
+
     def set_guid(self, guid):
         self.guid = guid
+
     def _hasContent(self):
         if (
-            self.Name is not None or
-            self.Abbreviation is not None or
-            self.Description is not None or
-            self.Questions is not None or
-            self.SubPossibilities is not None
+            self.Name is not None
+            or self.Abbreviation is not None
+            or self.Description is not None
+            or self.Questions is not None
+            or self.SubPossibilities is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespaceprefix_='', namespacedef_='', name_='CmSemanticDomainType', pretty_print=True):
-        imported_ns_def_ = GenerateDSNamespaceDefs_.get('CmSemanticDomainType')
+
+    def export(
+        self,
+        outfile,
+        level,
+        namespaceprefix_="",
+        namespacedef_="",
+        name_="CmSemanticDomainType",
+        pretty_print=True,
+    ):
+        imported_ns_def_ = GenerateDSNamespaceDefs_.get("CmSemanticDomainType")
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
         if pretty_print:
-            eol_ = '\n'
+            eol_ = "\n"
         else:
-            eol_ = ''
-        if self.original_tagname_ is not None and name_ == 'CmSemanticDomainType':
+            eol_ = ""
+        if self.original_tagname_ is not None and name_ == "CmSemanticDomainType":
             name_ = self.original_tagname_
         if UseCapturedNS_ and self.ns_prefix_:
-            namespaceprefix_ = self.ns_prefix_ + ':'
+            namespaceprefix_ = self.ns_prefix_ + ":"
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespaceprefix_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write(
+            "<%s%s%s"
+            % (
+                namespaceprefix_,
+                name_,
+                namespacedef_ and " " + namespacedef_ or "",
+            )
+        )
         already_processed = set()
-        self._exportAttributes(outfile, level, already_processed, namespaceprefix_, name_='CmSemanticDomainType')
+        self._exportAttributes(
+            outfile, level, already_processed, namespaceprefix_, name_="CmSemanticDomainType"
+        )
         if self._hasContent():
-            outfile.write('>%s' % (eol_, ))
-            self._exportChildren(outfile, level + 1, namespaceprefix_, namespacedef_, name_='CmSemanticDomainType', pretty_print=pretty_print)
+            outfile.write(">%s" % (eol_,))
+            self._exportChildren(
+                outfile,
+                level + 1,
+                namespaceprefix_,
+                namespacedef_,
+                name_="CmSemanticDomainType",
+                pretty_print=pretty_print,
+            )
             showIndent(outfile, level, pretty_print)
-            outfile.write('</%s%s>%s' % (namespaceprefix_, name_, eol_))
+            outfile.write("</%s%s>%s" % (namespaceprefix_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def _exportAttributes(self, outfile, level, already_processed, namespaceprefix_='', name_='CmSemanticDomainType'):
-        if self.guid is not None and 'guid' not in already_processed:
-            already_processed.add('guid')
-            outfile.write(' guid=%s' % (self.gds_encode(self.gds_format_string(quote_attrib(self.guid), input_name='guid')), ))
-    def _exportChildren(self, outfile, level, namespaceprefix_='', namespacedef_='', name_='CmSemanticDomainType', fromsubclass_=False, pretty_print=True):
+            outfile.write("/>%s" % (eol_,))
+
+    def _exportAttributes(
+        self, outfile, level, already_processed, namespaceprefix_="", name_="CmSemanticDomainType"
+    ):
+        if self.guid is not None and "guid" not in already_processed:
+            already_processed.add("guid")
+            outfile.write(
+                " guid=%s"
+                % (
+                    self.gds_encode(
+                        self.gds_format_string(quote_attrib(self.guid), input_name="guid")
+                    ),
+                )
+            )
+
+    def _exportChildren(
+        self,
+        outfile,
+        level,
+        namespaceprefix_="",
+        namespacedef_="",
+        name_="CmSemanticDomainType",
+        fromsubclass_=False,
+        pretty_print=True,
+    ):
         if pretty_print:
-            eol_ = '\n'
+            eol_ = "\n"
         else:
-            eol_ = ''
+            eol_ = ""
         if self.Name is not None:
-            namespaceprefix_ = self.Name_nsprefix_ + ':' if (UseCapturedNS_ and self.Name_nsprefix_) else ''
-            self.Name.export(outfile, level, namespaceprefix_, namespacedef_='', name_='Name', pretty_print=pretty_print)
+            namespaceprefix_ = (
+                self.Name_nsprefix_ + ":" if (UseCapturedNS_ and self.Name_nsprefix_) else ""
+            )
+            self.Name.export(
+                outfile,
+                level,
+                namespaceprefix_,
+                namespacedef_="",
+                name_="Name",
+                pretty_print=pretty_print,
+            )
         if self.Abbreviation is not None:
-            namespaceprefix_ = self.Abbreviation_nsprefix_ + ':' if (UseCapturedNS_ and self.Abbreviation_nsprefix_) else ''
-            self.Abbreviation.export(outfile, level, namespaceprefix_, namespacedef_='', name_='Abbreviation', pretty_print=pretty_print)
+            namespaceprefix_ = (
+                self.Abbreviation_nsprefix_ + ":"
+                if (UseCapturedNS_ and self.Abbreviation_nsprefix_)
+                else ""
+            )
+            self.Abbreviation.export(
+                outfile,
+                level,
+                namespaceprefix_,
+                namespacedef_="",
+                name_="Abbreviation",
+                pretty_print=pretty_print,
+            )
         if self.Description is not None:
-            namespaceprefix_ = self.Description_nsprefix_ + ':' if (UseCapturedNS_ and self.Description_nsprefix_) else ''
-            self.Description.export(outfile, level, namespaceprefix_, namespacedef_='', name_='Description', pretty_print=pretty_print)
+            namespaceprefix_ = (
+                self.Description_nsprefix_ + ":"
+                if (UseCapturedNS_ and self.Description_nsprefix_)
+                else ""
+            )
+            self.Description.export(
+                outfile,
+                level,
+                namespaceprefix_,
+                namespacedef_="",
+                name_="Description",
+                pretty_print=pretty_print,
+            )
         if self.Questions is not None:
-            namespaceprefix_ = self.Questions_nsprefix_ + ':' if (UseCapturedNS_ and self.Questions_nsprefix_) else ''
-            self.Questions.export(outfile, level, namespaceprefix_, namespacedef_='', name_='Questions', pretty_print=pretty_print)
+            namespaceprefix_ = (
+                self.Questions_nsprefix_ + ":"
+                if (UseCapturedNS_ and self.Questions_nsprefix_)
+                else ""
+            )
+            self.Questions.export(
+                outfile,
+                level,
+                namespaceprefix_,
+                namespacedef_="",
+                name_="Questions",
+                pretty_print=pretty_print,
+            )
         if self.SubPossibilities is not None:
-            namespaceprefix_ = self.SubPossibilities_nsprefix_ + ':' if (UseCapturedNS_ and self.SubPossibilities_nsprefix_) else ''
-            self.SubPossibilities.export(outfile, level, namespaceprefix_, namespacedef_='', name_='SubPossibilities', pretty_print=pretty_print)
+            namespaceprefix_ = (
+                self.SubPossibilities_nsprefix_ + ":"
+                if (UseCapturedNS_ and self.SubPossibilities_nsprefix_)
+                else ""
+            )
+            self.SubPossibilities.export(
+                outfile,
+                level,
+                namespaceprefix_,
+                namespacedef_="",
+                name_="SubPossibilities",
+                pretty_print=pretty_print,
+            )
+
     def build(self, node, gds_collector_=None):
         self.gds_collector_ = gds_collector_
         if SaveElementTreeNode:
@@ -2254,37 +3199,41 @@ class CmSemanticDomainType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self._buildChildren(child, node, nodeName_, gds_collector_=gds_collector_)
         return self
+
     def _buildAttributes(self, node, attrs, already_processed):
-        value = find_attr_value_('guid', node)
-        if value is not None and 'guid' not in already_processed:
-            already_processed.add('guid')
+        value = find_attr_value_("guid", node)
+        if value is not None and "guid" not in already_processed:
+            already_processed.add("guid")
             self.guid = value
+
     def _buildChildren(self, child_, node, nodeName_, fromsubclass_=False, gds_collector_=None):
-        if nodeName_ == 'Name':
+        if nodeName_ == "Name":
             obj_ = NameType.factory(parent_object_=self)
             obj_.build(child_, gds_collector_=gds_collector_)
             self.Name = obj_
-            obj_.original_tagname_ = 'Name'
-        elif nodeName_ == 'Abbreviation':
+            obj_.original_tagname_ = "Name"
+        elif nodeName_ == "Abbreviation":
             obj_ = AbbreviationType.factory(parent_object_=self)
             obj_.build(child_, gds_collector_=gds_collector_)
             self.Abbreviation = obj_
-            obj_.original_tagname_ = 'Abbreviation'
-        elif nodeName_ == 'Description':
+            obj_.original_tagname_ = "Abbreviation"
+        elif nodeName_ == "Description":
             obj_ = DescriptionType.factory(parent_object_=self)
             obj_.build(child_, gds_collector_=gds_collector_)
             self.Description = obj_
-            obj_.original_tagname_ = 'Description'
-        elif nodeName_ == 'Questions':
+            obj_.original_tagname_ = "Description"
+        elif nodeName_ == "Questions":
             obj_ = QuestionsType.factory(parent_object_=self)
             obj_.build(child_, gds_collector_=gds_collector_)
             self.Questions = obj_
-            obj_.original_tagname_ = 'Questions'
-        elif nodeName_ == 'SubPossibilities':
+            obj_.original_tagname_ = "Questions"
+        elif nodeName_ == "SubPossibilities":
             obj_ = SubPossibilitiesType.factory(parent_object_=self)
             obj_.build(child_, gds_collector_=gds_collector_)
             self.SubPossibilities = obj_
-            obj_.original_tagname_ = 'SubPossibilities'
+            obj_.original_tagname_ = "SubPossibilities"
+
+
 # end class CmSemanticDomainType
 
 
@@ -2292,82 +3241,140 @@ class SubPossibilitiesType(GeneratedsSuper):
     __hash__ = GeneratedsSuper.__hash__
     subclass = None
     superclass = None
+
     def __init__(self, CmSemanticDomain=None, gds_collector_=None, **kwargs_):
         self.gds_collector_ = gds_collector_
         self.gds_elementtree_node_ = None
         self.original_tagname_ = None
-        self.parent_object_ = kwargs_.get('parent_object_')
+        self.parent_object_ = kwargs_.get("parent_object_")
         self.ns_prefix_ = None
         if CmSemanticDomain is None:
             self.CmSemanticDomain = []
         else:
             self.CmSemanticDomain = CmSemanticDomain
         self.CmSemanticDomain_nsprefix_ = None
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
-            subclass = getSubclassFromModule_(
-                CurrentSubclassModule_, SubPossibilitiesType)
+            subclass = getSubclassFromModule_(CurrentSubclassModule_, SubPossibilitiesType)
             if subclass is not None:
                 return subclass(*args_, **kwargs_)
         if SubPossibilitiesType.subclass:
             return SubPossibilitiesType.subclass(*args_, **kwargs_)
         else:
             return SubPossibilitiesType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
+
     def get_ns_prefix_(self):
         return self.ns_prefix_
+
     def set_ns_prefix_(self, ns_prefix):
         self.ns_prefix_ = ns_prefix
+
     def get_CmSemanticDomain(self):
         return self.CmSemanticDomain
+
     def set_CmSemanticDomain(self, CmSemanticDomain):
         self.CmSemanticDomain = CmSemanticDomain
+
     def add_CmSemanticDomain(self, value):
         self.CmSemanticDomain.append(value)
+
     def insert_CmSemanticDomain_at(self, index, value):
         self.CmSemanticDomain.insert(index, value)
+
     def replace_CmSemanticDomain_at(self, index, value):
         self.CmSemanticDomain[index] = value
+
     def _hasContent(self):
-        if (
-            self.CmSemanticDomain
-        ):
+        if self.CmSemanticDomain:
             return True
         else:
             return False
-    def export(self, outfile, level, namespaceprefix_='', namespacedef_='', name_='SubPossibilitiesType', pretty_print=True):
-        imported_ns_def_ = GenerateDSNamespaceDefs_.get('SubPossibilitiesType')
+
+    def export(
+        self,
+        outfile,
+        level,
+        namespaceprefix_="",
+        namespacedef_="",
+        name_="SubPossibilitiesType",
+        pretty_print=True,
+    ):
+        imported_ns_def_ = GenerateDSNamespaceDefs_.get("SubPossibilitiesType")
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
         if pretty_print:
-            eol_ = '\n'
+            eol_ = "\n"
         else:
-            eol_ = ''
-        if self.original_tagname_ is not None and name_ == 'SubPossibilitiesType':
+            eol_ = ""
+        if self.original_tagname_ is not None and name_ == "SubPossibilitiesType":
             name_ = self.original_tagname_
         if UseCapturedNS_ and self.ns_prefix_:
-            namespaceprefix_ = self.ns_prefix_ + ':'
+            namespaceprefix_ = self.ns_prefix_ + ":"
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespaceprefix_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write(
+            "<%s%s%s"
+            % (
+                namespaceprefix_,
+                name_,
+                namespacedef_ and " " + namespacedef_ or "",
+            )
+        )
         already_processed = set()
-        self._exportAttributes(outfile, level, already_processed, namespaceprefix_, name_='SubPossibilitiesType')
+        self._exportAttributes(
+            outfile, level, already_processed, namespaceprefix_, name_="SubPossibilitiesType"
+        )
         if self._hasContent():
-            outfile.write('>%s' % (eol_, ))
-            self._exportChildren(outfile, level + 1, namespaceprefix_, namespacedef_, name_='SubPossibilitiesType', pretty_print=pretty_print)
+            outfile.write(">%s" % (eol_,))
+            self._exportChildren(
+                outfile,
+                level + 1,
+                namespaceprefix_,
+                namespacedef_,
+                name_="SubPossibilitiesType",
+                pretty_print=pretty_print,
+            )
             showIndent(outfile, level, pretty_print)
-            outfile.write('</%s%s>%s' % (namespaceprefix_, name_, eol_))
+            outfile.write("</%s%s>%s" % (namespaceprefix_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def _exportAttributes(self, outfile, level, already_processed, namespaceprefix_='', name_='SubPossibilitiesType'):
+            outfile.write("/>%s" % (eol_,))
+
+    def _exportAttributes(
+        self, outfile, level, already_processed, namespaceprefix_="", name_="SubPossibilitiesType"
+    ):
         pass
-    def _exportChildren(self, outfile, level, namespaceprefix_='', namespacedef_='', name_='SubPossibilitiesType', fromsubclass_=False, pretty_print=True):
+
+    def _exportChildren(
+        self,
+        outfile,
+        level,
+        namespaceprefix_="",
+        namespacedef_="",
+        name_="SubPossibilitiesType",
+        fromsubclass_=False,
+        pretty_print=True,
+    ):
         if pretty_print:
-            eol_ = '\n'
+            eol_ = "\n"
         else:
-            eol_ = ''
+            eol_ = ""
         for CmSemanticDomain_ in self.CmSemanticDomain:
-            namespaceprefix_ = self.CmSemanticDomain_nsprefix_ + ':' if (UseCapturedNS_ and self.CmSemanticDomain_nsprefix_) else ''
-            CmSemanticDomain_.export(outfile, level, namespaceprefix_, namespacedef_='', name_='CmSemanticDomain', pretty_print=pretty_print)
+            namespaceprefix_ = (
+                self.CmSemanticDomain_nsprefix_ + ":"
+                if (UseCapturedNS_ and self.CmSemanticDomain_nsprefix_)
+                else ""
+            )
+            CmSemanticDomain_.export(
+                outfile,
+                level,
+                namespaceprefix_,
+                namespacedef_="",
+                name_="CmSemanticDomain",
+                pretty_print=pretty_print,
+            )
+
     def build(self, node, gds_collector_=None):
         self.gds_collector_ = gds_collector_
         if SaveElementTreeNode:
@@ -2379,19 +3386,23 @@ class SubPossibilitiesType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self._buildChildren(child, node, nodeName_, gds_collector_=gds_collector_)
         return self
+
     def _buildAttributes(self, node, attrs, already_processed):
         pass
+
     def _buildChildren(self, child_, node, nodeName_, fromsubclass_=False, gds_collector_=None):
-        if nodeName_ == 'CmSemanticDomain':
+        if nodeName_ == "CmSemanticDomain":
             obj_ = CmSemanticDomainType.factory(parent_object_=self)
             obj_.build(child_, gds_collector_=gds_collector_)
             self.CmSemanticDomain.append(obj_)
-            obj_.original_tagname_ = 'CmSemanticDomain'
+            obj_.original_tagname_ = "CmSemanticDomain"
+
+
 # end class SubPossibilitiesType
 
 
 GDSClassesMapping = {
-    'CmSemanticDomain': CmSemanticDomainType,
+    "CmSemanticDomain": CmSemanticDomainType,
 }
 
 
@@ -2415,19 +3426,18 @@ def get_root_tag(node):
 
 
 def get_required_ns_prefix_defs(rootNode):
-    '''Get all name space prefix definitions required in this XML doc.
+    """Get all name space prefix definitions required in this XML doc.
     Return a dictionary of definitions and a char string of definitions.
-    '''
+    """
     nsmap = {
         prefix: uri
         for node in rootNode.iter()
         for (prefix, uri) in node.nsmap.items()
         if prefix is not None
     }
-    namespacedefs = ' '.join([
-        'xmlns:{}="{}"'.format(prefix, uri)
-        for prefix, uri in nsmap.items()
-    ])
+    namespacedefs = " ".join(
+        ['xmlns:{}="{}"'.format(prefix, uri) for prefix, uri in nsmap.items()]
+    )
     return nsmap, namespacedefs
 
 
@@ -2439,7 +3449,7 @@ def parse(inFileName, silence=False, print_warnings=True):
     rootNode = doc.getroot()
     rootTag, rootClass = get_root_tag(rootNode)
     if rootClass is None:
-        rootTag = 'CmSemanticDomainType'
+        rootTag = "CmSemanticDomainType"
         rootClass = CmSemanticDomainType
     rootObj = rootClass.factory()
     rootObj.build(rootNode, gds_collector_=gds_collector)
@@ -2450,28 +3460,31 @@ def parse(inFileName, silence=False, print_warnings=True):
     if not silence:
         sys.stdout.write('<?xml version="1.0" ?>\n')
         rootObj.export(
-            sys.stdout, 0, name_=rootTag,
-            namespacedef_=namespacedefs,
-            pretty_print=True)
+            sys.stdout, 0, name_=rootTag, namespacedef_=namespacedefs, pretty_print=True
+        )
     if print_warnings and len(gds_collector.get_messages()) > 0:
-        separator = ('-' * 50) + '\n'
+        separator = ("-" * 50) + "\n"
         sys.stderr.write(separator)
-        sys.stderr.write('----- Warnings -- count: {} -----\n'.format(
-            len(gds_collector.get_messages()), ))
+        sys.stderr.write(
+            "----- Warnings -- count: {} -----\n".format(
+                len(gds_collector.get_messages()),
+            )
+        )
         gds_collector.write_messages(sys.stderr)
         sys.stderr.write(separator)
     return rootObj
 
 
-def parseEtree(inFileName, silence=False, print_warnings=True,
-               mapping=None, reverse_mapping=None, nsmap=None):
+def parseEtree(
+    inFileName, silence=False, print_warnings=True, mapping=None, reverse_mapping=None, nsmap=None
+):
     parser = None
     doc = parsexml_(inFileName, parser)
     gds_collector = GdsCollector_()
     rootNode = doc.getroot()
     rootTag, rootClass = get_root_tag(rootNode)
     if rootClass is None:
-        rootTag = 'CmSemanticDomainType'
+        rootTag = "CmSemanticDomainType"
         rootClass = CmSemanticDomainType
     rootObj = rootClass.factory()
     rootObj.build(rootNode, gds_collector_=gds_collector)
@@ -2480,8 +3493,8 @@ def parseEtree(inFileName, silence=False, print_warnings=True,
     if reverse_mapping is None:
         reverse_mapping = {}
     rootElement = rootObj.to_etree(
-        None, name_=rootTag, mapping_=mapping,
-        reverse_mapping_=reverse_mapping, nsmap_=nsmap)
+        None, name_=rootTag, mapping_=mapping, reverse_mapping_=reverse_mapping, nsmap_=nsmap
+    )
     reverse_node_mapping = rootObj.gds_reverse_node_mapping(mapping)
     # Enable Python to collect the space used by the DOM.
     if not SaveElementTreeNode:
@@ -2489,35 +3502,38 @@ def parseEtree(inFileName, silence=False, print_warnings=True,
         rootNode = None
     if not silence:
         content = etree_.tostring(
-            rootElement, pretty_print=True,
-            xml_declaration=True, encoding="utf-8")
+            rootElement, pretty_print=True, xml_declaration=True, encoding="utf-8"
+        )
         sys.stdout.write(str(content))
-        sys.stdout.write('\n')
+        sys.stdout.write("\n")
     if print_warnings and len(gds_collector.get_messages()) > 0:
-        separator = ('-' * 50) + '\n'
+        separator = ("-" * 50) + "\n"
         sys.stderr.write(separator)
-        sys.stderr.write('----- Warnings -- count: {} -----\n'.format(
-            len(gds_collector.get_messages()), ))
+        sys.stderr.write(
+            "----- Warnings -- count: {} -----\n".format(
+                len(gds_collector.get_messages()),
+            )
+        )
         gds_collector.write_messages(sys.stderr)
         sys.stderr.write(separator)
     return rootObj, rootElement, mapping, reverse_node_mapping
 
 
 def parseString(inString, silence=False, print_warnings=True):
-    '''Parse a string, create the object tree, and export it.
+    """Parse a string, create the object tree, and export it.
 
     Arguments:
     - inString -- A string.  This XML fragment should not start
       with an XML declaration containing an encoding.
     - silence -- A boolean.  If False, export the object.
     Returns -- The root object in the tree.
-    '''
+    """
     parser = None
-    rootNode= parsexmlstring_(inString, parser)
+    rootNode = parsexmlstring_(inString, parser)
     gds_collector = GdsCollector_()
     rootTag, rootClass = get_root_tag(rootNode)
     if rootClass is None:
-        rootTag = 'CmSemanticDomainType'
+        rootTag = "CmSemanticDomainType"
         rootClass = CmSemanticDomainType
     rootObj = rootClass.factory()
     rootObj.build(rootNode, gds_collector_=gds_collector)
@@ -2525,14 +3541,15 @@ def parseString(inString, silence=False, print_warnings=True):
         rootNode = None
     if not silence:
         sys.stdout.write('<?xml version="1.0" ?>\n')
-        rootObj.export(
-            sys.stdout, 0, name_=rootTag,
-            namespacedef_='')
+        rootObj.export(sys.stdout, 0, name_=rootTag, namespacedef_="")
     if print_warnings and len(gds_collector.get_messages()) > 0:
-        separator = ('-' * 50) + '\n'
+        separator = ("-" * 50) + "\n"
         sys.stderr.write(separator)
-        sys.stderr.write('----- Warnings -- count: {} -----\n'.format(
-            len(gds_collector.get_messages()), ))
+        sys.stderr.write(
+            "----- Warnings -- count: {} -----\n".format(
+                len(gds_collector.get_messages()),
+            )
+        )
         gds_collector.write_messages(sys.stderr)
         sys.stderr.write(separator)
     return rootObj
@@ -2545,7 +3562,7 @@ def parseLiteral(inFileName, silence=False, print_warnings=True):
     rootNode = doc.getroot()
     rootTag, rootClass = get_root_tag(rootNode)
     if rootClass is None:
-        rootTag = 'CmSemanticDomainType'
+        rootTag = "CmSemanticDomainType"
         rootClass = CmSemanticDomainType
     rootObj = rootClass.factory()
     rootObj.build(rootNode, gds_collector_=gds_collector)
@@ -2554,16 +3571,19 @@ def parseLiteral(inFileName, silence=False, print_warnings=True):
         doc = None
         rootNode = None
     if not silence:
-        sys.stdout.write('#from semantic_domain import *\n\n')
-        sys.stdout.write('import semantic_domain as model_\n\n')
-        sys.stdout.write('rootObj = model_.rootClass(\n')
+        sys.stdout.write("#from semantic_domain import *\n\n")
+        sys.stdout.write("import semantic_domain as model_\n\n")
+        sys.stdout.write("rootObj = model_.rootClass(\n")
         rootObj.exportLiteral(sys.stdout, 0, name_=rootTag)
-        sys.stdout.write(')\n')
+        sys.stdout.write(")\n")
     if print_warnings and len(gds_collector.get_messages()) > 0:
-        separator = ('-' * 50) + '\n'
+        separator = ("-" * 50) + "\n"
         sys.stderr.write(separator)
-        sys.stderr.write('----- Warnings -- count: {} -----\n'.format(
-            len(gds_collector.get_messages()), ))
+        sys.stderr.write(
+            "----- Warnings -- count: {} -----\n".format(
+                len(gds_collector.get_messages()),
+            )
+        )
         gds_collector.write_messages(sys.stderr)
         sys.stderr.write(separator)
     return rootObj
@@ -2577,12 +3597,11 @@ def main():
         usage()
 
 
-if __name__ == '__main__':
-    #import pdb; pdb.set_trace()
+if __name__ == "__main__":
+    # import pdb; pdb.set_trace()
     main()
 
-RenameMappings_ = {
-}
+RenameMappings_ = {}
 
 #
 # Mapping of namespaces to types defined in them
@@ -2603,5 +3622,5 @@ __all__ = [
     "QuestionType",
     "QuestionsType",
     "RunType",
-    "SubPossibilitiesType"
+    "SubPossibilitiesType",
 ]

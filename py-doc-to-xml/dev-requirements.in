@@ -1,5 +1,22 @@
 -c requirements.txt
 
+tox
+
+# Type Checking.
+mypy
+types-requests
+types-pyOpenSSL
+types-python-dateutil
+types-PyYAML
+
+# Linting.
+flake8
+flake8-bugbear
+flake8-broken-line
+flake8-comprehensions
+flake8-eradicate
+pep8-naming
+
 # Formatting.
 black
 isort
