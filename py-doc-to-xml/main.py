@@ -7,28 +7,15 @@ from pprint import pformat
 from typing import Optional
 
 from docx import Document
-from semantic_domain import parse
 from simplify_docx import simplify
 from typer import Option, Typer
 
 from docx_to_xml.doc1 import process_doc
+from docx_to_xml.semantic_domain import display_semantic_domain
 from docx_to_xml.types import DocModel
+from semantic_domain import CmSemanticDomainType, parse
 
 app = Typer(add_completion=False)
-
-
-def display_model(model: DocModel, *, depth: int = 0) -> None:
-    """Recursively explore a doc model."""
-    indent = " " * depth
-    value = model.VALUE
-    if isinstance(value, str):
-        print(f"{indent}{model.TYPE}: {value}")
-        return
-
-    print(f"{indent}{model.TYPE}")
-    depth += 1
-    for v in value:
-        display_model(v, depth=depth)
 
 
 @app.command()
@@ -44,8 +31,6 @@ def translate(
     if debug_file is not None:
         debug_file.write_text(pformat(json))
     doc_model: DocModel = DocModel.parse_obj(json)
-    # display_model(doc_model)
-
     process_doc(doc_model, output_file)
 
 
@@ -60,8 +45,8 @@ def parse_final_xml(
         help="An XML file containing a **single** semantic domain (<CmSemanticDomain>).",
     ),
 ) -> None:
-    xml_root = parse(xml_file)
-    print(xml_root)
+    xml_root: CmSemanticDomainType = parse(xml_file, silence=True)
+    display_semantic_domain(xml_root)
 
 
 if __name__ == "__main__":

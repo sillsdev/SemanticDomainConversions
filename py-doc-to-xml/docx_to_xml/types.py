@@ -17,6 +17,20 @@ class DocModel(BaseModel):
     VALUE: Union[List[DocModel], str]
 
 
+def display_model(model: DocModel, *, depth: int = 0) -> None:
+    """Recursively explore a doc model."""
+    indent = " " * depth
+    value = model.VALUE
+    if isinstance(value, str):
+        print(f"{indent}{model.TYPE}: {value}")
+        return
+
+    print(f"{indent}{model.TYPE}")
+    depth += 1
+    for v in value:
+        display_model(v, depth=depth)
+
+
 @dataclass(order=True)
 class SemanticDomain:
     """Intermediate representation of a Semantic Domain."""
