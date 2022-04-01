@@ -7,10 +7,14 @@ from pprint import pformat
 from typing import Optional
 
 from docx import Document
+from semantic_domain import parse
+from simplify_docx import simplify
+from typer import Option, Typer
+
 from docx_to_xml.doc1 import process_doc
 from docx_to_xml.types import DocModel
-from simplify_docx import simplify
-from typer import Option, run
+
+app = Typer(add_completion=False)
 
 
 def display_model(model: DocModel, *, depth: int = 0) -> None:
@@ -27,7 +31,8 @@ def display_model(model: DocModel, *, depth: int = 0) -> None:
         display_model(v, depth=depth)
 
 
-def main(
+@app.command()
+def translate(
     doc_file: Path = Option(
         ..., "--doc-file", "-d", exists=True, dir_okay=False, readable=True, resolve_path=True
     ),
@@ -44,5 +49,13 @@ def main(
     process_doc(doc_model, output_file)
 
 
+@app.command()
+def parse_final_xml(
+    xml_file: Path = Option(..., exists=True, dir_okay=False, readable=True, resolve_path=True),
+) -> None:
+    final_xml = parse(xml_file)
+    print(final_xml)
+
+
 if __name__ == "__main__":
-    run(main)
+    app()

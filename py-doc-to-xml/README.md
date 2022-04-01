@@ -40,7 +40,7 @@ python -m piptools sync requirements.txt dev-requirements.txt
 Run the tool:
 
 ```bash
-python main.py --doc-file input.docx --output-file output.xml
+python main.py translate --doc-file input.docx --output-file output.xml
 ```
 
 ## Developer Guide

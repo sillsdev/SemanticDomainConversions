@@ -3,7 +3,7 @@ click==8.0.4
 typer
 
 # Parsing.
-# TODO: Add as as normal PyPI dependency one a new release is published.
+# TODO: Add as a normal PyPI dependency one a new release is published.
 git+https://github.com/microsoft/Simplify-Docx.git@refs/pull/18/merge
 pydantic
 
