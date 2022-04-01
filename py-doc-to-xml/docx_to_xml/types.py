@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List, Literal, Union
 
 from docx_to_xml.util import is_semantic_domain_number
@@ -16,7 +16,7 @@ class DocModel(BaseModel):
     VALUE: Union[List[DocModel], str]
 
 
-@dataclass(frozen=True)
+@dataclass(order=True)
 class SemanticDomain:
     """Intermediate representation of a Semantic Domain."""
 
@@ -24,29 +24,10 @@ class SemanticDomain:
     title: str
     description: str
     questions: List[str]
+    sort_index: int = field(init=False, repr=False)
+
+    def __post_init__(self):
+        self.sort_index = self.number
 
     def is_valid(self) -> bool:
         return is_semantic_domain_number(self.number)
-
-    # Define the comparison operators so that Python will sort for us
-    # based only on the domain number
-    def __str__(self) -> str:
-        return self.number
-
-    def __eq__(self, rvalue: object) -> bool:
-        return self.number == str(rvalue)
-
-    def __ne__(self, rvalue: object) -> bool:
-        return self.number != str(rvalue)
-
-    def __lt__(self, rvalue: object) -> bool:
-        return self.number < str(rvalue)
-
-    def __le__(self, rvalue: object) -> bool:
-        return self.number <= str(rvalue)
-
-    def __gt__(self, rvalue: object) -> bool:
-        return self.number > str(rvalue)
-
-    def __ge__(self, rvalue: object) -> bool:
-        return self.number > str(rvalue)

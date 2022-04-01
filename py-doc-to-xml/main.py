@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from pprint import pprint
+from pprint import pformat
 from typing import Optional
 
 from docx import Document
@@ -39,7 +39,7 @@ def main(
     if debug_file is not None:
         debug_file.write_text(pformat(json))
     doc_model: DocModel = DocModel.parse_obj(json)
-    display_model(doc_model)
+    # display_model(doc_model)
 
     process_doc(doc_model, output_file)
 
