@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from semantic_domain import (
     AbbreviationType,
     AStrType,
@@ -10,6 +12,7 @@ from semantic_domain import (
     NameType,
     QuestionType,
     RunType,
+    SubPossibilitiesType,
 )
 
 
@@ -33,12 +36,14 @@ def display_questions(questions: list[CmDomainQType]) -> None:
         display_a_uni(question.AUni, indent=2)
 
         print("\tExample Words")
-        examples: ExampleWordsType = domain_question.ExampleWords
-        display_a_uni(examples.AUni, indent=2)
+        examples: ExampleWordsType | None = domain_question.ExampleWords
+        if examples is not None:
+            display_a_uni(examples.AUni, indent=2)
 
         print("\tExample Sentences")
-        sentences: ExampleSentencesType = domain_question.ExampleSentences
-        display_a_str(sentences.AStr, indent=2)
+        sentences: ExampleSentencesType | None = domain_question.ExampleSentences
+        if sentences is not None:
+            display_a_str(sentences.AStr, indent=2)
 
 
 def display_semantic_domain(semantic_domain: CmSemanticDomainType) -> None:
@@ -56,4 +61,9 @@ def display_semantic_domain(semantic_domain: CmSemanticDomainType) -> None:
 
     print("\nQuestions")
     display_questions(semantic_domain.Questions.CmDomainQ)
-    pass
+
+    print("\nSubPossibilities")
+    possibilities: SubPossibilitiesType | None = semantic_domain.SubPossibilities
+    if possibilities is not None:
+        for domain in possibilities.CmSemanticDomain:  # type: CmSemanticDomainType
+            display_semantic_domain(domain)
