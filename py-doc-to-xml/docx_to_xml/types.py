@@ -28,8 +28,8 @@ class SemanticDomain:
     def is_valid(self) -> bool:
         return is_semantic_domain_number(self.number)
 
-    # # Define the comparison operators so that Python will sort for us
-    # # based only on the domain number
+    # Define the comparison operators so that Python will sort for us
+    # based only on the domain number
     def __str__(self) -> str:
         return self.number
 

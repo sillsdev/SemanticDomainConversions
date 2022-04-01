@@ -16,16 +16,16 @@ def split_line(s: str, *, pattern: str) -> Tuple[str, str]:
     # Split into first word and remaining text
     parts = s.split(None, 1)
     if len(parts) == 0:
-        return ("", s)
+        return "", s
     match = re.match(pattern, parts[0])
     if match is None:
         # no match, return original string as remainder
-        return ("", s)
+        return "", s
     if len(parts) > 1:
         # string contains a match and a remainder
-        return (parts[0], parts[1])
+        return parts[0], parts[1]
     # string contains match only
-    return (parts[0], "")
+    return parts[0], ""
 
 
 def split_semantic_domain_line(s: str) -> Tuple[str, str]:
@@ -51,11 +51,11 @@ def is_semantic_domain_number(s: str) -> bool:
 
     A semantic domain number consists of 1-5 single digits separated by decimal points.
     """
-    (domain_num, _) = split_semantic_domain_line(s)
+    domain_num, _ = split_semantic_domain_line(s)
     return domain_num != ""
 
 
 def is_question(s: str) -> bool:
     """Attempts split_question() and checks if there is a valid question number."""
-    (question_num, _) = split_question(s)
+    question_num, _ = split_question(s)
     return question_num != ""

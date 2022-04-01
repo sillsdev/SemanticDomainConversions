@@ -37,8 +37,7 @@ def main(
     doc = Document(doc_file)
     json = simplify(doc)
     if debug_file is not None:
-        with open(debug_file, "w") as json_file:
-            pprint(json, stream=json_file)
+        debug_file.write_text(pformat(json))
     doc_model: DocModel = DocModel.parse_obj(json)
     display_model(doc_model)
 
