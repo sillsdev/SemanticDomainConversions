@@ -53,8 +53,8 @@ def translate(
 def parse_final_xml(
     xml_file: Path = Option(..., exists=True, dir_okay=False, readable=True, resolve_path=True),
 ) -> None:
-    final_xml = parse(xml_file)
-    print(final_xml)
+    xml_root = parse(xml_file)
+    print(xml_root)
 
 
 if __name__ == "__main__":

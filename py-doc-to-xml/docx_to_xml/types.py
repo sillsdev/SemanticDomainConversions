@@ -3,8 +3,9 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import List, Literal, Union
 
-from docx_to_xml.util import is_semantic_domain_number
 from pydantic import BaseModel
+
+from docx_to_xml.util import is_semantic_domain_number
 
 Type = Literal["body", "paragraph", "text", "document"]
 

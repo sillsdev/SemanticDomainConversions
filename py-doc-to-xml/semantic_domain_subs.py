@@ -1,18 +1,19 @@
 #!/usr/bin/env python
 
 #
-# Generated Fri Mar 25 14:16:35 2022 by generateDS.py version 2.40.9.
+# Generated Fri Apr  1 13:20:43 2022 by generateDS.py version 2.40.9.
 # Python 3.10.3 (tags/v3.10.3:a342a49, Mar 16 2022, 13:07:40) [MSC v.1929 64 bit (AMD64)]
 #
 # Command line options:
 #   ('-o', 'semantic_domain.py')
 #   ('-s', 'semantic_domain_subs.py')
+#   ('--super', 'semantic_domain')
 #
 # Command line arguments:
 #   ../schemas/SemanticDomain.xsd
 #
 # Command line:
-#   .\venv\Scripts\generateDS.py -o "semantic_domain.py" -s "semantic_domain_subs.py" ../schemas/SemanticDomain.xsd
+#   .\venv\Scripts\generateDS.py -o "semantic_domain.py" -s "semantic_domain_subs.py" --super="semantic_domain" ../schemas/SemanticDomain.xsd
 #
 # Current working directory (os.getcwd()):
 #   py-doc-to-xml
@@ -284,8 +285,8 @@ def parseLiteral(inFilename, silence=False):
         doc = None
         rootNode = None
     if not silence:
-        sys.stdout.write("#from ??? import *\n\n")
-        sys.stdout.write("import ??? as model_\n\n")
+        sys.stdout.write("#from semantic_domain import *\n\n")
+        sys.stdout.write("import semantic_domain as model_\n\n")
         sys.stdout.write("rootObj = model_.rootClass(\n")
         rootObj.exportLiteral(sys.stdout, 0, name_=rootTag)
         sys.stdout.write(")\n")

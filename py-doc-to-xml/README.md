@@ -49,5 +49,12 @@ python main.py translate --doc-file input.docx --output-file output.xml
 
 ```bash
 # On Windows, you might have to run `python .\venv\Scripts\generateDS.py ...`
-generateDS -o semantic_domain.py -s semantic_domain_subs.py ../schemas/SemanticDomain.xsd
+generateDS -o semantic_domain.py -s semantic_domain_subs.py --super semantic_domain \
+    ../schemas/SemanticDomain.xsd
+```
+
+Format the generated code:
+
+```bash
+tox -e fmt
 ```
