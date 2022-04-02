@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import List, Literal, Union
+from typing import Dict, List, Literal, Union
+
+from pydantic import BaseModel
 
 from docx_to_xml.util import is_semantic_domain_number
-from pydantic import BaseModel
 
 Type = Literal["body", "paragraph", "text", "document"]
 
@@ -14,6 +15,7 @@ class DocModel(BaseModel):
 
     TYPE: Type
     VALUE: Union[List[DocModel], str]
+    style: Dict[str, Dict[str, Union[str, int]]] = {}
 
 
 @dataclass(order=True)
