@@ -27,7 +27,7 @@ def translate(
     debug_file: Optional[Path] = Option(writable=True, resolve_path=True, default=None),
 ) -> None:
     doc = Document(doc_file)
-    json = simplify(doc)
+    json = simplify(doc, {"include-paragraph-indent": False, "include-paragraph-numbering": True})
     if debug_file is not None:
         debug_file.write_text(pformat(json))
     doc_model: DocModel = DocModel.parse_obj(json)

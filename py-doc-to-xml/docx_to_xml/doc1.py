@@ -15,6 +15,16 @@ from docx_to_xml.util import (
 )
 
 
+class DuplicateDomainNumber(Exception):
+    def __init__(self, message: str):
+        # Call the base class constructor with the parameters it needs
+        super().__init__(message)
+
+
+def check_for_duplicate(domain_list: List[SemanticDomain], item: SemanticDomain) -> bool:
+    return next((x for x in domain_list if x.number == item.number), None) is not None
+
+
 def parse_semantic_domains(body: List[DocModel]) -> List[SemanticDomain]:
     """
     Convert a list of DocModel elements into a list of SemanticDomain elements.
@@ -100,7 +110,12 @@ def parse_semantic_domains(body: List[DocModel]) -> List[SemanticDomain]:
     current_semantic_domain = SemanticDomain(number="", title="", description="", questions=[])
     for paragraph in body:
         if paragraph.TYPE != "paragraph":
-            raise ValueError(f"Unexpected paragraph: {paragraph}")
+            raise ValueError(f"Unexpected element in body: {paragraph}")
+
+        if paragraph.style and "numPr" in paragraph.style:
+            raise ValueError(
+                f"Paragraph has automatic numbering: {paragraph}; Current semantic domain{current_semantic_domain}"
+            )
 
         values = paragraph.VALUE
         values_count = len(values)
@@ -116,6 +131,8 @@ def parse_semantic_domains(body: List[DocModel]) -> List[SemanticDomain]:
         if is_semantic_domain_number(value):
             # if the current semantic domain element is valid, add it to the list
             if current_semantic_domain.is_valid():
+                if check_for_duplicate(semantic_domains, current_semantic_domain):
+                    raise DuplicateDomainNumber(f"{current_semantic_domain.number}")
                 semantic_domains.append(current_semantic_domain)
             (domain_number, domain_title) = split_semantic_domain_line(value)
             current_semantic_domain = SemanticDomain(

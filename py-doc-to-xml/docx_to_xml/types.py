@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import List, Literal, Union
+from typing import Dict, List, Literal, Union
 
 from pydantic import BaseModel
 
@@ -15,6 +15,7 @@ class DocModel(BaseModel):
 
     TYPE: Type
     VALUE: Union[List[DocModel], str]
+    style: Dict[str, Dict[str, Union[str, int]]] = {}
 
 
 def display_model(model: DocModel, *, depth: int = 0) -> None:
