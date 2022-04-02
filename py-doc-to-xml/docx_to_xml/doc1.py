@@ -16,7 +16,7 @@ from docx_to_xml.util import (
 
 
 class DuplicateDomainNumber(Exception):
-    def __init__(self, message):
+    def __init__(self, message: str):
         # Call the base class constructor with the parameters it needs
         super().__init__(message)
 
