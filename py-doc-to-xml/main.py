@@ -7,10 +7,11 @@ from pprint import pformat
 from typing import Optional
 
 from docx import Document
-from docx_to_xml.doc1 import process_doc
-from docx_to_xml.types import DocModel
 from simplify_docx import simplify
 from typer import Option, run
+
+from docx_to_xml.doc1 import process_doc
+from docx_to_xml.types import DocModel
 
 
 def display_model(model: DocModel, *, depth: int = 0) -> None:
@@ -35,7 +36,7 @@ def main(
     debug_file: Optional[Path] = Option(writable=True, resolve_path=True, default=None),
 ) -> None:
     doc = Document(doc_file)
-    json = simplify(doc)
+    json = simplify(doc, {"include-paragraph-indent": False, "include-paragraph-numbering": True})
     if debug_file is not None:
         debug_file.write_text(pformat(json))
     doc_model: DocModel = DocModel.parse_obj(json)
