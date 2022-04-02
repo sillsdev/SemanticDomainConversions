@@ -3,9 +3,8 @@ click==8.0.4
 typer
 
 # Parsing.
-# Build and install simplify-docx manually to fix issue with ordered and
-# unordered lists in .docx files.
-#simplify-docx
+# TODO: Add as a normal PyPI dependency one a new release is published.
+git+https://github.com/microsoft/Simplify-Docx.git@refs/pull/18/merge
 pydantic
 
 # GenerateDS Output Dependencies
