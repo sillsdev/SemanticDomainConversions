@@ -4,7 +4,7 @@ typer
 
 # Parsing.
 # TODO: Add as a normal PyPI dependency one a new release is published.
-git+https://github.com/microsoft/Simplify-Docx.git@refs/pull/18/merge
+git+https://github.com/microsoft/Simplify-Docx.git
 pydantic
 
 # GenerateDS Output Dependencies
