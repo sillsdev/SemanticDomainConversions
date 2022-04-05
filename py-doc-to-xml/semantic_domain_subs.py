@@ -23,6 +23,7 @@ import os
 import sys
 
 from lxml import etree as etree_
+
 import semantic_domain as supermod
 
 

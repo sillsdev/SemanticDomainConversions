@@ -26,7 +26,9 @@ def check_for_duplicate(domain_list: List[SemanticDomain], item: SemanticDomain)
     return next((x for x in domain_list if x.number == item.number), None) is not None
 
 
-def parse_semantic_domains(body: List[DocModel],*, use_warnings: bool = False) -> List[SemanticDomain]:
+def parse_semantic_domains(
+    body: List[DocModel], *, use_warnings: bool = False
+) -> List[SemanticDomain]:
     """
     Convert a list of DocModel elements into a list of SemanticDomain elements.
 
@@ -114,7 +116,10 @@ def parse_semantic_domains(body: List[DocModel],*, use_warnings: bool = False) -
             process_error(f"Unexpected element in body: {paragraph}", use_warnings)
 
         if paragraph.style and "numPr" in paragraph.style:
-            process_error(f"Automatic numbering: {paragraph}; Current semantic domain{current_semantic_domain}", use_warnings)
+            process_error(
+                f"Automatic numbering: {paragraph}; Current semantic domain{current_semantic_domain}",
+                use_warnings,
+            )
 
         values = paragraph.VALUE
         values_count = len(values)
@@ -131,7 +136,9 @@ def parse_semantic_domains(body: List[DocModel],*, use_warnings: bool = False) -
             # if the current semantic domain element is valid, add it to the list
             if current_semantic_domain.is_valid():
                 if check_for_duplicate(semantic_domains, current_semantic_domain):
-                    process_error(f"Duplicate Domain: {current_semantic_domain.number}", use_warnings)
+                    process_error(
+                        f"Duplicate Domain: {current_semantic_domain.number}", use_warnings
+                    )
                 semantic_domains.append(current_semantic_domain)
             (domain_number, domain_title) = split_semantic_domain_line(value)
             current_semantic_domain = SemanticDomain(
@@ -160,7 +167,13 @@ def parse_semantic_domains(body: List[DocModel],*, use_warnings: bool = False) -
     return semantic_domains
 
 
-def process_doc(doc: DocModel, output_file: Optional[Path] = None, *, start_index: int = 0, warnings: bool = False) -> None:
+def process_doc(
+    doc: DocModel,
+    output_file: Optional[Path] = None,
+    *,
+    start_index: int = 0,
+    warnings: bool = False,
+) -> None:
     """Document-specific steps."""
     assert doc.TYPE == "document"
     body = doc.VALUE[0]
