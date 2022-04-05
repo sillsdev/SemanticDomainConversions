@@ -25,13 +25,14 @@ def translate(
     ),
     output_file: Path = Option(..., "--output-file", "-o", writable=True, resolve_path=True),
     debug_file: Optional[Path] = Option(writable=True, resolve_path=True, default=None),
+    warnings: bool = Option(False, "--warnings", "-w")
 ) -> None:
     doc = Document(doc_file)
     json = simplify(doc, {"include-paragraph-indent": False, "include-paragraph-numbering": True})
     if debug_file is not None:
         debug_file.write_text(pformat(json))
     doc_model: DocModel = DocModel.parse_obj(json)
-    process_doc(doc_model, output_file)
+    process_doc(doc_model, output_file, warnings=warnings)
 
 
 @app.command()

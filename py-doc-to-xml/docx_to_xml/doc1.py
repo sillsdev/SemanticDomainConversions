@@ -15,17 +15,18 @@ from docx_to_xml.util import (
 )
 
 
-class DuplicateDomainNumber(Exception):
-    def __init__(self, message: str):
-        # Call the base class constructor with the parameters it needs
-        super().__init__(message)
+def process_error(msg: str, warning: bool = False):
+    if warning:
+        print(msg, file=sys.stderr)
+    else:
+        raise ValueError(msg)
 
 
 def check_for_duplicate(domain_list: List[SemanticDomain], item: SemanticDomain) -> bool:
     return next((x for x in domain_list if x.number == item.number), None) is not None
 
 
-def parse_semantic_domains(body: List[DocModel]) -> List[SemanticDomain]:
+def parse_semantic_domains(body: List[DocModel],*, use_warnings: bool = False) -> List[SemanticDomain]:
     """
     Convert a list of DocModel elements into a list of SemanticDomain elements.
 
@@ -110,17 +111,15 @@ def parse_semantic_domains(body: List[DocModel]) -> List[SemanticDomain]:
     current_semantic_domain = SemanticDomain(number="", title="", description="", questions=[])
     for paragraph in body:
         if paragraph.TYPE != "paragraph":
-            raise ValueError(f"Unexpected element in body: {paragraph}")
+            process_error(f"Unexpected element in body: {paragraph}", use_warnings)
 
         if paragraph.style and "numPr" in paragraph.style:
-            raise ValueError(
-                f"Paragraph has automatic numbering: {paragraph}; Current semantic domain{current_semantic_domain}"
-            )
+            process_error(f"Automatic numbering: {paragraph}; Current semantic domain{current_semantic_domain}", use_warnings)
 
         values = paragraph.VALUE
         values_count = len(values)
         if values_count != 1:
-            print(f"Warning: Ignoring paragraph with count: {values_count}", file=sys.stderr)
+            process_error(f"Warning: Ignoring paragraph with count: {values_count}", True)
 
         # if the DocModel element is blank or starts with a '#', skip it.  (It is a comment.)
         value = str(paragraph.VALUE[0].VALUE)
@@ -132,7 +131,7 @@ def parse_semantic_domains(body: List[DocModel]) -> List[SemanticDomain]:
             # if the current semantic domain element is valid, add it to the list
             if current_semantic_domain.is_valid():
                 if check_for_duplicate(semantic_domains, current_semantic_domain):
-                    raise DuplicateDomainNumber(f"{current_semantic_domain.number}")
+                    process_error(f"Duplicate Domain: {current_semantic_domain.number}", use_warnings)
                 semantic_domains.append(current_semantic_domain)
             (domain_number, domain_title) = split_semantic_domain_line(value)
             current_semantic_domain = SemanticDomain(
@@ -161,13 +160,13 @@ def parse_semantic_domains(body: List[DocModel]) -> List[SemanticDomain]:
     return semantic_domains
 
 
-def process_doc(doc: DocModel, output_file: Optional[Path] = None, start_index: int = 0) -> None:
+def process_doc(doc: DocModel, output_file: Optional[Path] = None, *, start_index: int = 0, warnings: bool = False) -> None:
     """Document-specific steps."""
     assert doc.TYPE == "document"
     body = doc.VALUE[0]
     assert body.TYPE == "body"
     # Allow skipping title pages and similar.
-    semantic_domains = parse_semantic_domains(body.VALUE[start_index:])
+    semantic_domains = parse_semantic_domains(body.VALUE[start_index:], use_warnings=warnings)
     if output_file is not None:
         with open(output_file, "w") as file:
             pprint(semantic_domains, stream=file)
