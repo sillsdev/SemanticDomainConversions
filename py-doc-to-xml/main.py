@@ -21,11 +21,35 @@ app = Typer(add_completion=False)
 @app.command()
 def translate(
     doc_file: Path = Option(
-        ..., "--doc-file", "-d", exists=True, dir_okay=False, readable=True, resolve_path=True
+        ...,
+        "--doc-file",
+        "-d",
+        exists=True,
+        dir_okay=False,
+        readable=True,
+        resolve_path=True,
+        help="Input document file in .docx format",
     ),
-    output_file: Path = Option(..., "--output-file", "-o", writable=True, resolve_path=True),
-    debug_file: Optional[Path] = Option(writable=True, resolve_path=True, default=None),
-    warnings: bool = Option(False, "--warnings", "-w")
+    output_file: Path = Option(
+        ...,
+        "--output-file",
+        "-o",
+        writable=True,
+        resolve_path=True,
+        help="Output file for the Semantic Domain XML file",
+    ),
+    debug_file: Optional[Path] = Option(
+        writable=True,
+        resolve_path=True,
+        default=None,
+        help="Debug output file to capture the JSON file representation of the input document contents",
+    ),
+    warnings: bool = Option(
+        False,
+        "--warnings",
+        "-w",
+        help="Print warnings on standard error instead of raising an exception when a parsing problem is found.",
+    ),
 ) -> None:
     doc = Document(doc_file)
     json = simplify(doc, {"include-paragraph-indent": False, "include-paragraph-numbering": True})

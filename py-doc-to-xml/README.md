@@ -43,6 +43,12 @@ Run the tool:
 python main.py translate --doc-file input.docx --output-file output.xml
 ```
 
+To see a description of the available options, run
+
+```bash
+python main.py translate --help
+```
+
 ## Developer Guide
 
 ### XML Serialization Generation
