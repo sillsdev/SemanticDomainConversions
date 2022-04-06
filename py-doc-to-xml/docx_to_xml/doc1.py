@@ -84,7 +84,7 @@ def parse_semantic_domains(
         if the current semantic domain's list of questions is not empty
             - append it to the last question in the list
                 (this must be a continuation paragraph for the previous question)
-        else if the current semantic domain's title is emtpy,
+        else if the current semantic domain's title is empty,
             - set the title to the text
         else
             - append the text to the description
@@ -93,7 +93,7 @@ def parse_semantic_domains(
         semantic domain number:
             - starts with a number
             - number is followed by '.[0-9]' between 0 and 4 times
-            - no puntuation at the end of the number
+            - no punctuation at the end of the number
         question:
             - may start with a '('
             - followed by a sequence of digits
@@ -103,7 +103,7 @@ def parse_semantic_domains(
         semantic domain number:
             - starts with a number
             - number is followed by '.[0-9]' between 1 and 3 times
-            - no puntuation at the end of the number
+            - no punctuation at the end of the number
          question:
             - starts a sequence of digits, no punctuation
 
