@@ -22,11 +22,11 @@ def process_error(msg: str, warning: bool = False):
         raise ValueError(msg)
 
 
-def add_domain(domains: Dict[str, SemanticDomain], item: SemanticDomain,*,use_warnings:bool=False) -> None:
+def add_domain(
+    domains: Dict[str, SemanticDomain], item: SemanticDomain, *, use_warnings: bool = False
+) -> None:
     if item.number in domains.keys():
-        process_error(
-            f"Duplicate Domain: {item.number}", use_warnings
-        )
+        process_error(f"Duplicate Domain: {item.number}", use_warnings)
     domains[item.number] = item
 
 
