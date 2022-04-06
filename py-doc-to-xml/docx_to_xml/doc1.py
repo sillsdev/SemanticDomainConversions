@@ -4,7 +4,7 @@ from dataclasses import replace
 from pathlib import Path
 from pprint import pprint
 import sys
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from docx_to_xml.types import DocModel, SemanticDomain
 from docx_to_xml.util import (
@@ -22,15 +22,20 @@ def process_error(msg: str, warning: bool = False):
         raise ValueError(msg)
 
 
-def check_for_duplicate(domain_list: List[SemanticDomain], item: SemanticDomain) -> bool:
-    return next((x for x in domain_list if x.number == item.number), None) is not None
+def add_domain(
+    domains: Dict[str, SemanticDomain], item: SemanticDomain, *, use_warnings: bool = False
+) -> None:
+    if item.number in domains.keys():
+        process_error(f"Duplicate Domain: {item.number}", use_warnings)
+    domains[item.number] = item
 
 
 def parse_semantic_domains(
     body: List[DocModel], *, use_warnings: bool = False
-) -> List[SemanticDomain]:
+) -> Dict[str, SemanticDomain]:
     """
-    Convert a list of DocModel elements into a list of SemanticDomain elements.
+    Convert a list of DocModel elements into a dictionary of SemanticDomain elements.  The
+    dictionary key is the semantic domain number.
 
     The current source documents have different document structures that need to be parsed in
     order to generate the XML elements. The current set of documents have following structures:
@@ -75,7 +80,7 @@ def parse_semantic_domains(
 
     if the DocModel element is blank or starts with a '#', skip it.  (It is a comment.)
     if the DocModel element starts with a semantic domain number, then
-        - if the current semantic domain element is valid, add it to the list
+        - if the current semantic domain element is valid, add it to the dict
         - a new semantic domain element is created with the semantic domain number and title
          (if present)
     else if the DocModel element starts with a question number, then
@@ -108,7 +113,7 @@ def parse_semantic_domains(
             - starts a sequence of digits, no punctuation
 
     """
-    semantic_domains: List[SemanticDomain] = []
+    semantic_domains: Dict[str, SemanticDomain] = {}
 
     current_semantic_domain = SemanticDomain(number="", title="", description="", questions=[])
     for paragraph in body:
@@ -135,11 +140,7 @@ def parse_semantic_domains(
         if is_semantic_domain_number(value):
             # if the current semantic domain element is valid, add it to the list
             if current_semantic_domain.is_valid():
-                if check_for_duplicate(semantic_domains, current_semantic_domain):
-                    process_error(
-                        f"Duplicate Domain: {current_semantic_domain.number}", use_warnings
-                    )
-                semantic_domains.append(current_semantic_domain)
+                add_domain(semantic_domains, current_semantic_domain, use_warnings=use_warnings)
             (domain_number, domain_title) = split_semantic_domain_line(value)
             current_semantic_domain = SemanticDomain(
                 number=domain_number, title=domain_title, description="", questions=[]
@@ -162,8 +163,7 @@ def parse_semantic_domains(
                 )
     # Save the final semantic domain.
     if current_semantic_domain.is_valid():
-        semantic_domains.append(current_semantic_domain)
-    semantic_domains.sort()
+        add_domain(semantic_domains, current_semantic_domain, use_warnings=use_warnings)
     return semantic_domains
 
 

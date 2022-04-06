@@ -32,7 +32,7 @@ def display_model(model: DocModel, *, depth: int = 0) -> None:
         display_model(v, depth=depth)
 
 
-@dataclass(order=True)
+@dataclass(frozen=True)
 class SemanticDomain:
     """Intermediate representation of a Semantic Domain."""
 
@@ -40,10 +40,6 @@ class SemanticDomain:
     title: str
     description: str
     questions: List[str]
-    sort_index: int = field(init=False, repr=False)
-
-    def __post_init__(self):
-        self.sort_index = self.number
 
     def is_valid(self) -> bool:
         return is_semantic_domain_number(self.number)
