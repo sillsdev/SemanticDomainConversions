@@ -6,7 +6,7 @@ from pprint import pprint
 import sys
 from typing import Dict, List, Optional
 
-from docx_to_xml.types import DocModel, SemanticDomain
+from docx_to_xml.types import DocModel, DomainQuestion, SemanticDomain
 from docx_to_xml.util import (
     is_question,
     is_semantic_domain_abbrev,
@@ -72,8 +72,8 @@ def parse_semantic_domains(
     This file has duplicate entries as well.
 
     In order to parse these documents, the following algorithm is used.  In order to manage the
-    various document structures, different tests are used to identify a semantic domain abbreviation
-    and a question.
+    various document structures, different tests are used to identify a semantic domain
+    abbreviation and a question.
 
     Parsing Algorithm Logic
     -----------------------
@@ -81,14 +81,16 @@ def parse_semantic_domains(
     if the DocModel element is blank or starts with a '#', skip it.  (It is a comment.)
     if the DocModel element starts with a semantic domain abbreviation, then
         - if the current semantic domain element is valid, add it to the dict
-        - a new semantic domain element is created with the semantic domain abbreviation and name
-         (if present)
+        - a new semantic domain element is created with the semantic domain abbreviation and
+          name (if present)
     else if the DocModel element starts with a question number, then
         - add the text to the list of questions
     else (it's a plain block of text)
         if the current semantic domain's list of questions is not empty
-            - append it to the last question in the list
-                (this must be a continuation paragraph for the previous question)
+            - with the last question in the list:
+                if the example words empty, set the example words to the text
+                else if the example sentences are empty, set the example sentences to the text
+                else raise an exception
         else if the current semantic domain's name is emtpy,
             - set the name to the text
         else
@@ -150,12 +152,23 @@ def parse_semantic_domains(
         elif is_question(value):
             # add the text to the list of questions
             (question_num, question_text) = split_question(value)
-            current_semantic_domain.questions.append(f"{question_num} {question_text}")
+            current_semantic_domain.questions.append(
+                DomainQuestion(question=f"{question_num} {question_text}"), words="", sentences=""
+            )
         else:  # it's a plain block of text
             if current_semantic_domain.name == "":
                 current_semantic_domain = replace(current_semantic_domain, name=value)
             elif len(current_semantic_domain.questions) > 0:
-                current_semantic_domain.questions[-1] += f" {value}"
+                last_question = current_semantic_domain.questions[-1]
+                if not last_question.words:
+                    last_question = replace(last_question, words=f"{value}")
+                elif not last_question.sentences:
+                    last_question = replace(last_question, sentences=f"{value}")
+                else:
+                    process_error(
+                        f"Too many text blocks for question.\nDomain: {current_semantic_domain.abbrev}\nQuestion: {last_question}",
+                        use_warnings,
+                    )
             else:
                 updated_description = f"{current_semantic_domain.description} {value}"
                 current_semantic_domain = replace(

@@ -35,7 +35,7 @@ def display_model(model: DocModel, *, depth: int = 0) -> None:
 @dataclass(frozen=True)
 class DomainQuestion:
     question: str
-    words:  str
+    words: str
     sentences: str
 
 
