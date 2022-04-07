@@ -5,7 +5,7 @@ from typing import Dict, List, Literal, Union
 
 from pydantic import BaseModel
 
-from docx_to_xml.util import is_semantic_domain_number
+from docx_to_xml.util import is_semantic_domain_abbrev
 
 Type = Literal["body", "paragraph", "text", "document"]
 
@@ -32,18 +32,21 @@ def display_model(model: DocModel, *, depth: int = 0) -> None:
         display_model(v, depth=depth)
 
 
-@dataclass(order=True)
+@dataclass(frozen=True)
+class DomainQuestion:
+    question: str
+    words: str
+    sentences: str
+
+
+@dataclass(frozen=True)
 class SemanticDomain:
     """Intermediate representation of a Semantic Domain."""
 
-    number: str
-    title: str
+    abbrev: str
+    name: str
     description: str
-    questions: List[str]
-    sort_index: int = field(init=False, repr=False)
-
-    def __post_init__(self):
-        self.sort_index = self.number
+    questions: List[DomainQuestion]
 
     def is_valid(self) -> bool:
-        return is_semantic_domain_number(self.number)
+        return is_semantic_domain_abbrev(self.abbrev)

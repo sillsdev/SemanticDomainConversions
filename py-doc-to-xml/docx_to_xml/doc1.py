@@ -4,12 +4,12 @@ from dataclasses import replace
 from pathlib import Path
 from pprint import pprint
 import sys
-from typing import List, Optional
+from typing import Dict, List, Optional
 
-from docx_to_xml.types import DocModel, SemanticDomain
+from docx_to_xml.types import DocModel, DomainQuestion, SemanticDomain
 from docx_to_xml.util import (
     is_question,
-    is_semantic_domain_number,
+    is_semantic_domain_abbrev,
     split_question,
     split_semantic_domain_line,
 )
@@ -22,75 +22,82 @@ def process_error(msg: str, warning: bool = False):
         raise ValueError(msg)
 
 
-def check_for_duplicate(domain_list: List[SemanticDomain], item: SemanticDomain) -> bool:
-    return next((x for x in domain_list if x.number == item.number), None) is not None
+def add_domain(
+    domains: Dict[str, SemanticDomain], item: SemanticDomain, *, use_warnings: bool = False
+) -> None:
+    if item.abbrev in domains.keys():
+        process_error(f"Duplicate Domain: {item.abbrev}", use_warnings)
+    domains[item.abbrev] = item
 
 
 def parse_semantic_domains(
     body: List[DocModel], *, use_warnings: bool = False
-) -> List[SemanticDomain]:
+) -> Dict[str, SemanticDomain]:
     """
-    Convert a list of DocModel elements into a list of SemanticDomain elements.
+    Convert a list of DocModel elements into a dictionary of SemanticDomain elements.  The
+    dictionary key is the semantic domain abbrev.
 
     The current source documents have different document structures that need to be parsed in
     order to generate the XML elements. The current set of documents have following structures:
 
     Structure 1:
         1
-        Domain Title
+        Domain Name
         Domain Description
         1. Question 1
         2. Question 2...
         ```
 
     Structure 2:
-        1.3 Domain Title
+        1.3 Domain Name
         Domain Description
         (1) Question 1
         (2) Question 2...
 
     Structure 3:
-        3. Domain Title
+        3. Domain Name
         Question 1
-        3.1 Domain Title
+        3.1 Domain Name
         (1) Question 1
 
     Structure 4 has multiple forms:
-    4.2.6 Domain Title
+    4.2.6 Domain Name
     or
-    4.2 (no domain title)
+    4.2 (no domain name)
     or
     4.2.6.4
-    Domain Title
+    Domain Name
     1 Question 1
 
     This file has duplicate entries as well.
 
     In order to parse these documents, the following algorithm is used.  In order to manage the
-    various document structures, different tests are used to identify a semantic domain number
-    and a question.
+    various document structures, different tests are used to identify a semantic domain
+    abbreviation and a question.
 
     Parsing Algorithm Logic
     -----------------------
 
     if the DocModel element is blank or starts with a '#', skip it.  (It is a comment.)
-    if the DocModel element starts with a semantic domain number, then
-        - if the current semantic domain element is valid, add it to the list
-        - a new semantic domain element is created with the semantic domain number and title
-         (if present)
+    if the DocModel element starts with a semantic domain abbreviation, then
+        - if the current semantic domain element is valid, add it to the dict
+        - a new semantic domain element is created with the semantic domain abbreviation and
+          name (if present)
     else if the DocModel element starts with a question number, then
         - add the text to the list of questions
     else (it's a plain block of text)
         if the current semantic domain's list of questions is not empty
-            - append it to the last question in the list
-                (this must be a continuation paragraph for the previous question)
-        else if the current semantic domain's title is empty,
-            - set the title to the text
+            - with the last question in the list:
+                if the example words empty, set the example words to the text
+                else if the example sentences are empty, set the example sentences to the text
+                else raise an exception
+        else if the current semantic domain's name is empty,
+            - set the name to the text
         else
             - append the text to the description
 
     Tests for document structures 1-3:
-        semantic domain number:
+        semantic domain abbreviation:
             - starts with a number
             - number is followed by '.[0-9]' between 0 and 4 times
             - no punctuation at the end of the number
@@ -100,7 +107,7 @@ def parse_semantic_domains(
             - followed by a ')' or '.'
 
     Tests for document structure 4:
-        semantic domain number:
+        semantic domain abbreviation:
             - starts with a number
             - number is followed by '.[0-9]' between 1 and 3 times
             - no punctuation at the end of the number
@@ -108,9 +115,9 @@ def parse_semantic_domains(
             - starts a sequence of digits, no punctuation
 
     """
-    semantic_domains: List[SemanticDomain] = []
+    semantic_domains: Dict[str, SemanticDomain] = {}
 
-    current_semantic_domain = SemanticDomain(number="", title="", description="", questions=[])
+    current_semantic_domain = SemanticDomain(abbrev="", name="", description="", questions=[])
     for paragraph in body:
         if paragraph.TYPE != "paragraph":
             process_error(f"Unexpected element in body: {paragraph}", use_warnings)
@@ -131,30 +138,37 @@ def parse_semantic_domains(
         if value == "" or value[0] == "#":
             continue
 
-        # if the DocModel element starts with a semantic domain number, then
-        if is_semantic_domain_number(value):
+        # if the DocModel element starts with a semantic domain abbreviation, then
+        if is_semantic_domain_abbrev(value):
             # if the current semantic domain element is valid, add it to the list
             if current_semantic_domain.is_valid():
-                if check_for_duplicate(semantic_domains, current_semantic_domain):
-                    process_error(
-                        f"Duplicate Domain: {current_semantic_domain.number}", use_warnings
-                    )
-                semantic_domains.append(current_semantic_domain)
-            (domain_number, domain_title) = split_semantic_domain_line(value)
+                add_domain(semantic_domains, current_semantic_domain, use_warnings=use_warnings)
+            (domain_abbrev, domain_name) = split_semantic_domain_line(value)
             current_semantic_domain = SemanticDomain(
-                number=domain_number, title=domain_title, description="", questions=[]
+                abbrev=domain_abbrev, name=domain_name, description="", questions=[]
             )
         # else
         #   if the DocModel element starts with a question number, then
         elif is_question(value):
             # add the text to the list of questions
             (question_num, question_text) = split_question(value)
-            current_semantic_domain.questions.append(f"{question_num} {question_text}")
+            current_semantic_domain.questions.append(
+                DomainQuestion(question=f"{question_num} {question_text}", words="", sentences="")
+            )
         else:  # it's a plain block of text
-            if current_semantic_domain.title == "":
-                current_semantic_domain = replace(current_semantic_domain, title=value)
+            if current_semantic_domain.name == "":
+                current_semantic_domain = replace(current_semantic_domain, name=value)
             elif len(current_semantic_domain.questions) > 0:
-                current_semantic_domain.questions[-1] += f" {value}"
+                last_question = current_semantic_domain.questions[-1]
+                if not last_question.words:
+                    last_question = replace(last_question, words=f"{value}")
+                elif not last_question.sentences:
+                    last_question = replace(last_question, sentences=f"{value}")
+                else:
+                    process_error(
+                        f"Too many text blocks for question.\nDomain: {current_semantic_domain.abbrev}\nQuestion: {last_question}",
+                        use_warnings,
+                    )
             else:
                 updated_description = f"{current_semantic_domain.description} {value}"
                 current_semantic_domain = replace(
@@ -162,8 +176,7 @@ def parse_semantic_domains(
                 )
     # Save the final semantic domain.
     if current_semantic_domain.is_valid():
-        semantic_domains.append(current_semantic_domain)
-    semantic_domains.sort()
+        add_domain(semantic_domains, current_semantic_domain, use_warnings=use_warnings)
     return semantic_domains
 
 
