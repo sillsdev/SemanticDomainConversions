@@ -11,7 +11,7 @@ from simplify_docx import simplify
 from typer import Option, Typer
 
 from docx_to_xml.doc1 import process_doc
-from docx_to_xml.semantic_domain import display_semantic_domain
+from docx_to_xml.update_sem_dom_xml import display_semantic_domain
 from docx_to_xml.types import DocModel
 from semantic_domain import CmSemanticDomainType, parse
 
