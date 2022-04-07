@@ -153,7 +153,7 @@ def parse_semantic_domains(
             # add the text to the list of questions
             (question_num, question_text) = split_question(value)
             current_semantic_domain.questions.append(
-                DomainQuestion(question=f"{question_num} {question_text}"), words="", sentences=""
+                DomainQuestion(question=f"{question_num} {question_text}", words="", sentences="")
             )
         else:  # it's a plain block of text
             if current_semantic_domain.name == "":
