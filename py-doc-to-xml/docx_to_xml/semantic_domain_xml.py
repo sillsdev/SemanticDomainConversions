@@ -67,6 +67,13 @@ class SemanticDomainXml:
             node.Description.copy(src="en", dest=lang)
             node.Questions.copy(src="en", dest=lang)
 
+        # Now remove the old_lang entries
+        if old_lang:
+            node.Abbreviation.remove_ws(old_lang)
+            node.Name.remove_ws(old_lang)
+            node.Description.remove_ws(old_lang)
+            node.Questions.remove_ws(old_lang)
+
         # Update the sub-domains
         if node.SubPossibilities is not None:
             for sub_domain in node.SubPossibilities.CmSemanticDomain:

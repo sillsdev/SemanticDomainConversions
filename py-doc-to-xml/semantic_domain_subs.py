@@ -90,6 +90,12 @@ class NameTypeSub(supermod.NameType):
     def add(self, ws: str, value: str) -> None:
         self.add_AUni(AUniTypeSub(ws=ws, valueOf_=value))
 
+    def remove_ws(self, ws: str) -> None:
+        for auni in self.AUni:
+            if auni.get_ws() == ws:
+                self.AUni.remove(auni)
+                break;
+
     def find_AUni(self, ws: str) -> Optional[AUniTypeSub]:
         for auni in self.get_AUni():
             if auni.get_ws() == ws:
@@ -144,6 +150,11 @@ class AbbreviationTypeSub(supermod.AbbreviationType):
         else:
             self.add_AUni(dest_auni)
 
+    def remove_ws(self, ws: str) -> None:
+        for auni in self.AUni:
+            if auni.get_ws() == ws:
+                self.AUni.remove(auni)
+                break;
 
 supermod.AbbreviationType.subclass = AbbreviationTypeSub
 # end class AbbreviationTypeSub
@@ -182,6 +193,12 @@ class DescriptionTypeSub(supermod.DescriptionType):
     def add(self, ws: str, value: str) -> None:
         run = RunTypeSub(ws=ws, valueOf_=value)
         self.add_AStr(AStrTypeSub(ws=ws, Run=run))
+
+    def remove_ws(self, ws: str) -> None:
+        for astr in self.AStr:
+            if astr.get_ws() == ws:
+                self.AStr.remove(astr)
+                break
 
     def find_AStr(self, ws: str) -> Optional[AStrTypeSub]:
         for astr in self.get_AStr():
@@ -225,6 +242,12 @@ class QuestionTypeSub(supermod.QuestionType):
     def add(self, ws: str, value: str) -> None:
         self.add_AUni(AUniTypeSub(ws=ws, valueOf_=value))
 
+    def remove_ws(self, ws: str) -> None:
+        for auni in self.AUni:
+            if auni.get_ws() == ws:
+                self.AUni.remove(auni)
+                break;
+
     def update(self, ws: str, value: str) -> None:
         """
         Updates the question with ws that matches argument.
@@ -254,6 +277,12 @@ class ExampleWordsTypeSub(supermod.ExampleWordsType):
                 return auni
         return None
 
+    def remove_ws(self, ws: str) -> None:
+        for auni in self.AUni:
+            if auni.get_ws() == ws:
+                self.AUni.remove(auni)
+                break;
+
     def print(self, indent: int = 1) -> None:
         for auni in self.get_AUni():
             auni.print(indent)
@@ -279,6 +308,12 @@ class ExampleSentencesTypeSub(supermod.ExampleSentencesType):
             if auni.get_ws() == ws:
                 return auni
         return None
+
+    def remove_ws(self, ws: str) -> None:
+        for astr in self.AStr:
+            if astr.get_ws() == ws:
+                self.AStr.remove(astr)
+                break
 
     def print(self, indent: int = 1) -> None:
         for astr in self.get_AStr():
@@ -338,6 +373,14 @@ class QuestionsTypeSub(supermod.QuestionsType):
             if example_sentences:
                 domain_q.ExampleSentences.update(ws, example_sentences)
             self.replace_CmDomainQ_at(index, domain_q)
+
+    def remove_ws(self, ws: str) -> None:
+        for domain_q in self.CmDomainQ:
+            domain_q.Question.remove_ws(ws)
+            if domain_q.ExampleWords is not None:
+                domain_q.ExampleWords.remove_ws(ws)
+            if domain_q.ExampleSentences is not None:
+                domain_q.ExampleSentences.remove_ws(ws)
 
     def copy(self, src: str, dest: str) -> None:
         for domain_q in self.CmDomainQ:
