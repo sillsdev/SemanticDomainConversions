@@ -21,9 +21,9 @@
 
 import os
 import sys
+from typing import Optional
 
 from lxml import etree as etree_
-
 import semantic_domain as supermod
 
 
@@ -70,6 +70,10 @@ class AUniTypeSub(supermod.AUniType):
     def __init__(self, ws=None, valueOf_=None, **kwargs_):
         super(AUniTypeSub, self).__init__(ws, valueOf_, **kwargs_)
 
+    def print(self, indent: int = 1) -> None:
+        indent_str = "\t" * indent
+        print(f"{indent_str}{self.ws}: {self.valueOf_}")
+
 
 supermod.AUniType.subclass = AUniTypeSub
 # end class AUniTypeSub
@@ -79,6 +83,13 @@ class NameTypeSub(supermod.NameType):
     def __init__(self, AUni=None, **kwargs_):
         super(NameTypeSub, self).__init__(AUni, **kwargs_)
 
+    def print(self, indent: int = 1) -> None:
+        for uni in self.AUni:
+            uni.print(indent)
+
+    def add(self, ws: str, value: str) -> None:
+        self.add_AUni(AUniTypeSub(ws=ws, valueOf_=value))
+
 
 supermod.NameType.subclass = NameTypeSub
 # end class NameTypeSub
@@ -87,6 +98,19 @@ supermod.NameType.subclass = NameTypeSub
 class AbbreviationTypeSub(supermod.AbbreviationType):
     def __init__(self, AUni=None, **kwargs_):
         super(AbbreviationTypeSub, self).__init__(AUni, **kwargs_)
+
+    def print(self, indent: int = 1) -> None:
+        for uni in self.AUni:
+            uni.print(indent)
+
+    def add(self, ws: str, value: str) -> None:
+        self.add_AUni(AUniTypeSub(ws=ws, valueOf_=value))
+
+    def find_AUni(self, ws: str) -> Optional[AUniTypeSub]:
+        for auni in self.get_AUni():
+            if auni.get_ws() == ws:
+                return auni
+        return None
 
 
 supermod.AbbreviationType.subclass = AbbreviationTypeSub
@@ -106,6 +130,10 @@ class AStrTypeSub(supermod.AStrType):
     def __init__(self, ws=None, Run=None, **kwargs_):
         super(AStrTypeSub, self).__init__(ws, Run, **kwargs_)
 
+    def print(self, indent: int = 1) -> None:
+        indent_str = "\t" * indent
+        print(f"{indent_str}{self.ws}: {self.Run.valueOf_}")
+
 
 supermod.AStrType.subclass = AStrTypeSub
 # end class AStrTypeSub
@@ -114,6 +142,14 @@ supermod.AStrType.subclass = AStrTypeSub
 class DescriptionTypeSub(supermod.DescriptionType):
     def __init__(self, AStr=None, **kwargs_):
         super(DescriptionTypeSub, self).__init__(AStr, **kwargs_)
+
+    def print(self, indent: int = 1) -> None:
+        for astr in self.AStr:
+            astr.print(indent)
+
+    def add(self, ws: str, value: str) -> None:
+        run = RunTypeSub(ws=ws, valueOf_=value)
+        self.add_AStr(AStrTypeSub(ws=ws, valueOf_=run))
 
 
 supermod.DescriptionType.subclass = DescriptionTypeSub
@@ -124,6 +160,16 @@ class QuestionTypeSub(supermod.QuestionType):
     def __init__(self, AUni=None, **kwargs_):
         super(QuestionTypeSub, self).__init__(AUni, **kwargs_)
 
+    def find_AUni(self, ws: str) -> Optional[AUniTypeSub]:
+        for auni in self.get_AUni():
+            if auni.get_ws() == ws:
+                return auni
+        return None
+
+    def print(self, indent: int = 1) -> None:
+        for auni in self.get_AUni():
+            auni.print(indent)
+
 
 supermod.QuestionType.subclass = QuestionTypeSub
 # end class QuestionTypeSub
@@ -133,6 +179,16 @@ class ExampleWordsTypeSub(supermod.ExampleWordsType):
     def __init__(self, AUni=None, **kwargs_):
         super(ExampleWordsTypeSub, self).__init__(AUni, **kwargs_)
 
+    def find_AUni(self, ws: str) -> Optional[AUniTypeSub]:
+        for auni in self.get_AUni():
+            if auni.get_ws() == ws:
+                return auni
+        return None
+
+    def print(self, indent: int = 1) -> None:
+        for auni in self.get_AUni():
+            auni.print(indent)
+
 
 supermod.ExampleWordsType.subclass = ExampleWordsTypeSub
 # end class ExampleWordsTypeSub
@@ -141,6 +197,16 @@ supermod.ExampleWordsType.subclass = ExampleWordsTypeSub
 class ExampleSentencesTypeSub(supermod.ExampleSentencesType):
     def __init__(self, AStr=None, **kwargs_):
         super(ExampleSentencesTypeSub, self).__init__(AStr, **kwargs_)
+
+    def find_AStr(self, ws: str) -> Optional[AStrTypeSub]:
+        for auni in self.get_AUni():
+            if auni.get_ws() == ws:
+                return auni
+        return None
+
+    def print(self, indent: int = 1) -> None:
+        for astr in self.get_AStr():
+            astr.print(indent)
 
 
 supermod.ExampleSentencesType.subclass = ExampleSentencesTypeSub
@@ -159,6 +225,36 @@ supermod.CmDomainQType.subclass = CmDomainQTypeSub
 class QuestionsTypeSub(supermod.QuestionsType):
     def __init__(self, CmDomainQ=None, **kwargs_):
         super(QuestionsTypeSub, self).__init__(CmDomainQ, **kwargs_)
+
+    def print(self, indent: int = 1) -> None:
+        for domain_question in self.CmDomainQ:
+            print("\tDomain Question")
+            domain_question.Question.print(indent=2)
+            if domain_question.ExampleWords is not None:
+                print("\tExample Words")
+                domain_question.ExampleWords.print(indent=2)
+            if domain_question.ExampleSentences is not None:
+                print("\tExample Sentences")
+                domain_question.ExampleSentences.print(indent=1)
+
+    def copy(self, src: str, dest: str) -> None:
+        for domain_q in self.CmDomainQ:
+            src_auni = domain_q.Question.find_AUni(ws=src)
+            if src_auni is not None:
+                domain_q.Question.add_AUni(AUniTypeSub(ws=dest, valueOf_=src_auni.valueOf_))
+
+            if domain_q.ExampleWords is not None:
+                src_auni = domain_q.ExampleWords.find_AUni(ws=src)
+                if src_auni is not None:
+                    domain_q.ExampleWords.add_AUni(
+                        AUniTypeSub(ws=dest, valueOf_=src_auni.valueOf_)
+                    )
+
+            if domain_q.ExampleSentences is not None:
+                src_astr = domain_q.ExampleSentences.find_AStr(ws=src)
+                if src_astr is not None:
+                    run_copy = RunTypeSub(ws=dest, valueOf_=src_astr.Run.valueOf_)
+                    domain_q.ExampleSentences.add_AStr(AStrTypeSub(ws=dest, Run=run_copy))
 
 
 supermod.QuestionsType.subclass = QuestionsTypeSub
@@ -179,6 +275,20 @@ class CmSemanticDomainTypeSub(supermod.CmSemanticDomainType):
         super(CmSemanticDomainTypeSub, self).__init__(
             guid, Name, Abbreviation, Description, Questions, SubPossibilities, **kwargs_
         )
+
+    def print(self) -> None:
+        print("Name")
+        self.Name.print()
+        print("\nAbbreviation")
+        self.Abbreviation.print()
+        print("\nDescription")
+        self.Description.print()
+        print("\nQuestions")
+        self.Questions.print()
+        print("\nSubPossibilities")
+        if self.SubPossibilities is not None:
+            for domain in self.SubPossibilities.CmSemanticDomain:
+                domain.print()
 
 
 supermod.CmSemanticDomainType.subclass = CmSemanticDomainTypeSub

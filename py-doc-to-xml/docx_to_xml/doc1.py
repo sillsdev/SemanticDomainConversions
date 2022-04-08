@@ -182,17 +182,12 @@ def parse_semantic_domains(
 
 def process_doc(
     doc: DocModel,
-    output_file: Optional[Path] = None,
     *,
-    start_index: int = 0,
     warnings: bool = False,
-) -> None:
+) -> Dict[str, SemanticDomain]:
     """Document-specific steps."""
     assert doc.TYPE == "document"
     body = doc.VALUE[0]
     assert body.TYPE == "body"
-    # Allow skipping title pages and similar.
-    semantic_domains = parse_semantic_domains(body.VALUE[start_index:], use_warnings=warnings)
-    if output_file is not None:
-        with open(output_file, "w") as file:
-            pprint(semantic_domains, stream=file)
+
+    return parse_semantic_domains(body.VALUE, use_warnings=warnings)
