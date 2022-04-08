@@ -45,8 +45,23 @@ def display_questions(questions: list[CmDomainQType]) -> None:
         if sentences is not None:
             display_a_str(sentences.AStr, indent=2)
 
+def get_subdomain(semantic_domain: CmSemanticDomainType, abbrev: str) -> CmSemanticDomainType | None:
+    dom_abbrev: AbbreviationType = semantic_domain.Abbreviation
+    for uni in dom_abbrev.AUni: # type: AUniType
+        dom_abbrev_str: str = uni.valueOf_
+        if (dom_abbrev_str == abbrev):
+            return semantic_domain
+        if (abbrev[:len(dom_abbrev_str)] != dom_abbrev_str):
+            return None
+    possibilities: SubPossibilitiesType | None = semantic_domain.SubPossibilities
+    if possibilities is not None:
+        for domain in possibilities.CmSemanticDomain:  # type: CmSemanticDomainType
+            subdomain: CmSemanticDomainType | None = get_subdomain(domain, abbrev)
+            if (subdomain is not None):
+                return subdomain
+    return None
 
-def display_semantic_domain(semantic_domain: CmSemanticDomainType) -> None:
+def display_semantic_domain(semantic_domain: CmSemanticDomainType, *, display_subdomains: bool = True) -> None:
     print("Name")
     name: NameType = semantic_domain.Name
     display_a_uni(name.AUni)
@@ -62,8 +77,9 @@ def display_semantic_domain(semantic_domain: CmSemanticDomainType) -> None:
     print("\nQuestions")
     display_questions(semantic_domain.Questions.CmDomainQ)
 
-    print("\nSubPossibilities")
-    possibilities: SubPossibilitiesType | None = semantic_domain.SubPossibilities
-    if possibilities is not None:
-        for domain in possibilities.CmSemanticDomain:  # type: CmSemanticDomainType
-            display_semantic_domain(domain)
+    if (display_subdomains):
+        possibilities: SubPossibilitiesType | None = semantic_domain.SubPossibilities
+        if possibilities is not None:
+            print("\nSubPossibilities")
+            for domain in possibilities.CmSemanticDomain:  # type: CmSemanticDomainType
+                display_semantic_domain(domain, display_subdomains=display_subdomains)

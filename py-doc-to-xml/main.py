@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from pprint import pformat
+from sys import stderr
 from typing import Optional
 
 from docx import Document
@@ -11,7 +12,7 @@ from simplify_docx import simplify
 from typer import Option, Typer
 
 from docx_to_xml.doc1 import process_doc
-from docx_to_xml.semantic_domain import display_semantic_domain
+from docx_to_xml.semantic_domain import display_semantic_domain, get_subdomain
 from docx_to_xml.types import DocModel
 from semantic_domain import CmSemanticDomainType, parse
 
@@ -63,15 +64,30 @@ def translate(
 def parse_final_xml(
     xml_file: Path = Option(
         ...,
+        "--xml-file",
+        "-x",
         exists=True,
         dir_okay=False,
         readable=True,
         resolve_path=True,
         help="An XML file containing a **single** semantic domain (<CmSemanticDomain>).",
     ),
+    abbrev: Optional[str] = Option(
+        None,
+        "--abbrev",
+        "-a",
+        help="The numeric abbreviation of a semantic domain to display (e.g., 1.1.2).",
+    ),
 ) -> None:
     xml_root: CmSemanticDomainType = parse(xml_file, silence=True)
-    display_semantic_domain(xml_root)
+    if (abbrev is not None):
+        sub_root = get_subdomain(xml_root, abbrev)
+        if (sub_root is None):
+            print(f"Domain {abbrev} not found.", file=stderr)
+        else:
+            display_semantic_domain(sub_root, display_subdomains=False)
+    else:
+        display_semantic_domain(xml_root)
 
 
 if __name__ == "__main__":
