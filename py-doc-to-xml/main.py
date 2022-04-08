@@ -47,7 +47,7 @@ def translate(
     old_lang: str = Option(
         "es",
         "--rm",
-        help="List of language codes for languages to be removed from the XML template.",
+        help="Language code for language to be removed from the XML template.",
     ),
     warnings: bool = Option(
         False,
