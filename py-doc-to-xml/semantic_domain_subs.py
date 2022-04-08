@@ -90,6 +90,25 @@ class NameTypeSub(supermod.NameType):
     def add(self, ws: str, value: str) -> None:
         self.add_AUni(AUniTypeSub(ws=ws, valueOf_=value))
 
+    def find_AUni(self, ws: str) -> Optional[AUniTypeSub]:
+        for auni in self.get_AUni():
+            if auni.get_ws() == ws:
+                return auni
+        return None
+
+    def copy(self, src: str, dest: str) -> None:
+        src_auni = self.find_AUni(src)
+        if src_auni is None:
+            abbrev = self.AUni[0].valueOf_
+            raise ValueError(f"No Name in {src} for {self}")
+        dest_auni = AUniTypeSub(ws=dest, valueOf_=src_auni.valueOf_)
+        for i in range(len(self.get_AUni())):
+            if self.AUni[i].get_ws() == dest:
+                self.replace_AUni_at(i, dest_auni)
+                break
+        else:
+            self.add_AUni(dest_auni)
+
 
 supermod.NameType.subclass = NameTypeSub
 # end class NameTypeSub
@@ -111,6 +130,19 @@ class AbbreviationTypeSub(supermod.AbbreviationType):
             if auni.get_ws() == ws:
                 return auni
         return None
+
+    def copy(self, src: str, dest: str) -> None:
+        src_auni = self.find_AUni(src)
+        if src_auni is None:
+            abbrev = self.AUni[0].valueOf_
+            raise ValueError(f"No abbreviation in {src} for {abbrev}")
+        dest_auni = AUniTypeSub(ws=dest, valueOf_=src_auni.valueOf_)
+        for i in range(len(self.get_AUni())):
+            if self.AUni[i].get_ws() == dest:
+                self.replace_AUni_at(i, dest_auni)
+                break
+        else:
+            self.add_AUni(dest_auni)
 
 
 supermod.AbbreviationType.subclass = AbbreviationTypeSub
@@ -149,7 +181,27 @@ class DescriptionTypeSub(supermod.DescriptionType):
 
     def add(self, ws: str, value: str) -> None:
         run = RunTypeSub(ws=ws, valueOf_=value)
-        self.add_AStr(AStrTypeSub(ws=ws, valueOf_=run))
+        self.add_AStr(AStrTypeSub(ws=ws, Run=run))
+
+    def find_AStr(self, ws: str) -> Optional[AStrTypeSub]:
+        for astr in self.get_AStr():
+            if astr.get_ws() == ws:
+                return astr
+        return None
+
+    def copy(self, src: str, dest: str) -> None:
+        src_astr = self.find_AStr(src)
+        if src_astr is None:
+            abbrev = self.AUni[0].valueOf_
+            raise ValueError(f"No description in {src} for {self}")
+        dest_run = RunTypeSub(ws=dest, valueOf_=src_astr.Run.valueOf_)
+        dest_astr = AStrTypeSub(ws=dest, valueOf_=dest_run)
+        for i in range(len(self.get_AStr())):
+            if self.AStr[i].get_ws() == dest:
+                self.replace_AStr_at(i, dest_astr)
+                break
+        else:
+            self.add_AStr(dest_astr)
 
 
 supermod.DescriptionType.subclass = DescriptionTypeSub
@@ -170,6 +222,23 @@ class QuestionTypeSub(supermod.QuestionType):
         for auni in self.get_AUni():
             auni.print(indent)
 
+    def add(self, ws: str, value: str) -> None:
+        self.add_AUni(AUniTypeSub(ws=ws, valueOf_=value))
+
+    def update(self, ws: str, value: str) -> None:
+        """
+        Updates the question with ws that matches argument.
+
+        If the there is no element with a macthing 'ws' field,
+        a new one will be added.
+        """
+        for i in range(len(self.AUni)):
+            if ws == self.AUni[i].get_ws():
+                self.replace_AUni_at(i, AUniTypeSub(ws=ws, valueOf_=value))
+                break
+        else:
+            self.add(ws, value)
+
 
 supermod.QuestionType.subclass = QuestionTypeSub
 # end class QuestionTypeSub
@@ -189,6 +258,13 @@ class ExampleWordsTypeSub(supermod.ExampleWordsType):
         for auni in self.get_AUni():
             auni.print(indent)
 
+    def update(self, ws:str, value: str) -> None:
+        for i in range(len(self.AUni)):
+            if ws == self.AUni[i].get_ws():
+                self.replace_AUni_at(i, AUniTypeSub(ws=ws, valueOf_=value))
+                break
+        else:
+            self.add_AUni(AUniTypeSub(ws=ws, valueOf_=value))
 
 supermod.ExampleWordsType.subclass = ExampleWordsTypeSub
 # end class ExampleWordsTypeSub
@@ -236,6 +312,32 @@ class QuestionsTypeSub(supermod.QuestionsType):
             if domain_question.ExampleSentences is not None:
                 print("\tExample Sentences")
                 domain_question.ExampleSentences.print(indent=1)
+
+    def add(
+        self, ws: str, index: int, question: str, example_words: str, example_sentences: str
+    ) -> None:
+        if index >= len(self.CmDomainQ):
+            # Add past existing questions
+            question_elem = QuestionTypeSub([AUniTypeSub(ws=ws, valueOf_=question)])
+            if example_words:
+                words_elem = ExampleWordsTypeSub([AUniTypeSub(ws=ws, valueOf_=example_words)])
+            else:
+                words_elem = None
+            if example_sentences:
+                sentence_run = RunTypeSub(ws=ws, valueOf_=example_sentences)
+                sentence_elem = ExampleSentencesTypeSub([AStrTypeSub(ws=ws, Run=sentence_run)])
+            else:
+                sentence_elem = None
+            domain_q = CmDomainQTypeSub(question_elem, words_elem, sentence_elem)
+            self.add_CmDomainQ(domain_q)
+        else:
+            domain_q = self.CmDomainQ[index]
+            domain_q.Question.update(ws, question)
+            if example_words:
+                domain_q.ExampleWords.update(ws, example_words)
+            if example_sentences:
+                domain_q.ExampleSentences.update(ws, example_sentences)
+            self.replace_CmDomainQ_at(index, domain_q)
 
     def copy(self, src: str, dest: str) -> None:
         for domain_q in self.CmDomainQ:

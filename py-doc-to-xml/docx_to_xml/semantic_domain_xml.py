@@ -28,16 +28,18 @@ class SemanticDomainXml:
         lang: str,
         old_lang: str,
     ) -> None:
-        """Recursively update the non-English fields with the new_domains data."""
 
         # Find the domain abbreviation to be updated.
-        auni: Optional[AUniTypeSub] = node.get_Abbreviation().find_AUni("es")
+        auni: Optional[AUniTypeSub] = node.get_Abbreviation().find_AUni("en")
         if auni is not None:
             domain_abbr = auni.get_valueOf_()
 
-        if domain_abbr is not None:
-            # The source document has the current domain
+        # All
+        assert domain_abbr is not None
+
+        if domain_abbr in new_domains:
             domain = new_domains[domain_abbr]
+            # The source document has the current domain
             node.Abbreviation.add(ws=lang, value=domain.abbrev)
             node.Name.add(ws=lang, value=domain.name)
             node.Description.add(ws=lang, value=domain.description)
@@ -45,17 +47,32 @@ class SemanticDomainXml:
             new_len = len(domain.questions)
             if node_len != new_len:
                 print(
-                    f"WARNING: Number of questions differ for {domain_abbr}: {node_len}/{new_len}",
+                    f"WARNING: Number of questions for {domain_abbr}, 'es' - {node_len}; {lang} - {new_len}",
                     file=sys.stderr,
                 )
-            # TO DO: Update questions by question number
+            for i in range(new_len):
+                domain_q = domain.questions[i]
+                node.Questions.add(
+                    ws=lang,
+                    index=i,
+                    question=domain_q.question,
+                    example_words=domain_q.words,
+                    example_sentences=domain_q.sentences,
+                )
         else:
             # The source document does not have the current domain so
             # we copy the English text.
             node.Abbreviation.copy(src="en", dest=lang)
             node.Name.copy(src="en", dest=lang)
-            node.Descriptions.copy(src="en", dest=lang)
+            node.Description.copy(src="en", dest=lang)
             node.Questions.copy(src="en", dest=lang)
+
+        # Update the sub-domains
+        if node.SubPossibilities is not None:
+            for sub_domain in node.SubPossibilities.CmSemanticDomain:
+                SemanticDomainXml.update_node(
+                    sub_domain, new_domains, lang=lang, old_lang=old_lang
+                )
 
     def update(self, new_domains: Dict[str:SemanticDomain], lang: str, old_lang: str) -> None:
         self.root_node = CmSemanticDomainTypeSub = parse(self.xml_file, silence=True)
