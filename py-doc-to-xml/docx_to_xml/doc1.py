@@ -167,8 +167,9 @@ def parse_semantic_domains(
                     last_question = replace(last_question, sentences=f"{value}")
                     current_semantic_domain.questions[-1] = last_question
                 else:
+                    (error_question_num, _) = split_question(last_question.question)
                     process_error(
-                        f"Too many text blocks for question.\nDomain: {current_semantic_domain.abbrev}\nQuestion: {last_question}",
+                        f"Too many text blocks for question {error_question_num} in domain {current_semantic_domain.abbrev}",
                         use_warnings,
                     )
             else:
