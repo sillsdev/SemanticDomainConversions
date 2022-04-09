@@ -91,7 +91,7 @@ def parse_semantic_domains(
                 if the example words empty, set the example words to the text
                 else if the example sentences are empty, set the example sentences to the text
                 else raise an exception
-        else if the current semantic domain's name is emtpy,
+        else if the current semantic domain's name is empty,
             - set the name to the text
         else
             - append the text to the description
@@ -100,7 +100,7 @@ def parse_semantic_domains(
         semantic domain abbreviation:
             - starts with a number
             - number is followed by '.[0-9]' between 0 and 4 times
-            - no puntuation at the end of the number
+            - no punctuation at the end of the number
         question:
             - may start with a '('
             - followed by a sequence of digits
@@ -110,7 +110,7 @@ def parse_semantic_domains(
         semantic domain abbreviation:
             - starts with a number
             - number is followed by '.[0-9]' between 1 and 3 times
-            - no puntuation at the end of the number
+            - no punctuation at the end of the number
          question:
             - starts a sequence of digits, no punctuation
 
