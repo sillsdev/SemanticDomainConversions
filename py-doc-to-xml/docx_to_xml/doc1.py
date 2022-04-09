@@ -162,8 +162,10 @@ def parse_semantic_domains(
                 last_question = current_semantic_domain.questions[-1]
                 if not last_question.words:
                     last_question = replace(last_question, words=f"{value}")
+                    current_semantic_domain.questions[-1] = last_question
                 elif not last_question.sentences:
                     last_question = replace(last_question, sentences=f"{value}")
+                    current_semantic_domain.questions[-1] = last_question
                 else:
                     process_error(
                         f"Too many text blocks for question.\nDomain: {current_semantic_domain.abbrev}\nQuestion: {last_question}",
