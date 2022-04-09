@@ -62,6 +62,7 @@ class SemanticDomainXml:
         else:
             # The source document does not have the current domain so
             # we copy the English text.
+            print(f"WARNING: {domain_abbr} for {lang} is missing.", file=sys.stderr)
             node.Abbreviation.copy(src="en", dest=lang)
             node.Name.copy(src="en", dest=lang)
             node.Description.copy(src="en", dest=lang)

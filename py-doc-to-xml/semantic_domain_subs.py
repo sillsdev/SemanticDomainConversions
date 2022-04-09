@@ -235,6 +235,12 @@ class QuestionTypeSub(supermod.QuestionType):
                 return auni
         return None
 
+    def find_AUni_index(self, ws: str) -> int:
+        for index in range(len(self.AUni)):
+            if self.AUni[index].get_ws() == ws:
+                return index
+        return -1
+
     def print(self, indent: int = 1) -> None:
         for auni in self.get_AUni():
             auni.print(indent)
@@ -255,12 +261,11 @@ class QuestionTypeSub(supermod.QuestionType):
         If the there is no element with a macthing 'ws' field,
         a new one will be added.
         """
-        for i in range(len(self.AUni)):
-            if ws == self.AUni[i].get_ws():
-                self.replace_AUni_at(i, AUniTypeSub(ws=ws, valueOf_=value))
-                break
-        else:
+        i = self.find_AUni_index(ws)
+        if i < 0:
             self.add(ws, value)
+        else:
+            self.replace_AUni_at(i, AUniTypeSub(ws=ws, valueOf_=value))
 
 
 supermod.QuestionType.subclass = QuestionTypeSub
@@ -277,6 +282,12 @@ class ExampleWordsTypeSub(supermod.ExampleWordsType):
                 return auni
         return None
 
+    def find_AUni_index(self, ws: str) -> int:
+        for index in range(len(self.AUni)):
+            if self.AUni[index].get_ws() == ws:
+                return index
+        return -1
+
     def remove_ws(self, ws: str) -> None:
         for auni in self.AUni:
             if auni.get_ws() == ws:
@@ -288,12 +299,11 @@ class ExampleWordsTypeSub(supermod.ExampleWordsType):
             auni.print(indent)
 
     def update(self, ws:str, value: str) -> None:
-        for i in range(len(self.AUni)):
-            if ws == self.AUni[i].get_ws():
-                self.replace_AUni_at(i, AUniTypeSub(ws=ws, valueOf_=value))
-                break
-        else:
+        auni_index = self.find_AUni_index(ws)
+        if auni_index < 0:
             self.add_AUni(AUniTypeSub(ws=ws, valueOf_=value))
+        else:
+            self.replace_AUni_at(auni_index, AUniTypeSub(ws=ws, valueOf_=value))
 
 supermod.ExampleWordsType.subclass = ExampleWordsTypeSub
 # end class ExampleWordsTypeSub
@@ -304,21 +314,34 @@ class ExampleSentencesTypeSub(supermod.ExampleSentencesType):
         super(ExampleSentencesTypeSub, self).__init__(AStr, **kwargs_)
 
     def find_AStr(self, ws: str) -> Optional[AStrTypeSub]:
-        for auni in self.get_AUni():
-            if auni.get_ws() == ws:
-                return auni
+        for astr in self.get_AStr():
+            if astr.get_ws() == ws:
+                return astr
         return None
 
+    def find_AStr_index(self, ws: str) -> int:
+        for index in range(len(self.AStr)):
+            if self.AStr[index].get_ws() == ws:
+                return index
+        return -1
+
     def remove_ws(self, ws: str) -> None:
-        for astr in self.AStr:
-            if astr.get_ws() == ws:
-                self.AStr.remove(astr)
-                break
+        astr  = self.find_AStr(ws)
+        if astr is not None:
+            self.AStr.remove(astr)
 
     def print(self, indent: int = 1) -> None:
         for astr in self.get_AStr():
             astr.print(indent)
 
+    def update(self, ws: str, value: str) -> None:
+        astr_ix = self.find_AStr_index(ws)
+        run_str = RunTypeSub(ws=ws, valueOf_=value)
+        new_astr = AStrTypeSub(ws=ws, Run=run_str)
+        if astr_ix < 0:
+            self.add_AStr(new_astr)
+        else:
+            self.replace_AStr_at(astr_ix, new_astr)
 
 supermod.ExampleSentencesType.subclass = ExampleSentencesTypeSub
 # end class ExampleSentencesTypeSub
@@ -366,12 +389,21 @@ class QuestionsTypeSub(supermod.QuestionsType):
             domain_q = CmDomainQTypeSub(question_elem, words_elem, sentence_elem)
             self.add_CmDomainQ(domain_q)
         else:
-            domain_q = self.CmDomainQ[index]
+            domain_q: CmDomainQTypeSub = self.CmDomainQ[index]
             domain_q.Question.update(ws, question)
             if example_words:
-                domain_q.ExampleWords.update(ws, example_words)
+                if domain_q.ExampleWords is not None:
+                    domain_q.ExampleWords.update(ws, example_words)
+                else:
+                    example_auni = AUniTypeSub(ws=ws, valueOf_=example_words)
+                    domain_q.set_ExampleWords(ExampleWordsTypeSub([example_auni]))
             if example_sentences:
-                domain_q.ExampleSentences.update(ws, example_sentences)
+                if domain_q.ExampleSentences is not None:
+                    domain_q.ExampleSentences.update(ws, example_sentences)
+                else:
+                    run_str = RunTypeSub(ws=ws, valueOf_=example_sentences)
+                    example_astr = AStrTypeSub(ws=ws, Run=run_str)
+                    domain_q.set_ExampleSentences(ExampleSentencesTypeSub(AStr=[example_astr]))
             self.replace_CmDomainQ_at(index, domain_q)
 
     def remove_ws(self, ws: str) -> None:
