@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from pathlib import Path
+from pprint import pformat
+from typing import Optional
 
 from docx import Document
 from simplify_docx import simplify
@@ -43,6 +45,12 @@ def translate(
         resolve_path=True,
         help="Output file for the Semantic Domain XML file",
     ),
+    debug_file: Optional[Path] = Option(
+        writable=True,
+        resolve_path=True,
+        default=None,
+        help="Debug output file to capture the JSON file representation of the input document contents",
+    ),
     lang: str = Option(..., help="Code for language of the doc_file."),
     old_lang: str = Option(
         "es",
@@ -58,6 +66,8 @@ def translate(
 ) -> None:
     doc = Document(doc_file)
     json = simplify(doc, {"include-paragraph-indent": False, "include-paragraph-numbering": True})
+    if debug_file is not None:
+        debug_file.write_text(pformat(json))
     doc_model: DocModel = DocModel.parse_obj(json)
     semantic_domains = process_doc(doc_model, warnings=warnings)
     domain_updater = SemanticDomainXml(xml_template)
