@@ -22,6 +22,7 @@ class SemanticDomainXml:
     def load(self):
         self.root_node = parse(self.xml_file, silence=True)
 
+    @staticmethod
     def update_node(
         node: CmSemanticDomainTypeSub,
         new_domains: Dict[str:SemanticDomain],
@@ -47,7 +48,8 @@ class SemanticDomainXml:
             new_len = len(domain.questions)
             if node_len != new_len:
                 print(
-                    f"WARNING: Number of questions for {domain_abbr}, 'es' - {node_len}; {lang} - {new_len}",
+                    f"WARNING: Number of questions for {domain_abbr}, "
+                    f"'es' - {node_len}; {lang} - {new_len}",
                     file=sys.stderr,
                 )
             for i in range(new_len):
@@ -83,7 +85,7 @@ class SemanticDomainXml:
                 )
 
     def update(self, new_domains: Dict[str:SemanticDomain], lang: str, old_lang: str) -> None:
-        self.root_node = CmSemanticDomainTypeSub = parse(self.xml_file, silence=True)
+        self.root_node: CmSemanticDomainTypeSub = parse(self.xml_file, silence=True)
         SemanticDomainXml.update_node(
             node=self.root_node, new_domains=new_domains, lang=lang, old_lang=old_lang
         )

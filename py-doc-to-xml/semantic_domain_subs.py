@@ -94,7 +94,7 @@ class NameTypeSub(supermod.NameType):
         for auni in self.AUni:
             if auni.get_ws() == ws:
                 self.AUni.remove(auni)
-                break;
+                break
 
     def find_AUni(self, ws: str) -> Optional[AUniTypeSub]:
         for auni in self.get_AUni():
@@ -154,7 +154,8 @@ class AbbreviationTypeSub(supermod.AbbreviationType):
         for auni in self.AUni:
             if auni.get_ws() == ws:
                 self.AUni.remove(auni)
-                break;
+                break
+
 
 supermod.AbbreviationType.subclass = AbbreviationTypeSub
 # end class AbbreviationTypeSub
@@ -252,7 +253,7 @@ class QuestionTypeSub(supermod.QuestionType):
         for auni in self.AUni:
             if auni.get_ws() == ws:
                 self.AUni.remove(auni)
-                break;
+                break
 
     def update(self, ws: str, value: str) -> None:
         """
@@ -292,18 +293,19 @@ class ExampleWordsTypeSub(supermod.ExampleWordsType):
         for auni in self.AUni:
             if auni.get_ws() == ws:
                 self.AUni.remove(auni)
-                break;
+                break
 
     def print(self, indent: int = 1) -> None:
         for auni in self.get_AUni():
             auni.print(indent)
 
-    def update(self, ws:str, value: str) -> None:
+    def update(self, ws: str, value: str) -> None:
         auni_index = self.find_AUni_index(ws)
         if auni_index < 0:
             self.add_AUni(AUniTypeSub(ws=ws, valueOf_=value))
         else:
             self.replace_AUni_at(auni_index, AUniTypeSub(ws=ws, valueOf_=value))
+
 
 supermod.ExampleWordsType.subclass = ExampleWordsTypeSub
 # end class ExampleWordsTypeSub
@@ -326,7 +328,7 @@ class ExampleSentencesTypeSub(supermod.ExampleSentencesType):
         return -1
 
     def remove_ws(self, ws: str) -> None:
-        astr  = self.find_AStr(ws)
+        astr = self.find_AStr(ws)
         if astr is not None:
             self.AStr.remove(astr)
 
@@ -342,6 +344,7 @@ class ExampleSentencesTypeSub(supermod.ExampleSentencesType):
             self.add_AStr(new_astr)
         else:
             self.replace_AStr_at(astr_ix, new_astr)
+
 
 supermod.ExampleSentencesType.subclass = ExampleSentencesTypeSub
 # end class ExampleSentencesTypeSub
