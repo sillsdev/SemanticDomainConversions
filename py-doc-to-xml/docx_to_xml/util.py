@@ -42,7 +42,7 @@ def split_question(s: str) -> Tuple[str, str]:
      1)
      (1)
     """
-    return split_line(s, pattern=r"\s*\(?([0-9]+)[).]?")
+    return split_line(s, pattern=r"\s*\(?([0-9]+)[).]")
 
 
 def is_semantic_domain_abbrev(s: str) -> bool:
