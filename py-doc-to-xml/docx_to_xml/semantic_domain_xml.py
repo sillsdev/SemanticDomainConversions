@@ -66,9 +66,10 @@ class SemanticDomainXml:
             # we copy the English text.
             print(f"WARNING: {domain_abbr} for {lang} is missing.", file=sys.stderr)
             node.Abbreviation.copy(src="en", dest=lang)
-            node.Name.copy(src="en", dest=lang)
-            node.Description.copy(src="en", dest=lang)
-            node.Questions.copy(src="en", dest=lang)
+            node.Name.add(ws=lang, value="")
+            node.Description.add(ws=lang, value="")
+            for i in range(node.Questions.num_questions()):
+                node.Questions.add(ws=lang, index=i, question="")
 
         # Now remove the old_lang entries
         if old_lang:

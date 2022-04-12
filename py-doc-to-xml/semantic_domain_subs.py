@@ -375,7 +375,12 @@ class QuestionsTypeSub(supermod.QuestionsType):
                 domain_question.ExampleSentences.print(indent=1)
 
     def add(
-        self, ws: str, index: int, question: str, example_words: str, example_sentences: str
+        self,
+        ws: str,
+        index: int,
+        question: str,
+        example_words: str = "",
+        example_sentences: str = "",
     ) -> None:
         if index >= len(self.CmDomainQ):
             # Add past existing questions
@@ -436,6 +441,8 @@ class QuestionsTypeSub(supermod.QuestionsType):
                     run_copy = RunTypeSub(ws=dest, valueOf_=src_astr.Run.valueOf_)
                     domain_q.ExampleSentences.add_AStr(AStrTypeSub(ws=dest, Run=run_copy))
 
+    def num_questions(self) -> int:
+        return len(self.CmDomainQ)
 
 supermod.QuestionsType.subclass = QuestionsTypeSub
 # end class QuestionsTypeSub
