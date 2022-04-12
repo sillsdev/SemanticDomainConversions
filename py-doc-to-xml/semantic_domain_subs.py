@@ -444,6 +444,7 @@ class QuestionsTypeSub(supermod.QuestionsType):
     def num_questions(self) -> int:
         return len(self.CmDomainQ)
 
+
 supermod.QuestionsType.subclass = QuestionsTypeSub
 # end class QuestionsTypeSub
 

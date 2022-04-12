@@ -1,10 +1,8 @@
 """Custom doc1 processing."""
 
 from dataclasses import replace
-from pathlib import Path
-from pprint import pprint
 import sys
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from docx_to_xml.types import DocModel, DomainQuestion, SemanticDomain
 from docx_to_xml.util import (
@@ -124,7 +122,8 @@ def parse_semantic_domains(
 
         if paragraph.style and "numPr" in paragraph.style:
             process_error(
-                f"Automatic numbering: {paragraph}; Current semantic domain{current_semantic_domain}",
+                f"Automatic numbering: {paragraph}; "
+                f"Current semantic domain{current_semantic_domain}",
                 use_warnings,
             )
 
@@ -169,7 +168,8 @@ def parse_semantic_domains(
                 else:
                     (error_question_num, _) = split_question(last_question.question)
                     process_error(
-                        f"Too many text blocks for question {error_question_num} in domain {current_semantic_domain.abbrev}",
+                        f"Too many text blocks for question {error_question_num} "
+                        f"in domain {current_semantic_domain.abbrev}",
                         use_warnings,
                     )
             else:

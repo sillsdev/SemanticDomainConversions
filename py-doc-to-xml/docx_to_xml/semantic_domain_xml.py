@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 import sys
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 from semantic_domain_subs import AUniTypeSub, CmSemanticDomainTypeSub, parse
 

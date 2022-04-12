@@ -49,7 +49,8 @@ def translate(
         writable=True,
         resolve_path=True,
         default=None,
-        help="Debug output file to capture the JSON file representation of the input document contents",
+        help="Debug output file to capture the JSON file representation of"
+        " the input document contents",
     ),
     lang: str = Option(..., help="Code for language of the doc_file."),
     old_lang: str = Option(
@@ -61,7 +62,8 @@ def translate(
         False,
         "--warnings",
         "-w",
-        help="Print warnings on standard error instead of raising an exception when a parsing problem is found.",
+        help="Print warnings on standard error instead of raising"
+        " an exception when a parsing problem is found.",
     ),
 ) -> None:
     doc = Document(doc_file)
