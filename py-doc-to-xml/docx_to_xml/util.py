@@ -30,7 +30,7 @@ def split_line(s: str, *, pattern: str) -> Tuple[str, str]:
 
 def split_semantic_domain_line(s: str) -> Tuple[str, str]:
     """Splits a line into a semantic domain abbreviation and a name."""
-    return split_line(s, pattern=r"^\d(\.\d){0,4}$")
+    return split_line(s, pattern=r"^[0-9](\.[0-9]){0,4}$")
 
 
 def split_question(s: str) -> Tuple[str, str]:
@@ -42,7 +42,7 @@ def split_question(s: str) -> Tuple[str, str]:
      1)
      (1)
     """
-    return split_line(s, pattern=r"\s*\(?(\d+)[).]?")
+    return split_line(s, pattern=r"\s*\(?([0-9]+)[).]")
 
 
 def is_semantic_domain_abbrev(s: str) -> bool:

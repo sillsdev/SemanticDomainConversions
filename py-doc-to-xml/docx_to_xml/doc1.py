@@ -1,10 +1,8 @@
 """Custom doc1 processing."""
 
 from dataclasses import replace
-from pathlib import Path
-from pprint import pprint
 import sys
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from docx_to_xml.types import DocModel, DomainQuestion, SemanticDomain
 from docx_to_xml.util import (
@@ -91,7 +89,7 @@ def parse_semantic_domains(
                 if the example words empty, set the example words to the text
                 else if the example sentences are empty, set the example sentences to the text
                 else raise an exception
-        else if the current semantic domain's name is emtpy,
+        else if the current semantic domain's name is empty,
             - set the name to the text
         else
             - append the text to the description
@@ -100,7 +98,7 @@ def parse_semantic_domains(
         semantic domain abbreviation:
             - starts with a number
             - number is followed by '.[0-9]' between 0 and 4 times
-            - no puntuation at the end of the number
+            - no punctuation at the end of the number
         question:
             - may start with a '('
             - followed by a sequence of digits
@@ -110,7 +108,7 @@ def parse_semantic_domains(
         semantic domain abbreviation:
             - starts with a number
             - number is followed by '.[0-9]' between 1 and 3 times
-            - no puntuation at the end of the number
+            - no punctuation at the end of the number
          question:
             - starts a sequence of digits, no punctuation
 
@@ -124,7 +122,8 @@ def parse_semantic_domains(
 
         if paragraph.style and "numPr" in paragraph.style:
             process_error(
-                f"Automatic numbering: {paragraph}; Current semantic domain{current_semantic_domain}",
+                f"Automatic numbering: {paragraph}; "
+                f"Current semantic domain{current_semantic_domain}",
                 use_warnings,
             )
 
@@ -162,11 +161,15 @@ def parse_semantic_domains(
                 last_question = current_semantic_domain.questions[-1]
                 if not last_question.words:
                     last_question = replace(last_question, words=f"{value}")
+                    current_semantic_domain.questions[-1] = last_question
                 elif not last_question.sentences:
                     last_question = replace(last_question, sentences=f"{value}")
+                    current_semantic_domain.questions[-1] = last_question
                 else:
+                    (error_question_num, _) = split_question(last_question.question)
                     process_error(
-                        f"Too many text blocks for question.\nDomain: {current_semantic_domain.abbrev}\nQuestion: {last_question}",
+                        f"Too many text blocks for question {error_question_num} "
+                        f"in domain {current_semantic_domain.abbrev}",
                         use_warnings,
                     )
             else:
@@ -182,17 +185,12 @@ def parse_semantic_domains(
 
 def process_doc(
     doc: DocModel,
-    output_file: Optional[Path] = None,
     *,
-    start_index: int = 0,
     warnings: bool = False,
-) -> None:
+) -> Dict[str, SemanticDomain]:
     """Document-specific steps."""
     assert doc.TYPE == "document"
     body = doc.VALUE[0]
     assert body.TYPE == "body"
-    # Allow skipping title pages and similar.
-    semantic_domains = parse_semantic_domains(body.VALUE[start_index:], use_warnings=warnings)
-    if output_file is not None:
-        with open(output_file, "w") as file:
-            pprint(semantic_domains, stream=file)
+
+    return parse_semantic_domains(body.VALUE, use_warnings=warnings)
