@@ -44,7 +44,7 @@ class SemanticDomainXml:
             node.Abbreviation.add(ws=lang, value=domain.abbrev)
             node.Name.add(ws=lang, value=domain.name)
             node.Description.add(ws=lang, value=domain.description)
-            node_len = len(node.Questions.CmDomainQ)
+            node_len = node.Questions.num_questions()
             new_len = len(domain.questions)
             if node_len != new_len:
                 print(
@@ -61,6 +61,14 @@ class SemanticDomainXml:
                     example_words=domain_q.words,
                     example_sentences=domain_q.sentences,
                 )
+                en_set = node.Questions.get_domain_q_set(i, ws="en")
+                lang_set = node.Questions.get_domain_q_set(i, ws=lang)
+                if en_set != lang_set:
+                    print(
+                        f"WARNING: Mismatch for question {i+1} in {domain_abbr}.\t"
+                        f"en {en_set}\t{lang} {lang_set}",
+                        file=sys.stderr,
+                    )
         else:
             # The source document does not have the current domain so
             # we add the domain with blank fields.
