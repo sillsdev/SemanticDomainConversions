@@ -48,7 +48,7 @@ class SemanticDomainXml:
             new_len = len(domain.questions)
             if node_len != new_len:
                 print(
-                    f"WARNING: Number of questions for {domain_abbr},"
+                    f"WARNING: Number of questions for {domain_abbr}, "
                     f"'en' - {node_len}; {lang} - {new_len}",
                     file=sys.stderr,
                 )
