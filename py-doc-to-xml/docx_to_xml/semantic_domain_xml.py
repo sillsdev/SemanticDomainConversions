@@ -4,7 +4,7 @@ from pathlib import Path
 import sys
 from typing import Dict, Optional
 
-from semantic_domain_subs import AStrTypeSub, AUniTypeSub, ExampleSentencesTypeSub, CmSemanticDomainTypeSub, parse
+from semantic_domain_subs import AUniTypeSub, ExampleSentencesTypeSub, CmSemanticDomainTypeSub, parse
 
 from docx_to_xml.types import SemanticDomain
 
