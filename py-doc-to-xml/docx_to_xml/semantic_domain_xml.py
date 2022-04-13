@@ -4,7 +4,7 @@ from pathlib import Path
 import sys
 from typing import Dict, Optional
 
-from semantic_domain_subs import AUniTypeSub, CmSemanticDomainTypeSub, parse
+from semantic_domain_subs import AStrTypeSub, AUniTypeSub, ExampleSentencesTypeSub, CmSemanticDomainTypeSub, parse
 
 from docx_to_xml.types import SemanticDomain
 
@@ -44,7 +44,8 @@ class SemanticDomainXml:
             node.Abbreviation.add(ws=lang, value=domain.abbrev)
             node.Name.add(ws=lang, value=domain.name)
             node.Description.add(ws=lang, value=domain.description)
-            node_len = len(node.Questions.CmDomainQ)
+            node_qs: list = node.Questions.CmDomainQ
+            node_len = len(node_qs)
             new_len = len(domain.questions)
             if node_len != new_len:
                 print(
@@ -54,6 +55,16 @@ class SemanticDomainXml:
                 )
             for i in range(new_len):
                 domain_q = domain.questions[i]
+                node_q_sentences: ExampleSentencesTypeSub = node_qs[i].ExampleSentences
+                sentences_str = None
+                if (node_q_sentences is not None):
+                    sentences_str = node_q_sentences.find_AStr("en").Run.get_valueOf_()
+                if (domain_q.sentences != "" and not sentences_str):
+                    print(
+                        f"WARNING: Domain {domain_abbr}, question {i} has example "
+                        f"sentences in '{lang}' even though there are none in 'en'.",
+                        file=sys.stderr,
+                    )
                 node.Questions.add(
                     ws=lang,
                     index=i,
