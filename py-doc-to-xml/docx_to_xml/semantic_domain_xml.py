@@ -4,7 +4,7 @@ from pathlib import Path
 import sys
 from typing import Dict, Optional
 
-from semantic_domain_subs import AUniTypeSub, ExampleSentencesTypeSub, CmSemanticDomainTypeSub, parse
+from semantic_domain_subs import AUniTypeSub, CmSemanticDomainTypeSub, parse
 
 from docx_to_xml.types import SemanticDomain
 
@@ -44,27 +44,16 @@ class SemanticDomainXml:
             node.Abbreviation.add(ws=lang, value=domain.abbrev)
             node.Name.add(ws=lang, value=domain.name)
             node.Description.add(ws=lang, value=domain.description)
-            node_qs: list = node.Questions.CmDomainQ
-            node_len = len(node_qs)
+            node_len = node.Questions.num_questions()
             new_len = len(domain.questions)
             if node_len != new_len:
                 print(
-                    f"WARNING: Number of questions for {domain_abbr}, "
+                    f"WARNING: Number of questions for {domain_abbr},"
                     f"'en' - {node_len}; {lang} - {new_len}",
                     file=sys.stderr,
                 )
             for i in range(new_len):
                 domain_q = domain.questions[i]
-                node_q_sentences: ExampleSentencesTypeSub = node_qs[i].ExampleSentences
-                sentences_str = None
-                if (node_q_sentences is not None):
-                    sentences_str = node_q_sentences.find_AStr("en").Run.get_valueOf_()
-                if (domain_q.sentences != "" and not sentences_str):
-                    print(
-                        f"WARNING: Domain {domain_abbr}, question {i + 1} has example "
-                        f"sentences in '{lang}' even though there are none in 'en'.",
-                        file=sys.stderr,
-                    )
                 node.Questions.add(
                     ws=lang,
                     index=i,
@@ -72,6 +61,14 @@ class SemanticDomainXml:
                     example_words=domain_q.words,
                     example_sentences=domain_q.sentences,
                 )
+                en_set = node.Questions.get_domain_q_set(i, ws="en")
+                lang_set = node.Questions.get_domain_q_set(i, ws=lang)
+                if en_set != lang_set:
+                    print(
+                        f"WARNING: Mismatch for question {i} in {domain_abbr}.\t"
+                        f"en {en_set}\t{lang} {lang_set}",
+                        file=sys.stderr,
+                    )
         else:
             # The source document does not have the current domain so
             # we add the domain with blank fields.

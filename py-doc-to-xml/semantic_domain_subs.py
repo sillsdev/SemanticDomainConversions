@@ -21,10 +21,12 @@
 
 import os
 import sys
-from typing import Optional
+from typing import List, Optional
 
 from lxml import etree as etree_
 import semantic_domain as supermod
+
+from docx_to_xml.util import split_question
 
 
 def parsexml_(infile, parser=None, **kwargs):
@@ -354,6 +356,22 @@ class CmDomainQTypeSub(supermod.CmDomainQType):
     def __init__(self, Question=None, ExampleWords=None, ExampleSentences=None, **kwargs_):
         super(CmDomainQTypeSub, self).__init__(Question, ExampleWords, ExampleSentences, **kwargs_)
 
+    def domain_q_set(self, ws: str) -> List[str]:
+        contents: List[str] = []
+        if self.Question is not None:
+            q_auni = self.Question.find_AUni(ws)
+            if q_auni is not None:
+                (_, q_text) = split_question(q_auni.get_valueOf_())
+                if q_text:
+                    contents.append("question")
+        if self.ExampleWords is not None:
+            if self.ExampleWords.find_AUni(ws) is not None:
+                contents.append("words")
+        if self.ExampleSentences is not None:
+            if self.ExampleSentences.find_AStr(ws) is not None:
+                contents.append("sentences")
+        return contents
+
 
 supermod.CmDomainQType.subclass = CmDomainQTypeSub
 # end class CmDomainQTypeSub
@@ -443,6 +461,11 @@ class QuestionsTypeSub(supermod.QuestionsType):
 
     def num_questions(self) -> int:
         return len(self.CmDomainQ)
+
+    def get_domain_q_set(self, index: int, ws: str) -> List[str]:
+        if index < self.num_questions():
+            return self.CmDomainQ[index].domain_q_set(ws=ws)
+        return []
 
 
 supermod.QuestionsType.subclass = QuestionsTypeSub
