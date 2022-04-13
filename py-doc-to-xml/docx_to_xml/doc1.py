@@ -133,7 +133,7 @@ def parse_semantic_domains(
             process_error(f"Warning: Ignoring paragraph with count: {values_count}", True)
 
         # if the DocModel element is blank or starts with a '#', skip it.  (It is a comment.)
-        value = str(paragraph.VALUE[0].VALUE)
+        value = str(paragraph.VALUE[0].VALUE).strip()
         if value == "" or value[0] == "#":
             continue
 
