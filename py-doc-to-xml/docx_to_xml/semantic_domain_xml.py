@@ -61,7 +61,7 @@ class SemanticDomainXml:
                     sentences_str = node_q_sentences.find_AStr("en").Run.get_valueOf_()
                 if (domain_q.sentences != "" and not sentences_str):
                     print(
-                        f"WARNING: Domain {domain_abbr}, question {i} has example "
+                        f"WARNING: Domain {domain_abbr}, question {i + 1} has example "
                         f"sentences in '{lang}' even though there are none in 'en'.",
                         file=sys.stderr,
                     )
