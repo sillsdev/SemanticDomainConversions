@@ -65,7 +65,7 @@ class SemanticDomainXml:
                 lang_set = node.Questions.get_domain_q_set(i, ws=lang)
                 if en_set != lang_set:
                     print(
-                        f"WARNING: Mismatch for question {i} in {domain_abbr}.\t"
+                        f"WARNING: Mismatch for question {i+1} in {domain_abbr}.\t"
                         f"en {en_set}\t{lang} {lang_set}",
                         file=sys.stderr,
                     )
