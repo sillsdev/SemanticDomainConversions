@@ -366,7 +366,7 @@ class CmDomainQTypeSub(supermod.CmDomainQType):
                     contents.append("question")
         if self.ExampleWords is not None:
             w_auni = self.ExampleWords.find_AUni(ws)
-            if w_auni is not None and w_auni.get_valueOf_().strip('-') != "":
+            if w_auni is not None and w_auni.get_valueOf_().strip("-"):
                 contents.append("words")
         if self.ExampleSentences is not None:
             if self.ExampleSentences.find_AStr(ws) is not None:
