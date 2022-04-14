@@ -365,7 +365,8 @@ class CmDomainQTypeSub(supermod.CmDomainQType):
                 if q_text:
                     contents.append("question")
         if self.ExampleWords is not None:
-            if self.ExampleWords.find_AUni(ws) is not None:
+            w_auni = self.ExampleWords.find_AUni(ws)
+            if w_auni is not None and w_auni.get_valueOf_().strip('-') != "":
                 contents.append("words")
         if self.ExampleSentences is not None:
             if self.ExampleSentences.find_AStr(ws) is not None:
@@ -403,7 +404,7 @@ class QuestionsTypeSub(supermod.QuestionsType):
         if index >= len(self.CmDomainQ):
             # Add past existing questions
             question_elem = QuestionTypeSub([AUniTypeSub(ws=ws, valueOf_=question)])
-            if example_words:
+            if example_words.strip("-"):
                 words_elem = ExampleWordsTypeSub([AUniTypeSub(ws=ws, valueOf_=example_words)])
             else:
                 words_elem = None
@@ -417,7 +418,7 @@ class QuestionsTypeSub(supermod.QuestionsType):
         else:
             domain_q: CmDomainQTypeSub = self.CmDomainQ[index]
             domain_q.Question.update(ws, question)
-            if example_words:
+            if example_words.strip("-"):
                 if domain_q.ExampleWords is not None:
                     domain_q.ExampleWords.update(ws, example_words)
                 else:
