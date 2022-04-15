@@ -17,8 +17,8 @@ class SemanticDomainXml:
     def print(self) -> None:
         if self.root_node is None:
             self.load()
-        else:
-            self.root_node.print()
+
+        self.root_node.print()  # type: ignore
 
     def load(self) -> None:
         self.root_node = parse(self.xml_file, silence=True)
