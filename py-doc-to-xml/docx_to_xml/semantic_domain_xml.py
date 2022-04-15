@@ -10,22 +10,23 @@ from docx_to_xml.types import SemanticDomain
 
 
 class SemanticDomainXml:
-    def __init__(self, xml_file: Path):
+    def __init__(self, xml_file: Path) -> None:
         self.xml_file = xml_file
         self.root_node: Optional[CmSemanticDomainTypeSub] = None
 
     def print(self) -> None:
         if self.root_node is None:
             self.load()
-        self.root_node.print()
 
-    def load(self):
+        self.root_node.print()  # type: ignore
+
+    def load(self) -> None:
         self.root_node = parse(self.xml_file, silence=True)
 
     @staticmethod
     def update_node(
         node: CmSemanticDomainTypeSub,
-        new_domains: Dict[str:SemanticDomain],
+        new_domains: Dict[str, SemanticDomain],
         lang: str,
         old_lang: str,
     ) -> None:
@@ -93,12 +94,14 @@ class SemanticDomainXml:
                     sub_domain, new_domains, lang=lang, old_lang=old_lang
                 )
 
-    def update(self, new_domains: Dict[str:SemanticDomain], lang: str, old_lang: str) -> None:
-        self.root_node: CmSemanticDomainTypeSub = parse(self.xml_file, silence=True)
+    def update(self, new_domains: Dict[str, SemanticDomain], lang: str, old_lang: str) -> None:
+        root_node = parse(self.xml_file, silence=True)
         SemanticDomainXml.update_node(
-            node=self.root_node, new_domains=new_domains, lang=lang, old_lang=old_lang
+            node=root_node, new_domains=new_domains, lang=lang, old_lang=old_lang
         )
+        self.root_node = root_node
 
     def export(self, output_file: Path) -> None:
         with open(output_file, "w") as file:
-            self.root_node.export(file, level=2, pretty_print=True)
+            if self.root_node is not None:
+                self.root_node.export(file, level=2, pretty_print=True)
