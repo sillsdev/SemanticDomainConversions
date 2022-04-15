@@ -2,6 +2,18 @@
 ignore_missing_imports = true
 strict = true
 
+[[tool.mypy.overrides]]
+module = "semantic_domain"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "semantic_domain_subs"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "docx_to_xml.semantic_domain_xml"
+ignore_errors = true
+
 [tool.black]
 line-length = 99
 target-version = ["py38", "py39", "py310"]

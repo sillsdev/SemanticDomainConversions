@@ -13,7 +13,7 @@ from docx_to_xml.util import (
 )
 
 
-def process_error(msg: str, warning: bool = False):
+def process_error(msg: str, warning: bool = False) -> None:
     if warning:
         print(msg, file=sys.stderr)
     else:
@@ -133,7 +133,7 @@ def parse_semantic_domains(
             process_error(f"Warning: Ignoring paragraph with count: {values_count}", True)
 
         # if the DocModel element is blank or starts with a '#', skip it.  (It is a comment.)
-        value = str(paragraph.VALUE[0].VALUE).strip()
+        value = str(paragraph.VALUE[0].VALUE).strip()  # type: ignore
         if value == "" or value[0] == "#":
             continue
 
@@ -190,7 +190,8 @@ def process_doc(
 ) -> Dict[str, SemanticDomain]:
     """Document-specific steps."""
     assert doc.TYPE == "document"
-    body = doc.VALUE[0]
+    body: DocModel = doc.VALUE[0]  # type: ignore
     assert body.TYPE == "body"
+    value: List[DocModel] = body.VALUE  # type: ignore
 
-    return parse_semantic_domains(body.VALUE, use_warnings=warnings)
+    return parse_semantic_domains(value, use_warnings=warnings)
