@@ -1,6 +1,8 @@
 [tool.mypy]
 ignore_missing_imports = true
 strict = true
+# The auto-generated code does not have type annotations, so disable this setting.
+disallow_untyped_calls = false
 
 [[tool.mypy.overrides]]
 module = "semantic_domain"
@@ -8,10 +10,6 @@ ignore_errors = true
 
 [[tool.mypy.overrides]]
 module = "semantic_domain_subs"
-ignore_errors = true
-
-[[tool.mypy.overrides]]
-module = "docx_to_xml.semantic_domain_xml"
 ignore_errors = true
 
 [tool.black]
